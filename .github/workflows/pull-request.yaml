@@ -1,0 +1,54 @@
+name: Pull Request Build
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: BuildOnLinux
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.16
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.5
+      - name: Build
+        run: |
+          sudo apt-get update -y
+          sudo apt install libasound2-dev -y
+          go build -o bin/goplay .
+
+  build-darwin:
+    name: BuildOnDarwin
+    runs-on: macos-10.15
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.16
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.5
+      - name: Build
+        run: |
+          go build -o bin/goplay .
+
+  build-win:
+    name: BuildOnWindows
+    runs-on: windows-2019
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.16
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.5
+      - name: Build
+        run: |
+          go build -o bin/goplay .
