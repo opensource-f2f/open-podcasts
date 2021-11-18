@@ -20,16 +20,26 @@ func main() {
 	var albumID int
 	if result, err := broadcast.Search(keyword); err != nil {
 		panic(err)
+	} else if len(result.Data.AlbumViews.Albums) == 0 {
+		fmt.Println("not found any albums by keyword:", keyword)
+		return
 	} else {
-		if len(result.Data.AlbumViews.Albums) > 0 {
-			album := result.Data.AlbumViews.Albums[0].AlbumInfo
-			albumID = album.ID
+		albumTitle := make([]string, 0)
+		albumMap := make(map[string]int, 0)
+		for _, v := range result.Data.AlbumViews.Albums {
+			albumTitle = append(albumTitle, v.AlbumInfo.Title)
+			albumMap[v.AlbumInfo.Title] = v.AlbumInfo.ID
+		}
 
-			fmt.Println("find album", album.Title)
-		} else {
-			fmt.Println("not found any albums by keyword:", keyword)
+		selector := &survey.Select{
+			Message: "Select a album",
+			Options: albumTitle,
+		}
+		var choose string
+		if err = survey.AskOne(selector, &choose); err != nil {
 			return
 		}
+		albumID = albumMap[choose]
 	}
 
 	tracks, err := broadcast.GetTrackList(albumID, 1, false)
@@ -54,15 +64,6 @@ func main() {
 		fmt.Println("start to play", choose)
 		trackInfo := trackMap[choose]
 		play(trackInfo)
-
-		//if resp, err := http.Get(playURL); err != nil {
-		//	fmt.Println(err)
-		//} else {
-		//	data, _ := io.ReadAll(resp.Body)
-		//	buffer := bytes.NewReader(data)
-		//
-		//	play(playio.SeekerWithoutCloser(buffer))
-		//}
 	}
 }
 
