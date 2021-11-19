@@ -11,17 +11,17 @@ import (
 
 func Search(keyword string) (result *AlbumSearchResult, err error) {
 	keyword = url.QueryEscape(keyword)
-	apiurl := fmt.Sprintf("https://m.ximalaya.com/m-revision/page/search?kw=%s&core=album&page=1&rows=10", keyword)
+	apiurl := fmt.Sprintf("https://m.ximalaya.com/m-revision/page/search?kw=%s&core=album&page=1&rows=1000", keyword)
 	resp, err := HttpGet(apiurl, Android)
 	if err != nil {
-		return nil, fmt.Errorf("无法获取专辑信息: %v", err)
+		return nil, fmt.Errorf("cannot found albums by keyword: %s, error %v", keyword, err)
 	}
 	defer resp.Body.Close()
 
 	result = &AlbumSearchResult{}
 	err = jsoniter.NewDecoder(resp.Body).Decode(result)
 	if err != nil {
-		return nil, fmt.Errorf("无法获取专辑信息: 无法解析Json: %v", err)
+		return nil, fmt.Errorf("failed to parse json: %v", err)
 	}
 	return
 }
@@ -151,7 +151,7 @@ func GetAudioInfoListByPageID(albumID, pageID int) (playlist *Playlist, err erro
 
 func GetTrackList(albumID, pageID int, isAsc bool) (tracks *TrackList, err error) {
 	url := fmt.Sprintf(
-		"https://mobile.ximalaya.com/mobile/v1/album/track/ts-%d?ac=WIFI&albumId=%d&device=android&isAsc=%t&pageId=%d&pageSize=200",
+		"https://mobile.ximalaya.com/mobile/v1/album/track/ts-%d?ac=WIFI&albumId=%d&device=android&isAsc=%t&pageId=%d&pageSize=1000",
 		time.Now().Unix(), albumID, isAsc, pageID)
 	resp, err := HttpGet(url, Android)
 	if err != nil {
