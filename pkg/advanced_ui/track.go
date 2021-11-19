@@ -11,8 +11,10 @@ import (
 	"github.com/linuxsuren/goplay/pkg/ui"
 	"github.com/spf13/viper"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"time"
 )
@@ -26,11 +28,8 @@ type TrackAudioPanel struct {
 func NewTrackAudioPanel(trackInfo *broadcast.TrackInfo) (panel *TrackAudioPanel, err error) {
 	_ = loadConfig()
 
-	var resp *http.Response
-	if resp, err = http.Get(trackInfo.PlayURL64); err == nil {
-		data, _ := io.ReadAll(resp.Body)
-		buffer := bytes.NewReader(data)
-
+	var buffer io.Reader
+	if buffer, err = playWithLocalCache(trackInfo.PlayURL64); err == nil {
 		var streamer beep.StreamSeekCloser
 		var format beep.Format
 		streamer, format, err = mp3.Decode(playio.SeekerWithoutCloser(buffer))
@@ -41,9 +40,48 @@ func NewTrackAudioPanel(trackInfo *broadcast.TrackInfo) (panel *TrackAudioPanel,
 		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/30))
 
 		return &TrackAudioPanel{
-			AudioPlayer: ui.NewAudioPanel(format.SampleRate, streamer),
+			AudioPlayer: ui.NewAudioPanel(format.SampleRate, streamer, trackInfo.Title),
 			audioUID:    strconv.Itoa(trackInfo.UID),
 		}, nil
+	}
+	return
+}
+
+func playWithLocalCache(trackURL string) (reader io.Reader, err error) {
+	if reader, err = playWithRange(trackURL, -1); err != nil {
+		return
+	}
+
+	var data []byte
+	if data, err = ioutil.ReadAll(reader); err != nil {
+		return
+	}
+
+	cache := path.Join(os.TempDir(), "1")
+	if err = ioutil.WriteFile(cache, data, 0600); err != nil {
+		return
+	}
+
+	reader, err = os.Open(cache)
+	return
+}
+
+func playWithRange(trackURL string, from int) (reader io.Reader, err error) {
+	var resp *http.Response
+	if resp, err = http.Get(trackURL); err == nil {
+		ranges := resp.Header.Get("Accept-Ranges")
+		length := resp.Header.Get("Content-Length")
+
+		if ranges == "bytes" && from >= 0 {
+			lenghtNum, _ := strconv.Atoi(length)
+			reader = playio.NewRangeReader(0, lenghtNum, trackURL)
+		} else {
+			var resp *http.Response
+			if resp, err = http.Get(trackURL); err == nil {
+				data, _ := io.ReadAll(resp.Body)
+				reader = bytes.NewReader(data)
+			}
+		}
 	}
 	return
 }

@@ -17,14 +17,15 @@ type audioPanel struct {
 	ctrl       *beep.Ctrl
 	resampler  *beep.Resampler
 	volume     *effects.Volume
+	title      string
 }
 
 // NewAudioPanel creates a audio panel
-func NewAudioPanel(sampleRate beep.SampleRate, streamer beep.StreamSeeker) AudioPlayer {
+func NewAudioPanel(sampleRate beep.SampleRate, streamer beep.StreamSeeker, title string) AudioPlayer {
 	ctrl := &beep.Ctrl{Streamer: beep.Loop(-1, streamer)}
 	resampler := beep.ResampleRatio(4, 1, ctrl)
 	volume := &effects.Volume{Streamer: resampler, Base: 2}
-	return &audioPanel{sampleRate, streamer, ctrl, resampler, volume}
+	return &audioPanel{sampleRate, streamer, ctrl, resampler, volume, title}
 }
 
 // Play starts to play a audio
@@ -42,6 +43,31 @@ func (ap *audioPanel) Position() int {
 	return ap.streamer.Position()
 }
 
+type linePrinter struct {
+	index int
+	screen tcell.Screen
+	style tcell.Style
+}
+
+func (p *linePrinter) print(msg string) {
+	drawTextLine(p.screen, 0, p.index, msg, p.style)
+	p.index++
+}
+
+func (ap *audioPanel) printInfoArea(screen tcell.Screen, mainStyle tcell.Style)  {
+	printer := &linePrinter{
+		screen: screen,
+		style: mainStyle,
+	}
+	printer.print("Welcome to the GoPlay!")
+	if ap.title != "" {
+		printer.print(fmt.Sprintf("Title: %s", ap.title))
+	}
+	printer.print("Press [ESC] to quit.")
+	printer.print("Press [SPACE] to pause/resume.")
+	printer.print("Use keys in (?/?) to turn the buttons.")
+}
+
 // Draw draws the infomation to a screen
 func (ap *audioPanel) Draw(screen tcell.Screen) {
 	mainStyle := tcell.StyleDefault.
@@ -53,10 +79,7 @@ func (ap *audioPanel) Draw(screen tcell.Screen) {
 
 	screen.Fill(' ', mainStyle)
 
-	drawTextLine(screen, 0, 0, "Welcome to the Speedy Player!", mainStyle)
-	drawTextLine(screen, 0, 1, "Press [ESC] to quit.", mainStyle)
-	drawTextLine(screen, 0, 2, "Press [SPACE] to pause/resume.", mainStyle)
-	drawTextLine(screen, 0, 3, "Use keys in (?/?) to turn the buttons.", mainStyle)
+	ap.printInfoArea(screen, mainStyle)
 
 	speaker.Lock()
 	position := ap.sampleRate.D(ap.streamer.Position())
