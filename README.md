@@ -4,10 +4,10 @@ Listen podcast via CLI.
 
 ## Get started
 
-Install via [goget](https://github.com/linuxsuren/goget):
+Install via [hd](https://github.com/linuxsuren/http-downloader):
 
 ```shell
-goget github.com/linuxsuren/goplay
+hd install goplay
 ```
 
 Start to listen:
@@ -15,3 +15,7 @@ Start to listen:
 ```shell
 goplay 开源面对面
 ```
+
+## Release
+
+This project can be released via [linuxsuren-versions](https://github.com/linuxsuren/linuxsuren-versions).
