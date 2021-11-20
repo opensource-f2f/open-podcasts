@@ -6,8 +6,8 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
-	"github.com/linuxsuren/goplay/pkg/broadcast"
 	playio "github.com/linuxsuren/goplay/pkg/io"
+	"github.com/linuxsuren/goplay/pkg/rss"
 	"github.com/linuxsuren/goplay/pkg/ui"
 	"github.com/spf13/viper"
 	"io"
@@ -25,11 +25,11 @@ type TrackAudioPanel struct {
 	audioUID string
 }
 
-func NewTrackAudioPanel(trackInfo *broadcast.TrackInfo) (panel *TrackAudioPanel, err error) {
+func NewTrackAudioPanel(episode rss.Episode) (panel *TrackAudioPanel, err error) {
 	_ = loadConfig()
 
 	var buffer io.Reader
-	if buffer, err = playWithLocalCache(trackInfo.PlayURL64); err == nil {
+	if buffer, err = playWithLocalCache(episode.AudioLink); err == nil {
 		var streamer beep.StreamSeekCloser
 		var format beep.Format
 		streamer, format, err = mp3.Decode(playio.SeekerWithoutCloser(buffer))
@@ -40,8 +40,8 @@ func NewTrackAudioPanel(trackInfo *broadcast.TrackInfo) (panel *TrackAudioPanel,
 		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/30))
 
 		return &TrackAudioPanel{
-			AudioPlayer: ui.NewAudioPanel(format.SampleRate, streamer, trackInfo.Title),
-			audioUID:    strconv.Itoa(trackInfo.UID),
+			AudioPlayer: ui.NewAudioPanel(format.SampleRate, streamer, episode.Title),
+			audioUID:    episode.UID,
 		}, nil
 	}
 	return

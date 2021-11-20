@@ -1,0 +1,19 @@
+- rss: https://www.ximalaya.com/album/53320813.xml
+  category:
+    - opensource
+    - 开源
+  language: Chinese
+- rss: https://www.ximalaya.com/album/52069269.xml
+  category:
+    - opensource
+    - 开源
+  language: Chinese
+- rss: https://www.ximalaya.com/album/32915040.xml
+  category:
+    - opensource
+    - 开源
+  language: Chinese
+#- rss: https://storyfm.cn/feed/episodes
+#  category:
+#    - 故事
+#  language: Chinese
