@@ -13,7 +13,7 @@
     - opensource
     - 开源
   language: Chinese
-#- rss: https://storyfm.cn/feed/episodes
-#  category:
-#    - 故事
-#  language: Chinese
+- rss: https://storyfm.cn/feed/episodes
+  category:
+    - 故事
+  language: Chinese

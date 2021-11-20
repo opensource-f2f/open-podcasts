@@ -48,10 +48,16 @@ func ConvertEpisodeMap(items []*rss.Item) (episodes map[string]Episode, titles [
 	for i, _ := range items {
 		item := items[i]
 		titles = append(titles, item.Title)
-		episodes[item.Title] = Episode{
-			Title:     item.Title,
-			AudioLink: item.ID,
-			UID:       base64.StdEncoding.EncodeToString([]byte(item.ID)),
+
+		if len(item.Enclosures) > 0 {
+			enclosure := item.Enclosures[0]
+			episodes[item.Title] = Episode{
+				Title:     item.Title,
+				AudioLink: enclosure.URL,
+				Type:      enclosure.Type,
+				Length:    enclosure.Length,
+				UID:       base64.StdEncoding.EncodeToString([]byte(item.ID)),
+			}
 		}
 	}
 	return

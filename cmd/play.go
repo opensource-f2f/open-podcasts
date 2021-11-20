@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/gdamore/tcell"
 	"github.com/linuxsuren/goplay/pkg/advanced_ui"
@@ -9,6 +10,8 @@ import (
 	"time"
 )
 
+// brew install ffmpeg
+// ffmpeg -i input.m4a -c:v copy -c:a libmp3lame -q:a 4 output.mp3
 func NewPlayCommand() (cmd *cobra.Command) {
 	opt := &playOption{}
 
@@ -29,6 +32,10 @@ func (o *playOption) runE(cmd *cobra.Command, args []string) (err error) {
 	keyword := args[0]
 
 	feeds, titles := rss.FindMapByKeyword(keyword)
+	if len(titles) == 0 {
+		err = fmt.Errorf("no podcast found by keyword: %s", keyword)
+		return
+	}
 	selector := &survey.Select{
 		Message: "Select a podcast",
 		Options: titles,
@@ -41,6 +48,10 @@ func (o *playOption) runE(cmd *cobra.Command, args []string) (err error) {
 	feed := feeds[choose]
 	var episodes map[string]rss.Episode
 	episodes, titles = rss.ConvertEpisodeMap(feed.Items)
+	if len(titles) == 0 {
+		err = fmt.Errorf("no episode found by keyword: %s", keyword)
+		return
+	}
 	selector = &survey.Select{
 		Message: "Select an episode",
 		Options: titles,
@@ -104,4 +115,3 @@ loop:
 		}
 	}
 }
-
