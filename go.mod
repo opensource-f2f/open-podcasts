@@ -14,4 +14,4 @@ require (
 	github.com/stretchr/testify v1.7.0
 )
 
-replace github.com/SlyMarbo/rss v1.0.1 => github.com/LinuxSuRen/rss v1.0.2-0.20211120132253-498b4e58de09
+replace github.com/SlyMarbo/rss v1.0.1 => github.com/LinuxSuRen/rss v1.0.2-0.20211120161457-3f8efe372d7a

@@ -17,3 +17,11 @@
   category:
     - 故事
   language: Chinese
+- rss: https://kubernetespodcast.com/feeds/audio.xml
+  category:
+    - opensource
+  language: English
+- rss: https://feeds.buzzsprout.com/1008697.rss
+  category:
+    - opensource
+  language: English

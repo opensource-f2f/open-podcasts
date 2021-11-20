@@ -49,8 +49,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.3.3 h1:CWUqKXe0s8A2z6qCgkP4Kru7wC11YoAnoupUKFDnH08=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
-github.com/LinuxSuRen/rss v1.0.2-0.20211120132253-498b4e58de09 h1:bUqJHN/qjizbXcHo/2sDYxQGe51p/zUEQDR4ug2AxwM=
-github.com/LinuxSuRen/rss v1.0.2-0.20211120132253-498b4e58de09/go.mod h1:YBZVWc3LpikVAK4QOkeGhBD/qaugcveLQA2SAsdmOxc=
+github.com/LinuxSuRen/rss v1.0.2-0.20211120161457-3f8efe372d7a h1:VTnUnEcwQ3v0KJlNcLtDeM6YahJPUvL+/sso0wWGBME=
+github.com/LinuxSuRen/rss v1.0.2-0.20211120161457-3f8efe372d7a/go.mod h1:YBZVWc3LpikVAK4QOkeGhBD/qaugcveLQA2SAsdmOxc=
 github.com/Netflix/go-expect v0.0.0-20180615182759-c93bf25de8e8 h1:xzYJEypr/85nBpB11F9br+3HUrpgb+fcm5iADzXXYEw=
 github.com/Netflix/go-expect v0.0.0-20180615182759-c93bf25de8e8/go.mod h1:oX5x61PbNXchhh0oikYAH+4Pcfw5LKv21+Jnpr6r6Pc=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
