@@ -1,7 +1,6 @@
 package advanced_ui
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
@@ -9,13 +8,12 @@ import (
 	playio "github.com/linuxsuren/goplay/pkg/io"
 	"github.com/linuxsuren/goplay/pkg/rss"
 	"github.com/linuxsuren/goplay/pkg/ui"
+	"github.com/linuxsuren/goplay/pkg/util"
+	"github.com/linuxsuren/http-downloader/pkg/net"
 	"github.com/spf13/viper"
 	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"time"
 )
 
@@ -47,42 +45,27 @@ func NewTrackAudioPanel(episode rss.Episode) (panel *TrackAudioPanel, err error)
 	return
 }
 
-func playWithLocalCache(trackURL string) (reader io.Reader, err error) {
-	if reader, err = playWithRange(trackURL, -1); err != nil {
-		return
-	}
+func LoadAudioFile(rssURL string) (audioCacheFile string, err error) {
+	cacheDir := os.ExpandEnv("$HOME/.config/goplay/cache")
+	_ = os.MkdirAll(cacheDir, 0751)
 
-	var data []byte
-	if data, err = ioutil.ReadAll(reader); err != nil {
-		return
+	audioCacheFile = path.Join(cacheDir, fmt.Sprintf("%s.audio", util.HashCodeAsString(rssURL)))
+	if _, err = os.Stat(audioCacheFile); err != nil {
+		err = net.DownloadFileWithMultipleThread(rssURL, audioCacheFile, 4, true)
 	}
-
-	cache := path.Join(os.TempDir(), "1")
-	if err = ioutil.WriteFile(cache, data, 0600); err != nil {
-		return
-	}
-
-	reader, err = os.Open(cache)
 	return
 }
 
-func playWithRange(trackURL string, from int) (reader io.Reader, err error) {
-	var resp *http.Response
-	if resp, err = http.Get(trackURL); err == nil {
-		ranges := resp.Header.Get("Accept-Ranges")
-		length := resp.Header.Get("Content-Length")
-
-		if ranges == "bytes" && from >= 0 {
-			lenghtNum, _ := strconv.Atoi(length)
-			reader = playio.NewRangeReader(0, lenghtNum, trackURL)
-		} else {
-			var resp *http.Response
-			if resp, err = http.Get(trackURL); err == nil {
-				data, _ := io.ReadAll(resp.Body)
-				reader = bytes.NewReader(data)
-			}
-		}
+func saveOrGetCache(rssURL string) (reader io.Reader, err error) {
+	var audioCacheFile string
+	if audioCacheFile, err = LoadAudioFile(rssURL); err == nil {
+		reader, err = os.Open(audioCacheFile)
 	}
+	return
+}
+
+func playWithLocalCache(trackURL string) (reader io.Reader, err error) {
+	reader, err = saveOrGetCache(trackURL)
 	return
 }
 

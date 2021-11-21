@@ -2,7 +2,7 @@
 
 Listen podcast via CLI.
 
-## Get started
+## Install
 
 Install via [hd](https://github.com/linuxsuren/http-downloader):
 
@@ -10,11 +10,17 @@ Install via [hd](https://github.com/linuxsuren/http-downloader):
 hd install goplay
 ```
 
+## Get started
+
 Start to listen:
 
 ```shell
 goplay 开源面对面
 ```
+
+## Restriction
+
+* Rely on `mplayer` if the audio file format is not mp3
 
 ## Release
 

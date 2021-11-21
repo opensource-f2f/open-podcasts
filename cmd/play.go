@@ -6,12 +6,12 @@ import (
 	"github.com/gdamore/tcell"
 	"github.com/linuxsuren/goplay/pkg/advanced_ui"
 	"github.com/linuxsuren/goplay/pkg/rss"
+	exec2 "github.com/linuxsuren/http-downloader/pkg/exec"
 	"github.com/spf13/cobra"
+	"os/exec"
 	"time"
 )
 
-// brew install ffmpeg
-// ffmpeg -i input.m4a -c:v copy -c:a libmp3lame -q:a 4 output.mp3
 func NewPlayCommand() (cmd *cobra.Command) {
 	opt := &playOption{}
 
@@ -60,11 +60,46 @@ func (o *playOption) runE(cmd *cobra.Command, args []string) (err error) {
 		return
 	}
 
-	play(episodes[choose])
+	episode := episodes[choose]
+	if !isSupport(episode) {
+		var ok bool
+		if ok, err = playWithPotentialTools(episode); !ok || err != nil {
+			err = fmt.Errorf("currently, only support mp3")
+		}
+	} else {
+		err = play(episode)
+	}
 	return
 }
 
-func play(episode rss.Episode) {
+func isSupport(episode rss.Episode) bool {
+	return episode.Type == "audio/mpeg"
+}
+
+func playWithPotentialTools(episode rss.Episode) (ok bool, err error) {
+	var mplayer string
+	if mplayer, err = exec.LookPath("mplayer"); err == nil {
+		selector := &survey.Confirm{
+			Message: fmt.Sprintf("Do you want to play '%s' with mplayer?", episode.Title),
+		}
+
+		err = survey.AskOne(selector, &ok)
+		if err == nil && ok {
+			var audioCacheFile string
+			if audioCacheFile, err = advanced_ui.LoadAudioFile(episode.AudioLink); err == nil {
+				err = exec2.RunCommand(mplayer, audioCacheFile)
+			}
+		}
+	}
+	return
+}
+
+func play(episode rss.Episode) (err error) {
+	if _, err = advanced_ui.LoadAudioFile(episode.AudioLink); err != nil {
+		err = fmt.Errorf("failed to load audio file from: %s, error: %v", episode.AudioLink, err)
+		return
+	}
+
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		panic(err)
@@ -77,7 +112,8 @@ func play(episode rss.Episode) {
 
 	var player *advanced_ui.TrackAudioPanel
 	if player, err = advanced_ui.NewTrackAudioPanel(episode); err != nil {
-		panic(err)
+		err = fmt.Errorf("failed to play '%s', error: %v", episode.Title, err)
+		return
 	}
 
 	screen.Clear()
@@ -114,4 +150,5 @@ loop:
 			screen.Show()
 		}
 	}
+	return
 }

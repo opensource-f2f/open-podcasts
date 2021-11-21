@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/SlyMarbo/rss"
 	"github.com/linuxsuren/goplay/pkg/data"
+	"github.com/linuxsuren/goplay/pkg/util"
 	"io/ioutil"
 	"os"
 	"path"
@@ -26,7 +27,7 @@ func loadCache(rssURL string) *rss.Feed {
 	cacheDir := os.ExpandEnv("$HOME/.config/goplay/cache")
 	_ = os.MkdirAll(cacheDir, 0751)
 
-	rssCacheFile := path.Join(cacheDir, base64.StdEncoding.EncodeToString([]byte(rssURL)))
+	rssCacheFile := path.Join(cacheDir, util.HashCodeAsString(rssURL))
 	if cacheData, err := ioutil.ReadFile(rssCacheFile); err == nil {
 		if feed, err := rss.Parse(cacheData); err != nil {
 			_ = os.RemoveAll(rssCacheFile)
@@ -41,7 +42,7 @@ func saveCache(rssURL string, feed *rss.Feed) {
 	cacheDir := os.ExpandEnv("$HOME/.config/goplay/cache")
 	_ = os.MkdirAll(cacheDir, 0751)
 
-	rssCacheFile := path.Join(cacheDir, base64.StdEncoding.EncodeToString([]byte(rssURL)))
+	rssCacheFile := path.Join(cacheDir, util.HashCodeAsString(rssURL))
 	_ = ioutil.WriteFile(rssCacheFile, feed.RawData, 0644)
 }
 

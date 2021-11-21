@@ -8,7 +8,7 @@ require (
 	github.com/faiface/beep v1.1.0
 	github.com/gdamore/tcell v1.3.0
 	github.com/ghodss/yaml v1.0.0
-	github.com/json-iterator/go v1.1.11
+	github.com/linuxsuren/http-downloader v0.0.50
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
