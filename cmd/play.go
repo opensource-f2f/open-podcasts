@@ -9,6 +9,7 @@ import (
 	exec2 "github.com/linuxsuren/http-downloader/pkg/exec"
 	"github.com/spf13/cobra"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -73,7 +74,7 @@ func (o *playOption) runE(cmd *cobra.Command, args []string) (err error) {
 }
 
 func isSupport(episode rss.Episode) bool {
-	return episode.Type == "audio/mpeg"
+	return episode.Type == "audio/mpeg" || strings.HasSuffix(episode.AudioLink, ".mp3")
 }
 
 func playWithPotentialTools(episode rss.Episode) (ok bool, err error) {
