@@ -30,3 +30,7 @@
   language: Chinese
   category:
     - 故事
+- rss: https://feeds.pacific-content.com/commandlineheroes
+  category:
+    - technology
+  language: English
