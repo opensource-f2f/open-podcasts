@@ -1,14 +1,20 @@
 - rss: https://www.ximalaya.com/album/53320813.xml
+  title: 开源面对面
+  summary: 让每天身处开源但却不了解开源的 IT 从业人员都能够了解开源、认知开源，进而贡献开源。通过开源重新审视自己、改变自己！
   category:
     - opensource
     - 开源
   language: Chinese
 - rss: https://www.ximalaya.com/album/52069269.xml
+  title: 迪魔王 Devmore - More about Dev
+  summary: 比起有意义，有趣的事才会坚持下去呀。 这里是迪魔王电台，Devmore 。 随着开发者生态发展，围绕开发者产生了很多职业，我们想邀请各种种类的朋友们来唠唠嗑，他们到底在做什么？他们可爱吗？他们怎么想？他们开心吗？揭秘 Devmore 的日常。 欢迎一起玩...
   category:
     - opensource
     - 开源
   language: Chinese
 - rss: https://www.ximalaya.com/album/32915040.xml
+  title: 开源之道Talking
+  summary: 致力于开源相关思想、知识与价值的探究！
   category:
     - opensource
     - 开源
@@ -33,4 +39,8 @@
 - rss: https://feeds.pacific-content.com/commandlineheroes
   category:
     - technology
+  language: English
+- rss: https://feeds.megaphone.fm/thefutur
+  category:
+    - design
   language: English
