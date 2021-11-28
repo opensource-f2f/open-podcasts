@@ -23,7 +23,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt install libasound2-dev -y
-          GOENABLE=0 go build -o bin/goplay .
+          GOENABLE=0 go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
           cd bin && tar czvf goplay-linux-amd64.tar.gz goplay
           gh release upload ${{ github.ref_name }} goplay-linux-amd64.tar.gz
   BuildOnDarwin:
@@ -40,6 +40,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
         run: |
-          GOENABLE=0 go build -o bin/goplay .
+          GOENABLE=0 go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
           cd bin && tar czvf goplay-darwin-amd64.tar.gz goplay
           gh release upload ${{ github.ref_name }} goplay-darwin-amd64.tar.gz

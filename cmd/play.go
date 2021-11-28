@@ -7,6 +7,7 @@ import (
 	"github.com/linuxsuren/goplay/pkg/advanced_ui"
 	"github.com/linuxsuren/goplay/pkg/rss"
 	exec2 "github.com/linuxsuren/http-downloader/pkg/exec"
+	extver "github.com/linuxsuren/cobra-extension/version"
 	"github.com/spf13/cobra"
 	"os/exec"
 	"strings"
@@ -23,6 +24,8 @@ func NewPlayCommand() (cmd *cobra.Command) {
 		Args:    cobra.MinimumNArgs(1),
 		RunE:    opt.runE,
 	}
+
+	cmd.AddCommand(extver.NewVersionCmd("linuxsuren", "goplay", "goplay", nil))
 	return
 }
 
