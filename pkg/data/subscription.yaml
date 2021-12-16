@@ -44,3 +44,11 @@
   category:
     - design
   language: English
+- rss: http://www.ximalaya.com/album/54433824.xml
+  title: CHAOSScast_China
+  summary: 分享与开源社区，指标和度量的用户故事
+  category:
+    - opensource
+    - 开源
+    - chaoss
+  language: Chinese

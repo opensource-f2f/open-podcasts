@@ -8,5 +8,5 @@ import (
 func TestGetRSSSources(t *testing.T) {
 	items, err := GetRSSSources()
 	assert.Nil(t, err)
-	assert.Equal(t, 9, len(items))
+	assert.Equal(t, 10, len(items))
 }
