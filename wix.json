@@ -6,7 +6,7 @@
   "files": {
     "guid": "0af2253c-4f7a-469a-ab00-8f87dc3ae4de",
     "items": [
-      "goplay.exe"
+      "bin/goplay.exe"
     ]
   },
   "env": {
