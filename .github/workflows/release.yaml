@@ -57,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
         run: |
-          GOENABLE=0 go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay.exe .
+          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay.exe .
           cd bin && 7z d goplay-windows-amd64.zip  goplay.exe
           gh release upload ${{ github.ref_name }} goplay-windows-amd64.zip
 
