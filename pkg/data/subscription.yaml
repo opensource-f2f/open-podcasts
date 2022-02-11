@@ -52,3 +52,10 @@
     - 开源
     - chaoss
   language: Chinese
+- rss: https://anchor.fm/s/5a87b0f4/podcast/rss
+  title: The ReadME Podcast
+  summary:
+  category:
+    - opensource
+    - github
+  language: English
