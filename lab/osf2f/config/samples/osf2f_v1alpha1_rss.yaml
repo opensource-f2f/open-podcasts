@@ -1,0 +1,6 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: rss-sample
+spec:
+  # TODO(user): Add fields here
