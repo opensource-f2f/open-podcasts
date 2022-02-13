@@ -4,4 +4,12 @@
 本项目，计划采用云原生的方式来开发后端程序，利用 [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder) 作为
 脚手架。
 
+```shell
+k3d cluster create -p 30000:30000 -p 30001:30001 -p 30002:30002 -p 30003:30003
+```
 
+## Create new API
+
+```shell
+kubebuilder create api --group osf2f --version v1alpha1 --kind Profile
+```

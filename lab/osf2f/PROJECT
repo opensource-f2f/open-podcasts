@@ -22,4 +22,13 @@ resources:
   kind: Episode
   path: github.com/linuxsuren/goplay/lab/osf2f/api/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: my.domain
+  group: osf2f
+  kind: Profile
+  path: github.com/linuxsuren/goplay/lab/osf2f/api/v1alpha1
+  version: v1alpha1
 version: "3"

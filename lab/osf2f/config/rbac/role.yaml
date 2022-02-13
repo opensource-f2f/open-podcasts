@@ -34,6 +34,32 @@ rules:
 - apiGroups:
   - osf2f.my.domain
   resources:
+  - profiles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - profiles/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - profiles/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
   - rsses
   verbs:
   - create

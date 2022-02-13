@@ -34,6 +34,7 @@ type EpisodeStatus struct {
 	Hints int64 `json:"hints,omitempty"`
 }
 
+// +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`,description="The title of an episode"
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 

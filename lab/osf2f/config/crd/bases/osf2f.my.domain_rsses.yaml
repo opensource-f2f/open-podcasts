@@ -15,7 +15,12 @@ spec:
     singular: rss
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - description: The title of an episode
+      jsonPath: .spec.title
+      name: Title
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: RSS is the Schema for the rsses API
@@ -41,7 +46,13 @@ spec:
                 items:
                   type: string
                 type: array
+              description:
+                type: string
+              image:
+                type: string
               language:
+                type: string
+              link:
                 type: string
               title:
                 description: Title is the title of RSS

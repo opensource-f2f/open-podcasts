@@ -23,10 +23,13 @@ import (
 // RSSSpec defines the desired state of RSS
 type RSSSpec struct {
 	// Title is the title of RSS
-	Title      string   `json:"title,omitempty"`
-	Language   string   `json:"language,omitempty"`
-	Address    string   `json:"address,omitempty"`
-	Categories []string `json:"categories,omitempty"`
+	Title       string   `json:"title,omitempty"`
+	Language    string   `json:"language,omitempty"`
+	Address     string   `json:"address,omitempty"`
+	Image       string   `json:"image,omitempty"`
+	Link        string   `json:"link,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Categories  []string `json:"categories,omitempty"`
 }
 
 // RSSStatus defines the observed state of RSS
@@ -34,6 +37,7 @@ type RSSStatus struct {
 	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
 }
 
+// +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`,description="The title of an episode"
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 

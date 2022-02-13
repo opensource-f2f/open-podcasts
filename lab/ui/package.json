@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@kubernetes/client-node": "^0.16.3",
+    "express": "^4.17.2",
+    "kubernetes-client": "github:godaddy/kubernetes-client"
+  },
+  "name": "osf2f",
+  "version": "1.0.0",
+  "main": "namespace.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

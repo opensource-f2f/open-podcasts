@@ -1,0 +1,71 @@
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="application/javascript">
+        $.getJSON('/episodes', function (episodes){
+            $.each(episodes, function (i, episode){
+                const source = $(document.createElement('source'))
+                source.attr('src', episode.spec.audioSource)
+                source.attr('type', 'audio/x-m4a')
+
+                const audio = $(document.createElement('audio'))
+                audio.attr('controls','')
+                audio.append(source)
+
+                const zone = $(document.createElement('div'))
+                zone.attr('id', episode.metadata.name)
+                zone.append($('<span>' + episode.spec.title + '</span><br/>'))
+                zone.append(audio)
+
+                $("#episodes").append(zone)
+            })
+        })
+
+        $.getJSON('/rsses', function (rsses){
+            $.each(rsses, function (i, rss){
+                if(rss.spec.image) {
+                    $('#rss_list').append($('<div><a href="' + rss.spec.link + '"><img width="150px" src="' + rss.spec.image + '"></a></div>'))
+                } else {
+                    $('#rss_list').append($('<div><a href="' + rss.spec.link + '">' + rss.spec.title + '</a></div>'))
+                }
+            })
+        })
+
+        $(document).ready(function (){
+            $('#play').click(function (){
+                $('#rss-sample-0 > audio').trigger('play')
+            });
+        })
+    </script>
+    <style>
+        #episodes > div {
+            border-style: solid;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<button id="play">Play</button>
+
+<div id="rss_list">
+    <form action="/rsses" method="post">
+        <table>
+            <tr>
+                <td>RSS:</td>
+                <td><input name="address" type="text"></td>
+            </tr>
+            <tr>
+                <td>Name:</td>
+                <td><input name="name" type="text"></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Submit"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="episodes"></div>
+
+</body>
+</html>

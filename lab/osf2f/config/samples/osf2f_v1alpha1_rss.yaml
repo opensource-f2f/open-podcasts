@@ -3,4 +3,4 @@ kind: RSS
 metadata:
   name: rss-sample
 spec:
-  # TODO(user): Add fields here
+  address: http://www.ximalaya.com/album/53320813.xml

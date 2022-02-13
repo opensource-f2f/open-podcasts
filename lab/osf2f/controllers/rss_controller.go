@@ -22,6 +22,7 @@ import (
 	"github.com/SlyMarbo/rss"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	"time"
 
@@ -80,39 +81,56 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err
 	}
 
 	rssObject.Spec.Title = feed.Title
+	rssObject.Spec.Description = feed.Description
+	rssObject.Spec.Link = feed.Link
+	if feed.Image != nil {
+		rssObject.Spec.Image = feed.Image.URL
+	}
+	if err = r.Client.Update(context.Background(), rssObject); err != nil {
+		return
+	}
 
-	err = r.storeEpisodes(feed.Items, rssObject.Namespace)
+	err = r.storeEpisodes(feed.Items, rssObject.ObjectMeta)
 	return
 }
 
-func (r *RSSReconciler) storeEpisodes(items []*rss.Item, namespace string) (err error) {
+func (r *RSSReconciler) storeEpisodes(items []*rss.Item, meta metav1.ObjectMeta) (err error) {
 	for i, _ := range items {
-		if err = r.storeEpisode(items[i], namespace); err != nil {
+		episodeMeta := meta.DeepCopy()
+		episodeMeta.Name = fmt.Sprintf("%s-%d", meta.Name, i)
+
+		if err = r.storeEpisode(items[i], episodeMeta); err != nil {
 			return
 		}
 	}
 	return
 }
 
-func (r *RSSReconciler) storeEpisode(item *rss.Item, namespace string) (err error) {
+func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (err error) {
 	var audioSource string
 	if len(item.Enclosures) > 0 {
 		audioSource = item.Enclosures[0].URL
 	}
 
-	episode := &v1alpha1.Episode{
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: namespace,
-			Name:      item.ID,
-		},
-		Spec: v1alpha1.EpisodeSpec{
-			Title:       item.Title,
-			CoverImage:  "",
-			AudioSource: audioSource,
-			Link:        item.Link,
-		},
+	episode := &v1alpha1.Episode{}
+	if err = r.Client.Get(context.Background(), types.NamespacedName{
+		Namespace: meta.Namespace,
+		Name:      meta.Name,
+	}, episode); err != nil {
+		episode := &v1alpha1.Episode{
+			ObjectMeta: metav1.ObjectMeta{
+				Namespace: meta.Namespace,
+				Name:      meta.Name,
+			},
+			Spec: v1alpha1.EpisodeSpec{
+				Title:       item.Title,
+				CoverImage:  "",
+				AudioSource: audioSource,
+				Link:        item.Link,
+			},
+		}
+		err = r.Client.Create(context.Background(), episode)
 	}
-	err = r.Client.Create(context.Background(), episode)
 	return
 }
 
