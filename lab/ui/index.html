@@ -19,6 +19,12 @@
 
                 $("#episodes").append(zone)
             })
+
+            $.getJSON('/profiles', function (profiles){
+                $.each(profiles, function (i, profile) {
+                    setLaterPlayButtons(profile)
+                })
+            })
         })
 
         $.getJSON('/rsses', function (rsses){
@@ -31,22 +37,79 @@
             })
         })
 
-        $(document).ready(function (){
-            $('#play').click(function (){
-                $('#rss-sample-0 > audio').trigger('play')
+        $.getJSON('/profiles', function (profiles){
+            $.each(profiles, function (i, profile) {
+                const profileZone = $(document.createElement('div'))
+                profileZone.append($('<span>' + profile.spec.displayName + ': </span>'))
+                $.each(profile.spec.socialLinks, function (key, val) {
+                    profileZone.append($('<div>' + key + ': <a target="_blank" href="https://github.com/' + val + '">' + val + '</a></div>'))
+                })
+
+                $.each(profile.spec.laterPlayList, function (i, item){
+                    profileZone.append($('<span episode="' + item.name + '">' + item.name + '</span>'))
+                })
+
+                profileZone.append($('<button>Play</button>'))
+                $('#profiles').append(profileZone)
+            })
+
+            $('button').click(function (){
+                $(this).parent().find('span').each(function (i, item){
+                    item = $(item)
+                    if(item.attr('episode') && item.attr('episode') != "") {
+                        const selector = '#' + item.attr('episode') + ' > audio'
+                        $(selector).trigger('play')
+
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: $(selector).offset().top
+                        }, 2000);
+                        return false
+                    }
+                })
             });
         })
+
+        function setLaterPlayButtons(profile){
+            $('#episodes > div').each(function (){
+                var id = $(this).attr('id')
+                var found = false
+                if(id != ""){
+                    $.each(profile.spec.laterPlayList, function (i, item){
+                        if(item.name === id){
+                            found = true
+                            return false
+                        }
+                    })
+                }
+
+                if(!found){
+                    $(this).append("<button action='later' episode='" + id + "'>Later</button>")
+                }
+            })
+
+            $('[action="later"]').click(function (){
+                const form = $("<form method='post'></form>")
+                // TODO read it from somewhere later
+                form.attr('action', "/profile/playLater?name=profile-sample&episode=" + $(this).attr('episode'))
+                $(document.body).append(form)
+                form.submit()
+            })
+        }
     </script>
     <style>
         #episodes > div {
             border-style: solid;
             margin-top: 15px;
         }
+        #profiles > div {
+            border-style: solid;
+            margin: 20px;
+        }
     </style>
 </head>
 <body>
 
-<button id="play">Play</button>
+<div id="profiles"></div>
 
 <div id="rss_list">
     <form action="/rsses" method="post">

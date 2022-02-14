@@ -10,21 +10,6 @@ const port = 5000;                  //Save the port number where your server wil
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
     res.sendFile('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
-                                                        //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile
-
-});
-
-app.get('/a', (req, res) => {
-    const k8s = require('@kubernetes/client-node');
-
-    const kc = new k8s.KubeConfig();
-    kc.loadFromDefault();
-
-    const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-    result = k8sApi.readNamespace("default")
-    result.then(response => {
-        res.end(response.body.metadata.name)
-    })
 });
 
 app.get('/rsses', (req, res) => {
@@ -71,6 +56,53 @@ app.get('/episodes', (req, res) => {
         res.end(JSON.stringify(response.body.items))
     })
 });
+
+app.get('/profiles', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body.items, undefined, space))
+    })
+});
+
+app.post('/profile/playLater', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name).get()
+    profile.then(response => {
+        var found = false
+        response.body.spec.laterPlayList.forEach(function (item, index){
+            if(item.name === req.query.episode) {
+                found = true
+                return false
+            }
+        })
+        if(!found) {
+            targetProfile = response.body
+            targetProfile.spec.laterPlayList.push({
+                name: req.query.episode
+            })
+
+            console.log(targetProfile)
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name)
+                .put({
+                    body:targetProfile,
+                })
+        }
+    })
+    res.redirect('/')
+})
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);

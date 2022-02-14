@@ -3,5 +3,8 @@ kind: Profile
 metadata:
   name: profile-sample
 spec:
-  # Add fields here
-  foo: bar
+  displayName: Rick
+  socialLinks:
+    github: linuxsuren
+  laterPlayList:
+    - name: rss-sample-0
