@@ -84,7 +84,11 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err
 	rssObject.Spec.Description = feed.Description
 	rssObject.Spec.Link = feed.Link
 	if feed.Image != nil {
-		rssObject.Spec.Image = feed.Image.URL
+		if feed.Image.URL != "" {
+			rssObject.Spec.Image = feed.Image.URL
+		} else if feed.Image.Href != "" {
+			rssObject.Spec.Image = feed.Image.Href
+		}
 	}
 	if err = r.Client.Update(context.Background(), rssObject); err != nil {
 		return
@@ -126,10 +130,16 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (e
 				Title:       item.Title,
 				Summary:     item.Summary,
 				Content:     item.Content,
-				CoverImage:  "",
 				AudioSource: audioSource,
 				Link:        item.Link,
 			},
+		}
+		if item.Image != nil {
+			if item.Image.URL != "" {
+				episode.Spec.CoverImage = item.Image.URL
+			} else if item.Image.Href != "" {
+				episode.Spec.CoverImage = item.Image.Href
+			}
 		}
 		err = r.Client.Create(context.Background(), episode)
 	}
