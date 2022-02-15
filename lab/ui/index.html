@@ -2,20 +2,36 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script type="application/javascript">
+        function createAudio(src, parent) {
+            const source = $(document.createElement('source'))
+            source.attr('src', src)
+            source.attr('type', 'audio/x-m4a')
+
+            const audio = $(document.createElement('audio'))
+            audio.attr('controls','')
+            audio.append(source)
+            parent.append(audio)
+            return audio
+        }
+
         $.getJSON('/episodes', function (episodes){
             $.each(episodes, function (i, episode){
-                const source = $(document.createElement('source'))
-                source.attr('src', episode.spec.audioSource)
-                source.attr('type', 'audio/x-m4a')
-
-                const audio = $(document.createElement('audio'))
-                audio.attr('controls','')
-                audio.append(source)
-
                 const zone = $(document.createElement('div'))
                 zone.attr('id', episode.metadata.name)
+                zone.attr('src', episode.spec.audioSource)
                 zone.append($('<span>' + episode.spec.title + '</span><br/>'))
-                zone.append(audio)
+                zone.on('play-audio', function (){
+                    const audioZone = $(this)
+                    createAudio(audioZone.attr('src'), audioZone).trigger('play').on('ended', function (){
+                        const audioPanel = $(this)
+                        const episode = audioPanel.parent().attr('id')
+                        $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
+                            audioZone.trigger('ended-audio')
+                        })
+                    });
+
+                    $(this).trigger('ready')
+                })
 
                 $("#episodes").append(zone)
             })
@@ -31,7 +47,7 @@
             $.each(rsses, function (i, rss){
                 if(rss.spec.image) {
                     $('#rss_list').append($('<div><a href="' + rss.spec.link + '"><img width="150px" src="' + rss.spec.image + '"></a></div>'))
-                } else {
+                } else if(rss.spec.title) {
                     $('#rss_list').append($('<div><a href="' + rss.spec.link + '">' + rss.spec.title + '</a></div>'))
                 }
             })
@@ -60,16 +76,13 @@
                 playButton.parent().find('span').each(function (i, item){
                     item = $(item)
                     if(item.attr('episode') && item.attr('episode') != "") {
-                        const selector = '#' + item.attr('episode') + ' > audio'
-                        $(selector).trigger('play').on('ended', function (){
-                            const episode = $(this).parent().attr('id')
-                            $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
-                                console.log('success')
-
-                                item.remove()
-                                playButton.click()
-                            })
-                        });
+                        const selector = '#' + item.attr('episode')
+                        $('#' + item.attr('episode')).trigger('play-audio').on('ready', function (){
+                            console.log('ready' + $(this).attr('id'))
+                        }).on('ended-audio', function () {
+                            item.remove()
+                            playButton.click()
+                        })
 
                         $([document.documentElement, document.body]).animate({
                             scrollTop: $(selector).offset().top
@@ -99,21 +112,13 @@
             })
 
             $('[action="later"]').click(function (){
-                const form = $("<form method='post'></form>")
+                const laterButton = $(this)
                 // TODO read it from somewhere later
-                form.attr('action', "/profile/playLater?name=profile-sample&episode=" + $(this).attr('episode'))
-                $(document.body).append(form)
-                form.submit()
+                $.post("/profile/playLater?name=profile-sample&episode=" + $(this).attr('episode'), function () {
+                    laterButton.remove()
+                })
             })
         }
-
-        window.setInterval(function (){
-            $('audio').each(function (){
-                if(this.currentTime>0){
-                    console.log(this.duration + "===="+ this.currentTime)
-                }
-            })
-        }, 2000)
     </script>
     <style>
         #episodes > div {
@@ -127,6 +132,15 @@
         }
         #profiles > div > * {
             margin: 5px;
+        }
+        #rss_list > div {
+            display: inline-block;
+        }
+        #rss_list > div:nth-child(odd) {
+            width:calc(30% - 150px);
+        }
+        #rss_list > div:nth-child(even) {
+            width:calc(30% - 150px);
         }
         audio {
             width: 100%;

@@ -38,6 +38,7 @@ type RSSStatus struct {
 }
 
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`,description="The title of an episode"
+//+kubebuilder:printcolumn:name="LastUpdate",type=date,JSONPath=`.status.lastUpdateTime`,description="Last update time
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 

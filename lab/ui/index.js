@@ -100,7 +100,8 @@ app.post('/profile/playLater', (req, res) => {
                 })
         }
     })
-    res.redirect('/')
+    res.status(200);
+    res.end('ok')
 })
 
 app.post('/profile/playOver', (req, res) => {
