@@ -59,3 +59,8 @@
     - opensource
     - github
   language: English
+- rss: https://feeds.fireside.fm/linuxforeveryone/rss
+  title: Linux For Everyone
+  category:
+    - opensource
+  language: English
