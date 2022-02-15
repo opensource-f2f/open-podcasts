@@ -42,11 +42,15 @@ spec:
             properties:
               audioSource:
                 type: string
+              content:
+                type: string
               coverImage:
                 type: string
               link:
                 description: Link is the link of Episode. Edit episode_types.go to
                   remove/update
+                type: string
+              summary:
                 type: string
               title:
                 type: string

@@ -94,7 +94,6 @@ app.post('/profile/playLater', (req, res) => {
                 name: req.query.episode
             })
 
-            console.log(targetProfile)
             client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name)
                 .put({
                     body:targetProfile,
@@ -102,6 +101,41 @@ app.post('/profile/playLater', (req, res) => {
         }
     })
     res.redirect('/')
+})
+
+app.post('/profile/playOver', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+
+    const name = req.query.name
+    const episode = req.query.episode
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+    profile.then(response => {
+        targetProfile = response.body
+        targetProfile.spec.laterPlayList.forEach(function (item, index){
+            if(item.name === episode) {
+                targetProfile.spec.laterPlayList.splice(index, 1)
+                if(targetProfile.spec.watchedList){
+                    targetProfile.spec.watchedList.push({name: item.name})
+                } else {
+                    targetProfile.spec.watchedList = [{
+                        name: item.name
+                    }]
+                }
+                return false
+            }
+        })
+
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name)
+            .put({
+                body:targetProfile,
+            })
+    })
+    res.status(200);
+    res.end('ok')
 })
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}

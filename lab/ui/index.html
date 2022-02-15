@@ -45,20 +45,31 @@
                     profileZone.append($('<div>' + key + ': <a target="_blank" href="https://github.com/' + val + '">' + val + '</a></div>'))
                 })
 
+                const lasterPlayListZone = $('<div><span>Listen Later List: </span></div>')
                 $.each(profile.spec.laterPlayList, function (i, item){
-                    profileZone.append($('<span episode="' + item.name + '">' + item.name + '</span>'))
+                    lasterPlayListZone.append($('<span episode="' + item.name + '">' + item.name + '</span>'))
                 })
+                lasterPlayListZone.append($('<button>Play</button>'))
 
-                profileZone.append($('<button>Play</button>'))
+                profileZone.append(lasterPlayListZone)
                 $('#profiles').append(profileZone)
             })
 
             $('button').click(function (){
-                $(this).parent().find('span').each(function (i, item){
+                const playButton = $(this)
+                playButton.parent().find('span').each(function (i, item){
                     item = $(item)
                     if(item.attr('episode') && item.attr('episode') != "") {
                         const selector = '#' + item.attr('episode') + ' > audio'
-                        $(selector).trigger('play')
+                        $(selector).trigger('play').on('ended', function (){
+                            const episode = $(this).parent().attr('id')
+                            $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
+                                console.log('success')
+
+                                item.remove()
+                                playButton.click()
+                            })
+                        });
 
                         $([document.documentElement, document.body]).animate({
                             scrollTop: $(selector).offset().top
@@ -83,7 +94,7 @@
                 }
 
                 if(!found){
-                    $(this).append("<button action='later' episode='" + id + "'>Later</button>")
+                    $(this).append("<button action='later' episode='" + id + "'>Listen Later</button>")
                 }
             })
 
@@ -95,6 +106,14 @@
                 form.submit()
             })
         }
+
+        window.setInterval(function (){
+            $('audio').each(function (){
+                if(this.currentTime>0){
+                    console.log(this.duration + "===="+ this.currentTime)
+                }
+            })
+        }, 2000)
     </script>
     <style>
         #episodes > div {
@@ -102,8 +121,18 @@
             margin-top: 15px;
         }
         #profiles > div {
-            border-style: solid;
-            margin: 20px;
+            /*border-style: solid;*/
+            margin: 15px;
+            padding: 5px;
+        }
+        #profiles > div > * {
+            margin: 5px;
+        }
+        audio {
+            width: 100%;
+        }
+        span[episode] {
+            margin-right: 15px;
         }
     </style>
 </head>

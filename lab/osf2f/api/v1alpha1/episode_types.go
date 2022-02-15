@@ -23,6 +23,8 @@ import (
 // EpisodeSpec defines the desired state of Episode
 type EpisodeSpec struct {
 	Title       string `json:"title,omitempty"`
+	Summary     string `json:"summary,omitempty"`
+	Content     string `json:"content,omitempty"`
 	CoverImage  string `json:"coverImage,omitempty"`
 	AudioSource string `json:"audioSource,omitempty"`
 	// Link is the link of Episode. Edit episode_types.go to remove/update

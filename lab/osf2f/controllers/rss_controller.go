@@ -124,6 +124,8 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (e
 			},
 			Spec: v1alpha1.EpisodeSpec{
 				Title:       item.Title,
+				Summary:     item.Summary,
+				Content:     item.Content,
 				CoverImage:  "",
 				AudioSource: audioSource,
 				Link:        item.Link,
