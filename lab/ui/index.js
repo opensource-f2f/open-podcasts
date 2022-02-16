@@ -4,6 +4,7 @@ const {Client} = require("@kubernetes/client-node");
 const crd = require("./crds/episodes.json"); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const bodyParser = require('body-parser');
+const YAML = require("yaml");
 app.use(bodyParser());
 const port = 5000;                  //Save the port number where your server will be listening
 
@@ -20,7 +21,48 @@ app.get('/rsses', (req, res) => {
 
     const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
     all.then(response => {
-        res.end(JSON.stringify(response.body.items))
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body.items, undefined, space))
+    })
+})
+
+app.get('/rsses/export', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/rsses.json')
+    const client = new Client({ version: '1.13' })
+    const YAML = require('yaml');
+    client.addCustomResourceDefinition(crd)
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
+    all.then(response => {
+        const items = response.body.items
+        const exportItems = []
+        for(var i = 0; i < items.length; i++) {
+            exportItems[i] = {
+                apiVersion: items[i].apiVersion,
+                kind: "RSS",
+                metadata: {
+                    name: items[i].metadata.name,
+                },
+                spec: {
+                    address: items[i].spec.address,
+                }
+            }
+        }
+
+        res.set({"Content-Disposition":"attachment; filename=rsses.yaml"});
+
+        var result = ""
+        for(var i = 0; i < exportItems.length; i++) {
+            const doc = new YAML.Document();
+            doc.directivesEndMarker = true
+            doc.contents = exportItems[i]
+            result += doc.toString()
+        }
+        res.send(result);
     })
 })
 
@@ -54,7 +96,11 @@ app.get('/episodes', (req, res) => {
 
     const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get({ qs: { labelSelector: "rss=" + rss}})
     all.then(response => {
-        res.end(JSON.stringify(response.body.items))
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body.items, undefined, space))
     })
 });
 

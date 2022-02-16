@@ -2,7 +2,8 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.16.3",
     "express": "^4.17.2",
-    "kubernetes-client": "github:godaddy/kubernetes-client"
+    "kubernetes-client": "github:godaddy/kubernetes-client",
+    "yaml": "^1.10.2"
   },
   "name": "osf2f",
   "version": "1.0.0",
