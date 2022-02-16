@@ -1,5 +1,7 @@
 resources:
 - manager.yaml
+- ui.yaml
+- ui-svc.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -14,3 +16,6 @@ images:
 - name: controller
   newName: ghcr.io/linuxsuren/goplay
   newTag: osf2f-dev
+- name: osf2f-ui
+  newName: ghcr.io/linuxsuren/goplay
+  newTag: osf2f-ui-dev
