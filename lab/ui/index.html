@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <link rel="stylesheet" href="/css/loading.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script type="application/javascript">
         function createAudio(src, parent) {
@@ -16,8 +17,10 @@
         }
 
         function loadEpisode(rss) {
+            $("#episodes").html('<div class="lds-heart"><div></div></div>')
             $.getJSON('/episodes?rss=' + rss, function (episodes){
                 $("#episodes").empty()
+
                 $.each(episodes, function (i, episode){
                     const zone = $(document.createElement('div'))
                     zone.attr('id', episode.metadata.name)
