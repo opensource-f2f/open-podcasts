@@ -44,7 +44,7 @@ type RSSReconciler struct {
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=rsses,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=rsses/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=rsses/finalizers,verbs=update
-//+kubebuilder:rbac:groups=osf2f.my.domain,resources=episodes,verbs=get;create;update;patch;delete"
+//+kubebuilder:rbac:groups=osf2f.my.domain,resources=episodes,verbs=get;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

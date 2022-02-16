@@ -15,41 +15,57 @@
             return audio
         }
 
-        $.getJSON('/episodes', function (episodes){
-            $.each(episodes, function (i, episode){
-                const zone = $(document.createElement('div'))
-                zone.attr('id', episode.metadata.name)
-                zone.attr('src', episode.spec.audioSource)
-                zone.append($('<span>' + episode.spec.title + '</span><br/>'))
-                zone.on('play-audio', function (){
-                    const audioZone = $(this)
-                    createAudio(audioZone.attr('src'), audioZone).trigger('play').on('ended', function (){
-                        const audioPanel = $(this)
-                        const episode = audioPanel.parent().attr('id')
-                        $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
-                            audioZone.trigger('ended-audio')
-                        })
-                    });
+        function loadEpisode(rss) {
+            $.getJSON('/episodes?rss=' + rss, function (episodes){
+                $("#episodes").empty()
+                $.each(episodes, function (i, episode){
+                    const zone = $(document.createElement('div'))
+                    zone.attr('id', episode.metadata.name)
+                    zone.attr('src', episode.spec.audioSource)
+                    zone.append($('<span>' + episode.spec.title + '</span><br/>'))
+                    zone.on('play-audio', function (){
+                        const audioZone = $(this)
+                        var audioElement = audioZone.find('audio')
+                        if (audioElement.length === 0) {
+                            audioElement = createAudio(audioZone.attr('src'), audioZone)
+                        }
+                        if (!audioElement.paused && !audioElement.ended) {
+                            audioElement.trigger('play').on('ended', function (){
+                                const audioPanel = $(this)
+                                const episode = audioPanel.parent().attr('id')
+                                $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
+                                    audioZone.trigger('ended-audio')
+                                })
+                            });
 
-                    $(this).trigger('ready')
+                            $(this).trigger('ready')
+                        }
+                    })
+                    const listenButton = $('<button episode="' + episode.metadata.name + '">Listen</button>').click(function () {
+                        listenEpisode($(this).attr('episode'))
+                    })
+                    zone.append(listenButton)
+
+                    $("#episodes").append(zone)
                 })
 
-                $("#episodes").append(zone)
-            })
-
-            $.getJSON('/profiles', function (profiles){
-                $.each(profiles, function (i, profile) {
-                    setLaterPlayButtons(profile)
+                $.getJSON('/profiles', function (profiles){
+                    $.each(profiles, function (i, profile) {
+                        setLaterPlayButtons(profile)
+                    })
                 })
             })
-        })
+        }
 
         $.getJSON('/rsses', function (rsses){
             $.each(rsses, function (i, rss){
                 if(rss.spec.image) {
-                    $('#rss_list').append($('<div><a href="' + rss.spec.link + '"><img width="150px" src="' + rss.spec.image + '"></a></div>'))
-                } else if(rss.spec.title) {
-                    $('#rss_list').append($('<div><a href="' + rss.spec.link + '">' + rss.spec.title + '</a></div>'))
+                    const rssCard = $('<div rss="' + rss.metadata.name + '"><img width="150px" src="' + rss.spec.image + '"></div>')
+                    $('#rss_list').append(rssCard)
+
+                    rssCard.click(function () {
+                        loadEpisode($(this).attr('rss'))
+                    })
                 }
             })
         })
@@ -72,13 +88,14 @@
                 $('#profiles').append(profileZone)
             })
 
+            // trigger the play later list
             $('button').click(function (){
                 const playButton = $(this)
                 playButton.parent().find('span').each(function (i, item){
                     item = $(item)
                     if(item.attr('episode') && item.attr('episode') != "") {
                         const selector = '#' + item.attr('episode')
-                        $('#' + item.attr('episode')).trigger('play-audio').on('ready', function (){
+                        listenEpisode(selector).on('ready', function (){
                             console.log('ready' + $(this).attr('id'))
                         }).on('ended-audio', function () {
                             item.remove()
@@ -120,11 +137,18 @@
                 })
             })
         }
+
+        function listenEpisode(id) {
+            return $('#' + id).trigger('play-audio')
+        }
     </script>
     <style>
         #episodes > div {
             border-style: solid;
             margin-top: 15px;
+        }
+        #episodes > div > button {
+            margin-left: 8px;
         }
         #profiles > div {
             /*border-style: solid;*/
@@ -136,12 +160,17 @@
         }
         #rss_list > div {
             display: inline-block;
+            text-align: center;
+            margin: 5px;
         }
         #rss_list > div:nth-child(odd) {
             width:calc(30% - 150px);
         }
         #rss_list > div:nth-child(even) {
             width:calc(30% - 150px);
+        }
+        #rss_list > div > img {
+            cursor: pointer;
         }
         audio {
             width: 100%;

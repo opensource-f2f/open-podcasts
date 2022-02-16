@@ -50,8 +50,9 @@ app.get('/episodes', (req, res) => {
     const crd = require('./crds/episodes.json')
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
+    const rss = req.query.rss
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get({ qs: { labelSelector: "rss=" + rss}})
     all.then(response => {
         res.end(JSON.stringify(response.body.items))
     })
