@@ -101,17 +101,17 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err
 
 func (r *RSSReconciler) storeEpisodes(items []*rss.Item, meta metav1.ObjectMeta) (err error) {
 	for i, _ := range items {
-		episodeMeta := meta.DeepCopy()
-		episodeMeta.Name = fmt.Sprintf("%s-%d", meta.Name, i)
+		rssMeta := meta.DeepCopy()
+		episodeName := fmt.Sprintf("%s-%d", meta.Name, i)
 
-		if err = r.storeEpisode(items[i], episodeMeta); err != nil {
+		if err = r.storeEpisode(items[i], rssMeta, episodeName); err != nil {
 			return
 		}
 	}
 	return
 }
 
-func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (err error) {
+func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, episodeName string) (err error) {
 	var audioSource string
 	if len(item.Enclosures) > 0 {
 		audioSource = item.Enclosures[0].URL
@@ -120,12 +120,21 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (e
 	episode := &v1alpha1.Episode{}
 	if err = r.Client.Get(context.Background(), types.NamespacedName{
 		Namespace: meta.Namespace,
-		Name:      meta.Name,
+		Name:      episodeName,
 	}, episode); err != nil {
 		episode := &v1alpha1.Episode{
 			ObjectMeta: metav1.ObjectMeta{
 				Namespace: meta.Namespace,
-				Name:      meta.Name,
+				Name:      episodeName,
+				Labels: map[string]string{
+					"rss": meta.Name,
+				},
+				OwnerReferences: []metav1.OwnerReference{{
+					Name:       meta.Name,
+					UID:        meta.UID,
+					Kind:       "RSS",
+					APIVersion: "osf2f.my.domain/v1alpha1",
+				}},
 			},
 			Spec: v1alpha1.EpisodeSpec{
 				Title:       item.Title,
@@ -143,6 +152,24 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta) (e
 			}
 		}
 		err = r.Client.Create(context.Background(), episode)
+	} else {
+		episode.OwnerReferences = []metav1.OwnerReference{{
+			Name:       meta.Name,
+			UID:        meta.UID,
+			Kind:       "RSS",
+			APIVersion: "osf2f.my.domain/v1alpha1",
+		}}
+		episode.Labels = map[string]string{
+			"rss": meta.Name,
+		}
+		if item.Image != nil {
+			if item.Image.URL != "" {
+				episode.Spec.CoverImage = item.Image.URL
+			} else if item.Image.Href != "" {
+				episode.Spec.CoverImage = item.Image.Href
+			}
+		}
+		err = r.Client.Update(context.Background(), episode)
 	}
 	return
 }
