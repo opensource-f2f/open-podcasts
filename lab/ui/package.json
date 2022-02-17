@@ -3,16 +3,33 @@
     "@kubernetes/client-node": "^0.16.3",
     "express": "^4.17.2",
     "kubernetes-client": "github:godaddy/kubernetes-client",
-    "yaml": "^1.10.2"
+    "yaml": "^1.10.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.0",
+    "web-vitals": "^2.1.4"
   },
   "name": "osf2f",
   "version": "1.0.0",
   "main": "namespace.js",
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
