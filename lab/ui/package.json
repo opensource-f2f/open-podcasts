@@ -17,8 +17,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "react-scripts start"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "linuxsuren",
+  "license": "MIT",
   "description": "",
   "browserslist": {
     "production": [

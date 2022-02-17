@@ -52,11 +52,16 @@
                     $("#episodes").append(zone)
                 })
 
-                $.getJSON('/profiles', function (profiles){
-                    $.each(profiles, function (i, profile) {
+                // add play later button
+                const profile = window.localStorage.getItem('profile')
+                if (profile && profile !== "") {
+                    $.getJSON('/profiles?name=' + profile, function (profile){
+                        if (!profile.spec) {
+                            profile.spec = {}
+                        }
                         setLaterPlayButtons(profile)
                     })
-                })
+                }
             })
         }
 
@@ -73,8 +78,12 @@
             })
         })
 
-        $.getJSON('/profiles', function (profiles){
-            $.each(profiles, function (i, profile) {
+        function loadProfile(name) {
+            $.getJSON('/profiles?name=' + name, function (profile){
+                if (!profile.spec) {
+                    profile.spec = {}
+                }
+
                 const profileZone = $(document.createElement('div'))
                 profileZone.append($('<span>' + profile.spec.displayName + ': </span>'))
                 $.each(profile.spec.socialLinks, function (key, val) {
@@ -89,36 +98,52 @@
 
                 profileZone.append(lasterPlayListZone)
                 $('#profiles').append(profileZone)
+
+                // trigger the play later list
+                $('button').click(function (){
+                    const playButton = $(this)
+                    playButton.parent().find('span').each(function (i, item){
+                        item = $(item)
+                        if(item.attr('episode') && item.attr('episode') != "") {
+                            listenEpisode(item.attr('episode')).on('ready', function (){
+                                console.log('ready' + $(this).attr('id'))
+                            }).on('ended-audio', function () {
+                                item.remove()
+                                playButton.click()
+                            })
+
+                            hideGlobalAudioZone()
+                            if ($('#' + item.attr('episode')).length > 0) {
+                                $([document.documentElement, document.body]).animate({
+                                    scrollTop: $('#' + item.attr('episode')).offset().top
+                                }, 2000);
+                            } else {
+                                playEpisode(item.attr('episode'))
+                            }
+                            return false
+                        }
+                    })
+                });
             })
+        }
 
-            // trigger the play later list
-            $('button').click(function (){
-                const playButton = $(this)
-                playButton.parent().find('span').each(function (i, item){
-                    item = $(item)
-                    if(item.attr('episode') && item.attr('episode') != "") {
-                        const selector = '#' + item.attr('episode')
-                        listenEpisode(selector).on('ready', function (){
-                            console.log('ready' + $(this).attr('id'))
-                        }).on('ended-audio', function () {
-                            item.remove()
-                            playButton.click()
-                        })
-
-                        $([document.documentElement, document.body]).animate({
-                            scrollTop: $(selector).offset().top
-                        }, 2000);
-                        return false
-                    }
-                })
-            });
-        })
+        function playEpisode(episdoe) {
+            $.getJSON('/episodes/one?name=' + episdoe, function (item){
+                createAudio(item.spec.audioSource, $('#global-audio-zone').show()).trigger('play')
+            })
+        }
+        function hideGlobalAudioZone() {
+            $('#global-audio-zone').hide().empty()
+        }
 
         function setLaterPlayButtons(profile){
-            $('#episodes > div').each(function (){
-                var id = $(this).attr('id')
+            if (!profile.spec.laterPlayList) {
+                profile.spec.laterPlayList = []
+            }
+            $('#episodes > div[id]').each(function (){
+                const id = $(this).attr('id')
                 var found = false
-                if(id != ""){
+                if(id !== ""){
                     $.each(profile.spec.laterPlayList, function (i, item){
                         if(item.name === id){
                             found = true
@@ -134,8 +159,8 @@
 
             $('[action="later"]').click(function (){
                 const laterButton = $(this)
-                // TODO read it from somewhere later
-                $.post("/profile/playLater?name=profile-sample&episode=" + $(this).attr('episode'), function () {
+                const name = window.localStorage.getItem('profile')
+                $.post("/profile/playLater?name=" + name + "&episode=" + $(this).attr('episode'), function () {
                     laterButton.remove()
                 })
             })
@@ -144,6 +169,26 @@
         function listenEpisode(id) {
             return $('#' + id).trigger('play-audio')
         }
+
+        $(document).ready(function (){
+            const profile = localStorage.getItem('profile')
+            if(profile === "" || !profile) {
+                $('#login-zone').show()
+                $('button[action="login"]').click(function () {
+                    $.get('/profiles?name=' + $('#login-name').val(), function (){
+                        localStorage.setItem('profile', $('#login-name').val())
+                        window.location.reload()
+                    })
+                })
+                $('button[action="register"]').click(function () {
+                    $.post('/profiles/create?name=' + $('#login-name').val(), function (){
+                        window.location.reload()
+                    })
+                })
+            } else {
+                loadProfile(profile)
+            }
+        })
     </script>
     <style>
         #episodes > div {
@@ -181,6 +226,13 @@
         span[episode] {
             margin-right: 15px;
         }
+
+        .global-audio {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -188,7 +240,15 @@
 <a class="github-fork-ribbon" target="_blank" href="https://github.com/linuxsuren/goplay"
    data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
-<div id="profiles"></div>
+<div id="profiles">
+    <div style="display: none;" id="login-zone">
+        <label>
+            Name: <input name="name" id="login-name"/>
+        </label>
+        <div><button action="login">Login</button></div>
+        <div><button action="register">Register</button></div>
+    </div>
+</div>
 
 <div id="rss_list">
     <form action="/rsses" method="post">
@@ -209,5 +269,6 @@
 </div>
 <div id="episodes"></div>
 
+<div id="global-audio-zone" class="global-audio"></div>
 </body>
 </html>

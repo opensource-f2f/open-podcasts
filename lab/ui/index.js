@@ -105,21 +105,58 @@ app.get('/episodes', (req, res) => {
     })
 });
 
-app.get('/profiles', (req, res) => {
+app.get('/episodes/one', (req, res) => {
     const Client = require('kubernetes-client').Client
-    const crd = require('./crds/profiles.json')
+    const crd = require('./crds/episodes.json')
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
+    const name = req.query.name
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes(name).get()
     all.then(response => {
         var space = 0
         if(req.query.pretty === 'true'){
             space = 2
         }
-        res.end(JSON.stringify(response.body.items, undefined, space))
+        res.end(JSON.stringify(response.body, undefined, space))
+    })
+})
+
+app.get('/profiles', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body, undefined, space))
     })
 });
+
+app.post('/profiles/create', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.post({
+        body: {
+            apiVersion: 'osf2f.my.domain/v1alpha1',
+            kind: 'Profile',
+            metadata: {
+                name: name,
+            }
+        }
+    })
+    res.end('ok')
+})
 
 app.post('/profile/playLater', (req, res) => {
     const Client = require('kubernetes-client').Client
@@ -130,14 +167,21 @@ app.post('/profile/playLater', (req, res) => {
     profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name).get()
     profile.then(response => {
         var found = false
-        response.body.spec.laterPlayList.forEach(function (item, index){
+        targetProfile = response.body
+        if (!targetProfile.spec) {
+            targetProfile.spec = {}
+        }
+        if (!targetProfile.spec.laterPlayList) {
+            targetProfile.spec.laterPlayList = []
+        }
+
+        targetProfile.spec.laterPlayList.forEach(function (item, index){
             if(item.name === req.query.episode) {
                 found = true
                 return false
             }
         })
         if(!found) {
-            targetProfile = response.body
             targetProfile.spec.laterPlayList.push({
                 name: req.query.episode
             })
