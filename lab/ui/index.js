@@ -91,17 +91,29 @@ app.post('/rsses', (req, res) => {
 app.get('/episodes', (req, res) => {
     const Client = require('kubernetes-client').Client
     const crd = require('./crds/episodes.json')
+    const crdRSS = require('./crds/rsses.json')
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
+    client.addCustomResourceDefinition(crdRSS)
     const rss = req.query.rss
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get({ qs: { labelSelector: "rss=" + rss}})
-    all.then(response => {
-        var space = 0
-        if(req.query.pretty === 'true'){
-            space = 2
+    const rssObject = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses(rss).get()
+    rssObject.then(response => {
+        const rssObj = response.body
+        if (rssObj.status && rssObj.status.lastUpdateTime) {
+            res.set({
+                'Last-Modified' : rssObj.status.lastUpdateTime
+            })
         }
-        res.end(JSON.stringify(response.body.items, undefined, space))
+
+        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get({ qs: { labelSelector: "rss=" + rss}})
+        all.then(response => {
+            var space = 0
+            if(req.query.pretty === 'true'){
+                space = 2
+            }
+            res.end(JSON.stringify(response.body.items, undefined, space))
+        })
     })
 });
 
