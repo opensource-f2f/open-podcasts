@@ -24,6 +24,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -90,12 +91,27 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err
 			rssObject.Spec.Image = feed.Image.Href
 		}
 	}
-	rssObject.Status.LastUpdateTime = metav1.NewTime(time.Now())
 	if err = r.Client.Update(context.Background(), rssObject); err != nil {
 		return
 	}
 
-	err = r.storeEpisodes(feed.Items, rssObject.ObjectMeta)
+	if err = r.storeEpisodes(feed.Items, rssObject.ObjectMeta); err == nil {
+		err = r.setLastUpdateTime(rssObject.Namespace, rssObject.Name)
+	}
+	return
+}
+
+func (r *RSSReconciler) setLastUpdateTime(ns, name string) (err error) {
+	rssObj := &v1alpha1.RSS{}
+	if err = r.Client.Get(context.Background(), types.NamespacedName{
+		Namespace: ns,
+		Name:      name,
+	}, rssObj); err != nil {
+		err = client.IgnoreNotFound(err)
+		return
+	}
+	rssObj.Status.LastUpdateTime = metav1.NewTime(time.Now())
+	err = r.Client.Status().Update(context.Background(), rssObj)
 	return
 }
 
@@ -179,6 +195,7 @@ func (r *RSSReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	r.recorder = mgr.GetEventRecorderFor("rss")
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.RSS{}).
+		WithEventFilter(predicate.GenerationChangedPredicate{}).
 		Complete(r)
 }
 
