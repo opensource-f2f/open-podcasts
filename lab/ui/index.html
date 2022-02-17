@@ -36,7 +36,8 @@
                             audioElement.trigger('play').on('ended', function (){
                                 const audioPanel = $(this)
                                 const episode = audioPanel.parent().attr('id')
-                                $.post('/profile/playOver?name=profile-sample&episode=' + episode, function (){
+                                const profile = window.localStorage.getItem('profile')
+                                $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
                                     audioZone.trigger('ended-audio')
                                 })
                             });
@@ -85,7 +86,9 @@
                 }
 
                 const profileZone = $(document.createElement('div'))
-                profileZone.append($('<span>' + profile.spec.displayName + ': </span>'))
+                if (profile.spec.displayName) {
+                    profileZone.append($('<span>' + profile.spec.displayName + '</span>'))
+                }
                 $.each(profile.spec.socialLinks, function (key, val) {
                     profileZone.append($('<div>' + key + ': <a target="_blank" href="https://github.com/' + val + '">' + val + '</a></div>'))
                 })
@@ -105,9 +108,7 @@
                     playButton.parent().find('span').each(function (i, item){
                         item = $(item)
                         if(item.attr('episode') && item.attr('episode') != "") {
-                            listenEpisode(item.attr('episode')).on('ready', function (){
-                                console.log('ready' + $(this).attr('id'))
-                            }).on('ended-audio', function () {
+                            listenEpisode(item.attr('episode')).on('ended-audio', function () {
                                 item.remove()
                                 playButton.click()
                             })
@@ -118,7 +119,9 @@
                                     scrollTop: $('#' + item.attr('episode')).offset().top
                                 }, 2000);
                             } else {
-                                playEpisode(item.attr('episode'))
+                                playEpisode(item.attr('episode'), function () {
+                                    playButton.click()
+                                })
                             }
                             return false
                         }
@@ -127,9 +130,19 @@
             })
         }
 
-        function playEpisode(episdoe) {
+        function playEpisode(episdoe, callback) {
             $.getJSON('/episodes/one?name=' + episdoe, function (item){
-                createAudio(item.spec.audioSource, $('#global-audio-zone').show()).trigger('play')
+                createAudio(item.spec.audioSource, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
+                    const episode = $(this).attr('episode')
+                    const profile = window.localStorage.getItem('profile')
+                    $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
+                        $('span[episode=' + episode + ']').remove()
+
+                        if (callback) {
+                            callback()
+                        }
+                    })
+                }).attr('episode', item.metadata.name)
             })
         }
         function hideGlobalAudioZone() {
