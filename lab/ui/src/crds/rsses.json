@@ -1,0 +1,107 @@
+{
+  "apiVersion": "apiextensions.k8s.io/v1",
+  "kind": "CustomResourceDefinition",
+  "metadata": {
+    "annotations": {
+      "controller-gen.kubebuilder.io/version": "v0.8.0"
+    },
+    "creationTimestamp": null,
+    "name": "rsses.osf2f.my.domain"
+  },
+  "spec": {
+    "group": "osf2f.my.domain",
+    "names": {
+      "kind": "RSS",
+      "listKind": "RSSList",
+      "plural": "rsses",
+      "singular": "rss"
+    },
+    "scope": "Namespaced",
+    "versions": [
+      {
+        "additionalPrinterColumns": [
+          {
+            "description": "The title of an episode",
+            "jsonPath": ".spec.title",
+            "name": "Title",
+            "type": "string"
+          }
+        ],
+        "name": "v1alpha1",
+        "schema": {
+          "openAPIV3Schema": {
+            "description": "RSS is the Schema for the rsses API",
+            "properties": {
+              "apiVersion": {
+                "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+                "type": "string"
+              },
+              "kind": {
+                "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object"
+              },
+              "spec": {
+                "description": "RSSSpec defines the desired state of RSS",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "link": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "description": "Title is the title of RSS",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "status": {
+                "description": "RSSStatus defines the observed state of RSS",
+                "properties": {
+                  "lastUpdateTime": {
+                    "format": "date-time",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "served": true,
+        "storage": true,
+        "subresources": {
+          "status": {}
+        }
+      }
+    ]
+  },
+  "status": {
+    "acceptedNames": {
+      "kind": "",
+      "plural": ""
+    },
+    "conditions": [],
+    "storedVersions": []
+  }
+}

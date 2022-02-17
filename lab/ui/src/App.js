@@ -1,6 +1,12 @@
+import ForkMe from "./ForkMe";
+import Profile from "./Profile";
+
 function App() {
     return (
-      <div>good</div>
+        <div>
+            <Profile/>
+            <ForkMe/>
+        </div>
     )
 }
 
