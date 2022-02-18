@@ -1,0 +1,11 @@
+#episodes > div {
+    border-style: solid;
+    margin-top: 15px;
+}
+#episodes > div > button {
+    margin-left: 8px;
+}
+
+audio {
+    width: 100%;
+}

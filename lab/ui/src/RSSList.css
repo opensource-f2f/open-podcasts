@@ -1,0 +1,14 @@
+#rss_list > div {
+    display: inline-block;
+    text-align: center;
+    margin: 5px;
+}
+#rss_list > div:nth-child(odd) {
+    width:calc(30% - 150px);
+}
+#rss_list > div:nth-child(even) {
+    width:calc(30% - 150px);
+}
+#rss_list > div > img {
+    cursor: pointer;
+}

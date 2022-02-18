@@ -3,6 +3,7 @@
     "@kubernetes/client-node": "^0.16.3",
     "concurrently": "^7.0.0",
     "express": "^4.17.2",
+    "jquery": "^3.6.0",
     "kubernetes-client": "github:godaddy/kubernetes-client",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

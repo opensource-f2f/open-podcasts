@@ -3,10 +3,10 @@ LABEL org.opencontainers.image.source https://github.com/linuxsuren/goplay
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-EXPOSE 5000
-CMD [ "node", "index.js" ]
+ENV NODE_ENV=production
+RUN npm install
+
+EXPOSE 3000
+CMD [ "npm", "run", "start1" ]
