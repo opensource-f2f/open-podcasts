@@ -19,6 +19,7 @@
     "start": "react-scripts start",
     "react-start": "react-scripts start",
     "start1": "concurrently 'npm run react-start' 'npm run good'",
+    "build": "react-scripts build",
     "good": "node index.js"
   },
   "author": "linuxsuren",

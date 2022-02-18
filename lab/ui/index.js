@@ -8,10 +8,10 @@ const YAML = require("yaml");
 app.use(bodyParser());
 const port = 5000;                  //Save the port number where your server will be listening
 
-app.use(express.static('static'))
+app.use(express.static('build'))
 //Idiomatic expression in express to route and respond to a client request
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
-    res.sendFile('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
+    res.sendFile('build/index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
 });
 
 app.get('/rsses', (req, res) => {
