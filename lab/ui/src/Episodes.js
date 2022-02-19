@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './Episodes.css'
 import $ from 'jquery'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 class AudioControlPanel extends Component {
     constructor(props) {
@@ -68,29 +70,39 @@ class Episodes extends Component {
         this.state = {episodes: []};
     }
 
+    fetchEpisodes(laterPlayList) {
+        const name = localStorage.getItem('profile')
+        const hasProfile = (name !== "" && name != null)
+
+        fetch('/episodes?rss=' + this.props.rss)
+            .then(res => res.json())
+            .then(res => {
+                for (var i = 0; i < res.length; i++) {
+                    res[i].later = hasProfile
+                    for (var j = 0; j < laterPlayList.length; j++) {
+                        if (laterPlayList[j].name === res[i].metadata.name) {
+                            res[i].later = false
+                            break
+                        }
+                    }
+                }
+                this.setState({
+                    episodes: res,
+                })
+            })
+    }
+
     componentDidMount() {
         const name = localStorage.getItem('profile')
+        if (name === "" || !name || name == null) {
+            this.fetchEpisodes([])
+            return
+        }
         fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
                 const laterPlayList = res.spec.laterPlayList
-
-                fetch('/episodes?rss=' + this.props.rss)
-                    .then(res => res.json())
-                    .then(res => {
-                        for (var i = 0; i < res.length; i++) {
-                            res[i].later = true
-                            for (var j = 0; j < laterPlayList.length; j++) {
-                                if (laterPlayList[j].name === res[i].metadata.name) {
-                                    res[i].later = false
-                                    break
-                                }
-                            }
-                        }
-                        this.setState({
-                            episodes: res,
-                        })
-                    })
+                this.fetchEpisodes(laterPlayList)
             })
     }
 
@@ -113,6 +125,7 @@ class Episodes extends Component {
                 {episodes.map((item, index) => (
                     <div id={item.metadata.name} src="" key={index}>
                         <span>{item.spec.title}</span><br/>
+                        <ReactMarkdown children={item.spec.summary} remarkPlugins={[remarkGfm]} />
                         <button episode={item.metadata.name} onClick={() => this.listenNow(item.metadata.name)}>Listen</button>
                         <LaterButton name={item.metadata.name} show={item.later}/>
                         <AudioControlPanel show={item.show} play={item.play} source={item.spec.audioSource} episode={item.metadata.name}/>

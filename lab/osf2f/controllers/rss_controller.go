@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"strings"
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -169,7 +170,7 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, ep
 
 func updateEpisode(episode *v1alpha1.Episode, item *rss.Item) {
 	episode.Spec.Title = item.Title
-	episode.Spec.Summary = strip.StripTags(item.Summary)
+	episode.Spec.Summary = strings.TrimSpace(strip.StripTags(item.Summary))
 	episode.Spec.Content = item.Content
 	episode.Spec.Link = item.Link
 	episode.Spec.Date = metav1.NewTime(item.Date)

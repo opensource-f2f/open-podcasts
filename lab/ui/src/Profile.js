@@ -37,7 +37,11 @@ class Profile extends Component {
     }
 
     reload(){
-        fetch('/profiles?name=linuxsuren')
+        const name = localStorage.getItem('profile')
+        if (name === "" || !name || name == null) {
+            return
+        }
+        fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
                 this.setState({

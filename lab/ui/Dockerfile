@@ -7,7 +7,6 @@ COPY . .
 
 ENV NODE_ENV=production
 RUN npm run build
-COPY build .
 
 EXPOSE 5000
 CMD [ "node", "index.js" ]
