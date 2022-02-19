@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import $ from 'jquery'
 import './Profile.css'
+import avatar from './images/img_avatar.png'
+import Modal from 'react-modal'
 
 function createAudio(src, parent) {
     const source = $(document.createElement('source'))
@@ -30,10 +32,70 @@ function playEpisode(episdoe, callback) {
     })
 }
 
+Modal.setAppElement('#root');
+class ProfileModal extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpen: false,
+            rssURL: "",
+            rssName: ""
+        }
+    }
+
+    closeModal() {
+        this.setState({isOpen: false})
+    }
+
+    addRSS() {
+        console.log(this.state)
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                address: this.state.rssURL,
+                name: this.state.rssName
+            })
+        };
+        fetch('/rsses', requestOptions)
+    }
+    setRSSURL(e) {
+        this.setState({
+            rssURL: e.target.value
+        })
+    }
+    setRSSName(e) {
+        this.setState({
+            rssName: e.target.value
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <Modal
+                    isOpen={this.state.isOpen}
+                    contentLabel="Example Modal"
+                >
+                    <button onClick={() => this.closeModal()}>Close</button>
+                    <div>
+                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)}/> with name:
+                        <input onChange={(e) => this.setRSSName(e)}/><button onClick={() => this.addRSS()}>Add</button>
+                    </div>
+                </Modal>
+            </div>
+        );
+    }
+}
+
 class Profile extends Component {
     constructor(props) {
         super(props);
-        this.state = { laterPlayList: [] };
+        this.state = {
+            laterPlayList: [],
+            showModal: false,
+        };
+        this.profileModalElement = React.createRef();
     }
 
     reload(){
@@ -80,6 +142,10 @@ class Profile extends Component {
         })
     }
 
+    toggleModal() {
+        this.profileModalElement.current.setState({isOpen: true})
+    }
+
     render() {
         const {laterPlayList} = this.state;
         return (
@@ -101,6 +167,10 @@ class Profile extends Component {
                         <button onClick={this.play}>Play</button>
                     </div>
                 </div>
+
+                <img src={avatar} className="avatar" alt="Avatar" onClick={() => this.toggleModal()}/>
+
+                <ProfileModal ref={this.profileModalElement}/>
             </div>
         );
     }
