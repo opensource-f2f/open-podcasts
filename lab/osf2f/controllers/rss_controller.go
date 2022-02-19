@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/SlyMarbo/rss"
+	strip "github.com/grokify/html-strip-tags-go"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -128,11 +129,6 @@ func (r *RSSReconciler) storeEpisodes(items []*rss.Item, meta metav1.ObjectMeta)
 }
 
 func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, episodeName string) (err error) {
-	var audioSource string
-	if len(item.Enclosures) > 0 {
-		audioSource = item.Enclosures[0].URL
-	}
-
 	episode := &v1alpha1.Episode{}
 	if err = r.Client.Get(context.Background(), types.NamespacedName{
 		Namespace: meta.Namespace,
@@ -152,21 +148,8 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, ep
 					APIVersion: "osf2f.my.domain/v1alpha1",
 				}},
 			},
-			Spec: v1alpha1.EpisodeSpec{
-				Title:       item.Title,
-				Summary:     item.Summary,
-				Content:     item.Content,
-				AudioSource: audioSource,
-				Link:        item.Link,
-			},
 		}
-		if item.Image != nil {
-			if item.Image.URL != "" {
-				episode.Spec.CoverImage = item.Image.URL
-			} else if item.Image.Href != "" {
-				episode.Spec.CoverImage = item.Image.Href
-			}
-		}
+		updateEpisode(episode, item)
 		err = r.Client.Create(context.Background(), episode)
 	} else {
 		episode.OwnerReferences = []metav1.OwnerReference{{
@@ -178,16 +161,32 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, ep
 		episode.Labels = map[string]string{
 			"rss": meta.Name,
 		}
-		if item.Image != nil {
-			if item.Image.URL != "" {
-				episode.Spec.CoverImage = item.Image.URL
-			} else if item.Image.Href != "" {
-				episode.Spec.CoverImage = item.Image.Href
-			}
-		}
+		updateEpisode(episode, item)
 		err = r.Client.Update(context.Background(), episode)
 	}
 	return
+}
+
+func updateEpisode(episode *v1alpha1.Episode, item *rss.Item) {
+	episode.Spec.Title = item.Title
+	episode.Spec.Summary = strip.StripTags(item.Summary)
+	episode.Spec.Content = item.Content
+	episode.Spec.Link = item.Link
+	episode.Spec.Date = metav1.NewTime(item.Date)
+
+	if len(item.Enclosures) > 0 {
+		episode.Spec.AudioSource = item.Enclosures[0].URL
+		episode.Spec.AudioType = item.Enclosures[0].Type
+		episode.Spec.AudioLength = item.Enclosures[0].Length
+	}
+
+	if item.Image != nil {
+		if item.Image.URL != "" {
+			episode.Spec.CoverImage = item.Image.URL
+		} else if item.Image.Href != "" {
+			episode.Spec.CoverImage = item.Image.Href
+		}
+	}
 }
 
 // SetupWithManager sets up the controller with the Manager.

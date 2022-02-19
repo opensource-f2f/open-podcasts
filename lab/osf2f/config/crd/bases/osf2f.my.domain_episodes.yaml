@@ -40,11 +40,18 @@ spec:
           spec:
             description: EpisodeSpec defines the desired state of Episode
             properties:
+              audioLength:
+                type: integer
               audioSource:
+                type: string
+              audioType:
                 type: string
               content:
                 type: string
               coverImage:
+                type: string
+              date:
+                format: date-time
                 type: string
               link:
                 description: Link is the link of Episode. Edit episode_types.go to
@@ -61,6 +68,9 @@ spec:
               hints:
                 format: int64
                 type: integer
+              lastUpdateTime:
+                format: date-time
+                type: string
             type: object
         type: object
     served: true

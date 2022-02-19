@@ -27,13 +27,17 @@ type EpisodeSpec struct {
 	Content     string `json:"content,omitempty"`
 	CoverImage  string `json:"coverImage,omitempty"`
 	AudioSource string `json:"audioSource,omitempty"`
+	AudioType   string `json:"audioType,omitempty"`
+	AudioLength uint   `json:"audioLength,omitempty"`
 	// Link is the link of Episode. Edit episode_types.go to remove/update
-	Link string `json:"link,omitempty"`
+	Link string      `json:"link,omitempty"`
+	Date metav1.Time `json:"date,omitempty"`
 }
 
 // EpisodeStatus defines the observed state of Episode
 type EpisodeStatus struct {
-	Hints int64 `json:"hints,omitempty"`
+	Hints          int64       `json:"hints,omitempty"`
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
 }
 
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`,description="The title of an episode"
