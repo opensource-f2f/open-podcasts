@@ -32,11 +32,19 @@ function playEpisode(episdoe, callback) {
     })
 }
 
+const customStyles = {
+    content: {
+        top: '100px',
+        right: '100px',
+        bottom: '80px',
+    },
+};
 Modal.setAppElement('#root');
 class ProfileModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            laterPlayList: [],
             isOpen: false,
             rssURL: "",
             rssName: ""
@@ -68,34 +76,6 @@ class ProfileModal extends Component {
         this.setState({
             rssName: e.target.value
         })
-    }
-
-    render() {
-        return (
-            <div>
-                <Modal
-                    isOpen={this.state.isOpen}
-                    contentLabel="Example Modal"
-                >
-                    <button onClick={() => this.closeModal()}>Close</button>
-                    <div>
-                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)}/> with name:
-                        <input onChange={(e) => this.setRSSName(e)}/><button onClick={() => this.addRSS()}>Add</button>
-                    </div>
-                </Modal>
-            </div>
-        );
-    }
-}
-
-class Profile extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            laterPlayList: [],
-            showModal: false,
-        };
-        this.profileModalElement = React.createRef();
     }
 
     reload(){
@@ -142,32 +122,61 @@ class Profile extends Component {
         })
     }
 
+    render() {
+        const {laterPlayList} = this.state;
+        return (
+            <div>
+                <Modal
+                    isOpen={this.state.isOpen}
+                    contentLabel="Example Modal"
+                    style={customStyles}
+                >
+                    <button onClick={() => this.closeModal()} className="modal-close-but">Close</button>
+
+                    <div style={{display: "none"}} id="login-zone">
+                        <label>
+                            Name: <input name="name" id="login-name" />
+                        </label>
+                        <div><button action="login">Login</button></div>
+                        <div><button action="register">Register</button></div>
+                    </div>
+                    <div>
+                        <div>
+                            <span>Listen Later List: </span>
+                            {laterPlayList.map((item, index) => (
+                                    <span episode={item.name} key={index} className="later-play-item">{item.displayName}</span>
+                                )
+                            )}
+                            <button onClick={this.play}>Play</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)}/> with name:
+                        <input onChange={(e) => this.setRSSName(e)}/><button onClick={() => this.addRSS()}>Add</button>
+                    </div>
+                </Modal>
+            </div>
+        );
+    }
+}
+
+class Profile extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showModal: false,
+        };
+        this.profileModalElement = React.createRef();
+    }
+
     toggleModal() {
         this.profileModalElement.current.setState({isOpen: true})
     }
 
     render() {
-        const {laterPlayList} = this.state;
         return (
             <div id="profiles">
-                <div style={{display: "none"}} id="login-zone">
-                    <label>
-                        Name: <input name="name" id="login-name" />
-                    </label>
-                    <div><button action="login">Login</button></div>
-                    <div><button action="register">Register</button></div>
-                </div>
-                <div>
-                    <div>
-                        <span>Listen Later List: </span>
-                        {laterPlayList.map((item, index) => (
-                            <span episode={item.name} key={index}>{item.name}</span>
-                            )
-                        )}
-                        <button onClick={this.play}>Play</button>
-                    </div>
-                </div>
-
                 <img src={avatar} className="avatar" alt="Avatar" onClick={() => this.toggleModal()}/>
 
                 <ProfileModal ref={this.profileModalElement}/>

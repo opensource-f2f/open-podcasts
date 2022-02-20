@@ -25,6 +25,12 @@
             "jsonPath": ".spec.title",
             "name": "Title",
             "type": "string"
+          },
+          {
+            "description": "Last update time",
+            "jsonPath": ".status.lastUpdateTime",
+            "name": "LastUpdate",
+            "type": "date"
           }
         ],
         "name": "v1alpha1",

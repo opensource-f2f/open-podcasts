@@ -54,6 +54,10 @@
                     "items": {
                       "description": "PlayTodo represents a later play item",
                       "properties": {
+                        "displayName": {
+                          "description": "DisplayName which comes from an Episode",
+                          "type": "string"
+                        },
                         "index": {
                           "type": "integer"
                         },

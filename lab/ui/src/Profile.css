@@ -9,3 +9,13 @@ img {
     top: 0px;
     cursor: pointer;
 }
+.modal-close-but {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+.later-play-item {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
