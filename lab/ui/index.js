@@ -257,7 +257,7 @@ app.post('/profile/social', (req, res) => {
     profile.then(response => {
         targetProfile = response.body
         if (!targetProfile.spec.socialLinks) {
-            targetProfile.spec.socialLinks = []
+            targetProfile.spec.socialLinks = {}
         }
         targetProfile.spec.socialLinks[kind] = account
 
