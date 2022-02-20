@@ -4,7 +4,7 @@
     "concurrently": "^7.0.0",
     "express": "^4.17.2",
     "jquery": "^3.6.0",
-    "kubernetes-client": "github:godaddy/kubernetes-client",
+    "kubernetes-client": "9.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-markdown": "^8.0.0",
@@ -27,7 +27,7 @@
   },
   "author": "linuxsuren",
   "license": "MIT",
-  "description": "",
+  "description": "Open Podcasts",
   "browserslist": {
     "production": [
       ">0.2%",
