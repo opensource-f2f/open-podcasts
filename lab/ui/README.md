@@ -1,4 +1,6 @@
 
+Demo address: http://103.61.38.146:30001/
+
 ## Get started
 
 ```shell

@@ -12,7 +12,7 @@ function createAudio(src, parent) {
     const audio = $(document.createElement('audio'))
     audio.attr('controls','')
     audio.append(source)
-    parent.append(audio)
+    parent.empty().append(audio)
     return audio
 }
 
@@ -78,7 +78,7 @@ class ProfileModal extends Component {
         })
     }
 
-    reload(){
+    getProfile(callback) {
         const name = localStorage.getItem('profile')
         if (name === "" || !name || name == null) {
             return
@@ -87,20 +87,28 @@ class ProfileModal extends Component {
         fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
-                this.setState({
-                    laterPlayList: res.spec.laterPlayList
-                })
-
-                if (res.spec.socialLinks) {
-                    const github = res.spec.socialLinks["github"]
-                    this.setState({
-                        github: github
-                    })
-                    if (github !== "") {
-                        $('#avatar').attr('src', 'https://avatars.githubusercontent.com/' + github)
-                    }
+                if (callback instanceof Function) {
+                    callback(this, res)
                 }
             })
+    }
+
+    reload(){
+        this.getProfile(function (com, res){
+            com.setState({
+                laterPlayList: res.spec.laterPlayList
+            })
+
+            if (res.spec.socialLinks) {
+                const github = res.spec.socialLinks["github"]
+                com.setState({
+                    github: github
+                })
+                if (github !== "") {
+                    $('#avatar').attr('src', 'https://avatars.githubusercontent.com/' + github)
+                }
+            }
+        })
     }
 
     onOpen() {
@@ -134,25 +142,33 @@ class ProfileModal extends Component {
     }
 
     play() {
-        $('span[episode]').each(function (i, item){
-            item = $(item)
-            const episode = item.attr('episode')
-            $('#' + episode).trigger('play-audio').on('ended-audio', function () {
-                item.remove()
-                // playButton.click()
-            })
-
-            // hideGlobalAudioZone()
-            if ($('#' + episode).length > 0) {
-                $([document.documentElement, document.body]).animate({
-                    scrollTop: $('#' + episode).offset().top
-                }, 2000);
-            } else {
-                playEpisode(episode, function () {
+        this.getProfile(function (com, res) {
+            if (res.spec.laterPlayList.length > 0) {
+                const episode = res.spec.laterPlayList[0]
+                playEpisode(episode.name, function () {
+                    com.play()
                 })
             }
-            return false
         })
+        // $('span[episode]').each(function (i, item){
+        //     item = $(item)
+        //     const episode = item.attr('episode')
+        //     $('#' + episode).trigger('play-audio').on('ended-audio', function () {
+        //         item.remove()
+        //         // playButton.click()
+        //     })
+        //
+        //     // hideGlobalAudioZone()
+        //     if ($('#' + episode).length > 0) {
+        //         $([document.documentElement, document.body]).animate({
+        //             scrollTop: $('#' + episode).offset().top
+        //         }, 2000);
+        //     } else {
+        //         playEpisode(episode, function () {
+        //         })
+        //     }
+        //     return false
+        // })
     }
 
     render() {
@@ -177,7 +193,7 @@ class ProfileModal extends Component {
                     <div>
                         <div>
                             <span>Listen Later List: </span>
-                            <button onClick={this.play}>Play</button>
+                            <button onClick={() => this.play()}>Play</button>
                             {laterPlayList.map((item, index) => (
                                     <span episode={item.name} key={index} className="later-play-item">{item.displayName}</span>
                                 )
