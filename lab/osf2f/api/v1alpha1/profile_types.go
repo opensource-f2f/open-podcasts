@@ -33,8 +33,10 @@ type ProfileSpec struct {
 // PlayTodo represents a later play item
 type PlayTodo struct {
 	v1.LocalObjectReference `json:",inline"`
-	Index                   int `json:"index,omitempty"`
-	Location                int `json:"location,omitempty"`
+	// DisplayName which comes from an Episode
+	DisplayName string `json:"displayName,omitempty"`
+	Index       int    `json:"index,omitempty"`
+	Location    int    `json:"location,omitempty"`
 }
 
 // ProfileStatus defines the observed state of Profile

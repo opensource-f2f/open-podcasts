@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -46,17 +48,53 @@ type ProfileReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
-func (r *ProfileReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *ProfileReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, err error) {
 	_ = log.FromContext(ctx)
 
-	// your logic here
+	profile := &osf2fv1alpha1.Profile{}
+	if err = r.Client.Get(ctx, req.NamespacedName, profile); err != nil {
+		err = client.IgnoreNotFound(err)
+		return
+	}
 
-	return ctrl.Result{}, nil
+	err = r.handleLaterPlayList(profile)
+	return
+}
+
+func (r *ProfileReconciler) handleLaterPlayList(profile *osf2fv1alpha1.Profile) (err error) {
+	playList := profile.Spec.LaterPlayList
+	if len(playList) == 0 {
+		return
+	}
+
+	needToUpdate := false
+	for i, _ := range playList {
+		item := &playList[i]
+		if item.DisplayName != "" {
+			continue
+		}
+
+		episode := &osf2fv1alpha1.Episode{}
+		if err = r.Client.Get(context.Background(), types.NamespacedName{
+			Namespace: profile.Namespace,
+			Name:      item.Name,
+		}, episode); err == nil {
+			// TODO need to consider the case when episode does not exist
+			item.DisplayName = episode.Spec.Title
+			needToUpdate = true
+		}
+	}
+
+	if needToUpdate {
+		err = r.Client.Update(context.Background(), profile)
+	}
+	return
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ProfileReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&osf2fv1alpha1.Profile{}).
+		WithEventFilter(predicate.GenerationChangedPredicate{}).
 		Complete(r)
 }
