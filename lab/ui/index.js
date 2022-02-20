@@ -243,6 +243,33 @@ app.post('/profile/playOver', (req, res) => {
     res.end('ok')
 })
 
+app.post('/profile/social', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+
+    const name = req.query.name
+    const kind = req.query.kind
+    const account = req.query.account
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+    profile.then(response => {
+        targetProfile = response.body
+        if (!targetProfile.spec.socialLinks) {
+            targetProfile.spec.socialLinks = []
+        }
+        targetProfile.spec.socialLinks[kind] = account
+
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name)
+            .put({
+                body:targetProfile,
+            })
+    })
+    res.status(200);
+    res.end('ok')
+})
+
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port ${port}`);
 });

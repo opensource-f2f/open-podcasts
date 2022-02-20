@@ -47,7 +47,8 @@ class ProfileModal extends Component {
             laterPlayList: [],
             isOpen: false,
             rssURL: "",
-            rssName: ""
+            rssName: "",
+            github: ""
         }
     }
 
@@ -56,7 +57,6 @@ class ProfileModal extends Component {
     }
 
     addRSS() {
-        console.log(this.state)
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -83,13 +83,28 @@ class ProfileModal extends Component {
         if (name === "" || !name || name == null) {
             return
         }
+        const profileObj = this
         fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
                 this.setState({
                     laterPlayList: res.spec.laterPlayList
                 })
+
+                if (res.spec.socialLinks) {
+                    const github = res.spec.socialLinks["github"]
+                    this.setState({
+                        github: github
+                    })
+                    if (github !== "") {
+                        $('#avatar').attr('src', 'https://avatars.githubusercontent.com/' + github)
+                    }
+                }
             })
+    }
+
+    onOpen() {
+        $('#social-account-github').val(this.state.github)
     }
 
     componentDidMount() {
@@ -98,6 +113,24 @@ class ProfileModal extends Component {
         $('#profiles').on('reload', function (){
             com.reload()
         })
+    }
+
+    setGitHubAccount(currentValue) {
+        const oldValue = this.state.github
+        if (currentValue === oldValue) {
+            return
+        }
+        const profile = window.localStorage.getItem('profile')
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch('/profile/social?kind=github&account=' + currentValue + '&name=' + profile, requestOptions)
+            .then(() => (
+                this.setState({
+                    github: currentValue
+                })
+            ))
     }
 
     play() {
@@ -128,6 +161,7 @@ class ProfileModal extends Component {
             <div>
                 <Modal
                     isOpen={this.state.isOpen}
+                    onAfterOpen={() => this.onOpen()}
                     contentLabel="Example Modal"
                     style={customStyles}
                 >
@@ -143,17 +177,22 @@ class ProfileModal extends Component {
                     <div>
                         <div>
                             <span>Listen Later List: </span>
+                            <button onClick={this.play}>Play</button>
                             {laterPlayList.map((item, index) => (
                                     <span episode={item.name} key={index} className="later-play-item">{item.displayName}</span>
                                 )
                             )}
-                            <button onClick={this.play}>Play</button>
                         </div>
                     </div>
 
                     <div>
                         New RSS feed:<input onChange={(e) => this.setRSSURL(e)}/> with name:
                         <input onChange={(e) => this.setRSSName(e)}/><button onClick={() => this.addRSS()}>Add</button>
+                    </div>
+
+                    <div className="social-account-zone">
+                        <div>Social Account</div>
+                        <div>GitHub: <input id="social-account-github" onBlur={(e) => this.setGitHubAccount(e.target.value)}/></div>
                     </div>
                 </Modal>
             </div>
@@ -177,7 +216,7 @@ class Profile extends Component {
     render() {
         return (
             <div id="profiles">
-                <img src={avatar} className="avatar" alt="Avatar" onClick={() => this.toggleModal()}/>
+                <img src={avatar} className="avatar" id="avatar" alt="Avatar" onClick={() => this.toggleModal()}/>
 
                 <ProfileModal ref={this.profileModalElement}/>
             </div>

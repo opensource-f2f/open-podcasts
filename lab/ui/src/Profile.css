@@ -19,3 +19,10 @@ img {
     margin-top: 5px;
     margin-bottom: 5px;
 }
+.social-account-zone {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.social-account-zone > div {
+    margin-bottom: 5px;
+}
