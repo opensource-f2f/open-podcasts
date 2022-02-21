@@ -17,7 +17,6 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 const https = require('follow-redirects').http
 app.get('/stream/*', (req, res) => {
     const targetURL = req.url.replaceAll('/stream/', 'http://')
-    console.log(targetURL)
     https.get(targetURL, (rsp) => {
         rsp.pipe(res)
     })

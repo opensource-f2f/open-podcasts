@@ -18,7 +18,13 @@ function createAudio(src, parent) {
 
 function playEpisode(episdoe, callback) {
     $.getJSON('/episodes/one?name=' + episdoe, function (item){
-        createAudio(item.spec.audioSource, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
+        let source = item.spec.audioSource
+        const proxy = localStorage.getItem('proxy')
+        if (proxy === 'true') {
+            source = '/stream' + source.replaceAll('https://', '/')
+        }
+
+        createAudio(source, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
             const episode = $(this).attr('episode')
             const profile = window.localStorage.getItem('profile')
             $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
