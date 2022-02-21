@@ -24,12 +24,18 @@ class AudioControlPanel extends Component {
     }
 
     render() {
+        let source = this.props.source
+        const proxy = localStorage.getItem('proxy')
+        if (proxy === 'true') {
+            source = '/stream' + this.props.source.replaceAll('https://', '/')
+        }
+
         let audio = null
         if (this.props.show) {
             audio = (
                 <audio controls="controls" autoPlay={this.props.play}
                     onEnded={() => this.playOver(this.props.episode)}
-                ><source src={this.props.source} type="audio/x-m4a"/></audio>
+                ><source src={source} type="audio/x-m4a"/></audio>
             )
         }
         return audio;

@@ -14,6 +14,15 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     res.sendFile('build/index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
 });
 
+const https = require('follow-redirects').http
+app.get('/stream/*', (req, res) => {
+    const targetURL = req.url.replaceAll('/stream/', 'http://')
+    console.log(targetURL)
+    https.get(targetURL, (rsp) => {
+        rsp.pipe(res)
+    })
+})
+
 app.get('/rsses', (req, res) => {
     const Client = require('kubernetes-client').Client
     const crd = require('./crds/rsses.json')
