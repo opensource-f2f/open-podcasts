@@ -9,3 +9,9 @@
 audio {
     width: 100%;
 }
+
+.icon-trash {
+    font-size: 24px;
+    margin-left: 10px;
+    cursor: pointer;
+}

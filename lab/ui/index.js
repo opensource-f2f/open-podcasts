@@ -89,14 +89,14 @@ app.post('/rsses', (req, res) => {
             apiVersion: 'osf2f.my.domain/v1alpha1',
             kind: 'RSS',
             metadata: {
-                name: req.body.name,
+                generateName: (Math.random() + 1).toString(36).substring(7),
             },
             spec: {
                 address: req.body.address
             }
         }
     })
-    res.redirect('/')
+    res.end('ok')
 })
 
 app.get('/episodes', (req, res) => {
@@ -178,6 +178,41 @@ app.post('/profiles/create', (req, res) => {
             }
         }
     })
+    res.end('ok')
+})
+
+app.delete('/profile/playLater', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const client = new Client({version: '1.13'})
+    client.addCustomResourceDefinition(crd)
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name).get()
+    profile.then(response => {
+        var found = false
+        targetProfile = response.body
+        if (!targetProfile.spec) {
+            targetProfile.spec = {}
+        }
+        if (!targetProfile.spec.laterPlayList) {
+            targetProfile.spec.laterPlayList = []
+        }
+
+        targetProfile.spec.laterPlayList.forEach(function (item, index){
+            if(item.name === req.query.episode) {
+                targetProfile.spec.laterPlayList.splice(index, 1)
+                found = true
+                return false
+            }
+        })
+        if(found) {
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name)
+                .put({
+                    body:targetProfile,
+                })
+        }
+    })
+    res.status(200);
     res.end('ok')
 })
 

@@ -56,6 +56,7 @@ class ProfileModal extends Component {
             rssName: "",
             github: ""
         }
+        this.removeEpisode = this.removeEpisode.bind(this);
     }
 
     closeModal() {
@@ -67,20 +68,17 @@ class ProfileModal extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                address: this.state.rssURL,
-                name: this.state.rssName
+                address: this.state.rssURL
             })
         };
-        fetch('/rsses', requestOptions)
+        fetch('/rsses', requestOptions).then(() => {
+            $('#new-rss-url').val('')
+            alert('success')
+        })
     }
     setRSSURL(e) {
         this.setState({
             rssURL: e.target.value
-        })
-    }
-    setRSSName(e) {
-        this.setState({
-            rssName: e.target.value
         })
     }
 
@@ -147,6 +145,19 @@ class ProfileModal extends Component {
             ))
     }
 
+    removeEpisode(episode) {
+        const requestOptions = {
+            method: 'DELETE',
+        };
+        const profileCom = this
+        const name = localStorage.getItem('profile')
+        fetch('/profile/playLater?name=' + name + '&episode=' + episode, requestOptions)
+            .then(res => {
+                $('button[action="later"][episode="' + episode + '"]').remove()
+                profileCom.reload()
+            })
+    }
+
     play() {
         this.getProfile(function (com, res) {
             if (res.spec.laterPlayList.length > 0) {
@@ -201,15 +212,18 @@ class ProfileModal extends Component {
                             <span>Listen Later List: </span>
                             <button onClick={() => this.play()}>Play</button>
                             {laterPlayList.map((item, index) => (
-                                    <span episode={item.name} key={index} className="later-play-item">{item.displayName}</span>
+                                    <span episode={item.name} key={index} className="later-play-item">{item.displayName}
+                                        <i className="fa icon-trash" key={index} onClick={() => this.removeEpisode(item.name)}>&#xf014;</i>
+                                    </span>
+
                                 )
                             )}
                         </div>
                     </div>
 
                     <div>
-                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)}/> with name:
-                        <input onChange={(e) => this.setRSSName(e)}/><button onClick={() => this.addRSS()}>Add</button>
+                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
+                        <button onClick={() => this.addRSS()}>Add</button>
                     </div>
 
                     <div className="social-account-zone">
