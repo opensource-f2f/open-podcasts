@@ -20,6 +20,7 @@ import (
 	"context"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"strings"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -80,7 +81,7 @@ func (r *ProfileReconciler) handleLaterPlayList(profile *osf2fv1alpha1.Profile) 
 			Name:      item.Name,
 		}, episode); err == nil {
 			// TODO need to consider the case when episode does not exist
-			item.DisplayName = episode.Spec.Title
+			item.DisplayName = strings.TrimSpace(episode.Spec.Title)
 			needToUpdate = true
 		}
 	}
