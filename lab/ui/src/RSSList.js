@@ -3,6 +3,23 @@ import $ from 'jquery'
 import './RSSList.css'
 import Episodes from "./Episodes"
 
+class RSSItem extends Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        if (this.props.image) {
+            return (
+                <div rss={this.props.name}>
+                    <img width="150px" src={this.props.image} alt={this.props.name}
+                         onClick={() => this.props.loadEpisodes(this.props.name)}/>
+                </div>
+            )
+        }
+        return ''
+    }
+}
+
 class RSSList extends Component {
     constructor(props) {
         super(props);
@@ -10,6 +27,7 @@ class RSSList extends Component {
             rsses:[],
             rssName: "",
         };
+        this.loadEpisodes = this.loadEpisodes.bind(this);
     }
 
     componentDidMount() {
@@ -40,9 +58,8 @@ class RSSList extends Component {
             <div>
                 <div id="rss_list">
                     {rsses.map((item, index) => (
-                        <div rss={item.metadata.name} key={index}>
-                            <img width="150px" src={item.spec.image} onClick={() => this.loadEpisodes(item.metadata.name)}></img>
-                        </div>
+                        <RSSItem name={item.metadata.name} key={index} image={item.spec.image}
+                                 loadEpisodes={this.loadEpisodes}/>
                     ))}
                 </div>
                 {episodes}
