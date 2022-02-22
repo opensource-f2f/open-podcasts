@@ -71,11 +71,11 @@ func (r *RSSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result
 		return
 	}
 
-	err = r.fetchByRSS(address, rssObj)
+	result, err = r.fetchByRSS(address, rssObj)
 	return
 }
 
-func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err error) {
+func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (result ctrl.Result, err error) {
 	var feed *rss.Feed
 	if feed, err = rss.Fetch(address); err != nil {
 		err = r.errorAndRecord(rssObject, v1.EventTypeWarning, "Failed to fetch RSS",
@@ -100,6 +100,12 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (err
 
 	if err = r.storeEpisodes(feed.Items, rssObject.ObjectMeta); err == nil {
 		err = r.setLastUpdateTime(rssObject.Namespace, rssObject.Name)
+	}
+
+	if err == nil {
+		result = ctrl.Result{
+			RequeueAfter: feed.Refresh.Sub(time.Now()),
+		}
 	}
 	return
 }
