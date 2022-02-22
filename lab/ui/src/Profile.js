@@ -117,6 +117,10 @@ class ProfileModal extends Component {
 
     onOpen() {
         $('#social-account-github').val(this.state.github)
+        const profile = window.localStorage.getItem('profile')
+        if (!profile) {
+            $('#login-zone').show()
+        }
     }
 
     componentDidMount() {
@@ -188,6 +192,21 @@ class ProfileModal extends Component {
         // })
     }
 
+    register() {
+        const name = $('#login-name').val()
+        $.post('/profiles/create?name=' + name, function (){
+            window.location.reload()
+        })
+    }
+
+    login() {
+        const name = $('#login-name').val()
+        $.get('/profiles?name=' + name, function (){
+            localStorage.setItem('profile', $('#login-name').val())
+            window.location.reload()
+        })
+    }
+
     render() {
         const {laterPlayList} = this.state;
         return (
@@ -204,8 +223,10 @@ class ProfileModal extends Component {
                         <label>
                             Name: <input name="name" id="login-name" />
                         </label>
-                        <div><button action="login">Login</button></div>
-                        <div><button action="register">Register</button></div>
+                        <div>
+                            <button onClick={this.login}>Login</button>
+                            <button onClick={this.register}>Register</button>
+                        </div>
                     </div>
                     <div>
                         <div>
@@ -221,14 +242,14 @@ class ProfileModal extends Component {
                         </div>
                     </div>
 
-                    <div>
-                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
-                        <button onClick={() => this.addRSS()}>Add</button>
-                    </div>
-
                     <div className="social-account-zone">
                         <div>Social Account</div>
                         <div>GitHub: <input id="social-account-github" onBlur={(e) => this.setGitHubAccount(e.target.value)}/></div>
+                    </div>
+
+                    <div>
+                        New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
+                        <button onClick={() => this.addRSS()}>Add</button>
                     </div>
                 </Modal>
             </div>

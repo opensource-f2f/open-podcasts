@@ -152,14 +152,18 @@ app.get('/profiles', (req, res) => {
     client.addCustomResourceDefinition(crd)
     const name = req.query.name
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
-    all.then(response => {
-        var space = 0
-        if(req.query.pretty === 'true'){
-            space = 2
-        }
-        res.end(JSON.stringify(response.body, undefined, space))
-    })
+    try {
+        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+        all.then(response => {
+            var space = 0
+            if(req.query.pretty === 'true'){
+                space = 2
+            }
+            res.end(JSON.stringify(response.body, undefined, space))
+        })
+    } catch (e) {
+        console.error('Error: ', e)
+    }
 });
 
 app.post('/profiles/create', (req, res) => {
@@ -169,16 +173,22 @@ app.post('/profiles/create', (req, res) => {
     client.addCustomResourceDefinition(crd)
     const name = req.query.name
 
-    client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.post({
-        body: {
-            apiVersion: 'osf2f.my.domain/v1alpha1',
-            kind: 'Profile',
-            metadata: {
-                name: name,
+    try {
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.post({
+            body: {
+                apiVersion: 'osf2f.my.domain/v1alpha1',
+                kind: 'Profile',
+                metadata: {
+                    name: name,
+                }
             }
-        }
-    })
-    res.end('ok')
+        }).error(res => {
+            console.log(res)
+        })
+        res.end('ok')
+    } catch (e) {
+        console.error('Error: ', e)
+    }
 })
 
 app.delete('/profile/playLater', (req, res) => {
