@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - lab-osf2f
+      - master
 
 jobs:
   UpdateReleaseDraft:
