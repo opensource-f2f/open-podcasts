@@ -1,0 +1,10 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: Profile
+metadata:
+  name: profile-sample
+spec:
+  displayName: Rick
+  socialLinks:
+    github: linuxsuren
+  laterPlayList:
+    - name: rss-sample-0

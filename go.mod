@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.2
-	github.com/SlyMarbo/rss v1.0.1
+	github.com/SlyMarbo/rss v1.0.3
 	github.com/faiface/beep v1.1.0
 	github.com/gdamore/tcell v1.3.0
 	github.com/ghodss/yaml v1.0.0

@@ -1,0 +1,9 @@
+.global-audio {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}
+.global-audio > audio {
+    width: 100%;
+}

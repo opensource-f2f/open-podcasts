@@ -1,0 +1,287 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <link rel="stylesheet" href="/css/loading.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="application/javascript">
+        function createAudio(src, parent) {
+            const source = $(document.createElement('source'))
+            source.attr('src', src)
+            source.attr('type', 'audio/x-m4a')
+
+            const audio = $(document.createElement('audio'))
+            audio.attr('controls','')
+            audio.append(source)
+            parent.append(audio)
+            return audio
+        }
+
+        function loadEpisode(rss) {
+            $("#episodes").html('<div class="lds-heart"><div></div></div>')
+            $.getJSON('/episodes?rss=' + rss, function (episodes){
+                $("#episodes").empty()
+
+                $.each(episodes, function (i, episode){
+                    const zone = $(document.createElement('div'))
+                    zone.attr('id', episode.metadata.name)
+                    zone.attr('src', episode.spec.audioSource)
+                    zone.append($('<span>' + episode.spec.title + '</span><br/>'))
+                    zone.on('play-audio', function (){
+                        const audioZone = $(this)
+                        var audioElement = audioZone.find('audio')
+                        if (audioElement.length === 0) {
+                            audioElement = createAudio(audioZone.attr('src'), audioZone)
+                        }
+                        if (!audioElement.paused && !audioElement.ended) {
+                            audioElement.trigger('play').on('ended', function (){
+                                const audioPanel = $(this)
+                                const episode = audioPanel.parent().attr('id')
+                                const profile = window.localStorage.getItem('profile')
+                                $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
+                                    audioZone.trigger('ended-audio')
+                                })
+                            });
+
+                            $(this).trigger('ready')
+                        }
+                    })
+                    const listenButton = $('<button episode="' + episode.metadata.name + '">Listen</button>').click(function () {
+                        listenEpisode($(this).attr('episode'))
+                    })
+                    zone.append(listenButton)
+
+                    $("#episodes").append(zone)
+                })
+
+                // add play later button
+                const profile = window.localStorage.getItem('profile')
+                if (profile && profile !== "") {
+                    $.getJSON('/profiles?name=' + profile, function (profile){
+                        if (!profile.spec) {
+                            profile.spec = {}
+                        }
+                        setLaterPlayButtons(profile)
+                    })
+                }
+            })
+        }
+
+        $.getJSON('/rsses', function (rsses){
+            $.each(rsses, function (i, rss){
+                if(rss.spec.image) {
+                    const rssCard = $('<div rss="' + rss.metadata.name + '"><img width="150px" src="' + rss.spec.image + '"></div>')
+                    $('#rss_list').append(rssCard)
+
+                    rssCard.click(function () {
+                        loadEpisode($(this).attr('rss'))
+                    })
+                }
+            })
+        })
+
+        function loadProfile(name) {
+            $.getJSON('/profiles?name=' + name, function (profile){
+                if (!profile.spec) {
+                    profile.spec = {}
+                }
+
+                const profileZone = $(document.createElement('div'))
+                if (profile.spec.displayName) {
+                    profileZone.append($('<span>' + profile.spec.displayName + '</span>'))
+                }
+                $.each(profile.spec.socialLinks, function (key, val) {
+                    profileZone.append($('<div>' + key + ': <a target="_blank" href="https://github.com/' + val + '">' + val + '</a></div>'))
+                })
+
+                const lasterPlayListZone = $('<div><span>Listen Later List: </span></div>')
+                $.each(profile.spec.laterPlayList, function (i, item){
+                    lasterPlayListZone.append($('<span episode="' + item.name + '">' + item.name + '</span>'))
+                })
+                lasterPlayListZone.append($('<button>Play</button>'))
+
+                profileZone.append(lasterPlayListZone)
+                $('#profiles').append(profileZone)
+
+                // trigger the play later list
+                $('button').click(function (){
+                    const playButton = $(this)
+                    playButton.parent().find('span').each(function (i, item){
+                        item = $(item)
+                        if(item.attr('episode') && item.attr('episode') != "") {
+                            listenEpisode(item.attr('episode')).on('ended-audio', function () {
+                                item.remove()
+                                playButton.click()
+                            })
+
+                            hideGlobalAudioZone()
+                            if ($('#' + item.attr('episode')).length > 0) {
+                                $([document.documentElement, document.body]).animate({
+                                    scrollTop: $('#' + item.attr('episode')).offset().top
+                                }, 2000);
+                            } else {
+                                playEpisode(item.attr('episode'), function () {
+                                    playButton.click()
+                                })
+                            }
+                            return false
+                        }
+                    })
+                });
+            })
+        }
+
+        function playEpisode(episdoe, callback) {
+            $.getJSON('/episodes/one?name=' + episdoe, function (item){
+                createAudio(item.spec.audioSource, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
+                    const episode = $(this).attr('episode')
+                    const profile = window.localStorage.getItem('profile')
+                    $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
+                        $('span[episode=' + episode + ']').remove()
+
+                        if (callback) {
+                            callback()
+                        }
+                    })
+                }).attr('episode', item.metadata.name)
+            })
+        }
+        function hideGlobalAudioZone() {
+            $('#global-audio-zone').hide().empty()
+        }
+
+        function setLaterPlayButtons(profile){
+            if (!profile.spec.laterPlayList) {
+                profile.spec.laterPlayList = []
+            }
+            $('#episodes > div[id]').each(function (){
+                const id = $(this).attr('id')
+                var found = false
+                if(id !== ""){
+                    $.each(profile.spec.laterPlayList, function (i, item){
+                        if(item.name === id){
+                            found = true
+                            return false
+                        }
+                    })
+                }
+
+                if(!found){
+                    $(this).append("<button action='later' episode='" + id + "'>Listen Later</button>")
+                }
+            })
+
+            $('[action="later"]').click(function (){
+                const laterButton = $(this)
+                const name = window.localStorage.getItem('profile')
+                $.post("/profile/playLater?name=" + name + "&episode=" + $(this).attr('episode'), function () {
+                    laterButton.remove()
+                })
+            })
+        }
+
+        function listenEpisode(id) {
+            return $('#' + id).trigger('play-audio')
+        }
+
+        $(document).ready(function (){
+            const profile = localStorage.getItem('profile')
+            if(profile === "" || !profile) {
+                $('#login-zone').show()
+                $('button[action="login"]').click(function () {
+                    $.get('/profiles?name=' + $('#login-name').val(), function (){
+                        localStorage.setItem('profile', $('#login-name').val())
+                        window.location.reload()
+                    })
+                })
+                $('button[action="register"]').click(function () {
+                    $.post('/profiles/create?name=' + $('#login-name').val(), function (){
+                        window.location.reload()
+                    })
+                })
+            } else {
+                loadProfile(profile)
+            }
+        })
+    </script>
+    <style>
+        #episodes > div {
+            border-style: solid;
+            margin-top: 15px;
+        }
+        #episodes > div > button {
+            margin-left: 8px;
+        }
+        #profiles > div {
+            /*border-style: solid;*/
+            margin: 15px;
+            padding: 5px;
+        }
+        #profiles > div > * {
+            margin: 5px;
+        }
+        #rss_list > div {
+            display: inline-block;
+            text-align: center;
+            margin: 5px;
+        }
+        #rss_list > div:nth-child(odd) {
+            width:calc(30% - 150px);
+        }
+        #rss_list > div:nth-child(even) {
+            width:calc(30% - 150px);
+        }
+        #rss_list > div > img {
+            cursor: pointer;
+        }
+        audio {
+            width: 100%;
+        }
+        span[episode] {
+            margin-right: 15px;
+        }
+
+        .global-audio {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<a class="github-fork-ribbon" target="_blank" href="https://github.com/linuxsuren/goplay"
+   data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+
+<div id="profiles">
+    <div style="display: none;" id="login-zone">
+        <label>
+            Name: <input name="name" id="login-name"/>
+        </label>
+        <div><button action="login">Login</button></div>
+        <div><button action="register">Register</button></div>
+    </div>
+</div>
+
+<div id="rss_list">
+    <form action="/rsses" method="post">
+        <table>
+            <tr>
+                <td>RSS:</td>
+                <td><input name="address" type="text"></td>
+            </tr>
+            <tr>
+                <td>Name:</td>
+                <td><input name="name" type="text"></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Submit"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="episodes"></div>
+
+<div id="global-audio-zone" class="global-audio"></div>
+</body>
+</html>

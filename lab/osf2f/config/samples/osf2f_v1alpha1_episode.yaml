@@ -1,0 +1,6 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: Episode
+metadata:
+  name: episode-sample
+spec:
+  # TODO(user): Add fields here

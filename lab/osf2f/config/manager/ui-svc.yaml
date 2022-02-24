@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: osf2f-ui
+  name: osf2f-ui
+  namespace: osf2f-system
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: front
+      nodePort: 30001
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+  selector:
+    app: osf2f-ui
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

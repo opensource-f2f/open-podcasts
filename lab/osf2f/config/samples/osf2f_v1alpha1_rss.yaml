@@ -1,0 +1,6 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: rss-sample
+spec:
+  address: http://www.ximalaya.com/album/53320813.xml

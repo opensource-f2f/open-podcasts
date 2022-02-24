@@ -16,3 +16,8 @@
 # vendor/
 goplay
 bin/
+*/**/.DS_Store
+.DS_Store
+lab/ui/node_modules/
+lab/ui/package-lock.json
+lab/ui/build

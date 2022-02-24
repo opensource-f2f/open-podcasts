@@ -1,0 +1,85 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - episodes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - episodes/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - episodes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - profiles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - profiles/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - profiles/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - rsses
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - rsses/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - rsses/status
+  verbs:
+  - get
+  - patch
+  - update
