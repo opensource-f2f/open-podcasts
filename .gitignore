@@ -18,6 +18,16 @@ goplay
 bin/
 */**/.DS_Store
 .DS_Store
-lab/ui/node_modules/
-lab/ui/package-lock.json
-lab/ui/build
+ui/node_modules/
+ui/package-lock.json
+ui/build
+
+# Kubernetes Generated files - skip generated files, except for vendored files
+
+!vendor/**/zz_generated.*
+
+# editor and IDE paraphernalia
+.idea
+*.swp
+*.swo
+*~

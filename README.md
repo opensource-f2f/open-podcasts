@@ -1,31 +1,17 @@
-# goplay
+> 以下想法源于[《开源面对面》](https://github.com/opensource-f2f/episode) 。既然播客节目的制作过程、内容是可以开源的，那么，
+> 播客平台为什么不可以呢？
 
-Listen podcast via CLI.
+本项目，计划采用云原生的方式来开发后端程序，利用 [Kubebuilder](https://github.com/kubernetes-sigs/kubebuilder) 作为
+脚手架。
 
-## Install
-
-Install via [hd](https://github.com/linuxsuren/http-downloader):
-
-```shell
-hd install goplay
-```
-
-## Get started
-
-Start to listen:
+Demo address: http://103.61.38.146:30001/
 
 ```shell
-goplay 开源面对面
+k3d cluster create -p 30000:30000 -p 30001:30001 -p 30002:30002 -p 30003:30003
 ```
 
-## Restriction
+## Create new API
 
-* Rely on `mplayer` if the audio file format is not mp3
-
-## Lab
-
-Please step into [the lab directory](lab) if you like a native Podcasts platform.
-
-## Release
-
-This project can be released via [linuxsuren-versions](https://github.com/linuxsuren/linuxsuren-versions).
+```shell
+kubebuilder create api --group osf2f --version v1alpha1 --kind Profile
+```

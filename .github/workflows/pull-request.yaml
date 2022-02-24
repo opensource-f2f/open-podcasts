@@ -10,48 +10,49 @@ jobs:
     name: BuildOnLinux
     runs-on: ubuntu-20.04
     steps:
-      - name: Set up Go 1.16
+      - name: Set up Go 1.17
         uses: actions/setup-go@v2.1.4
         with:
-          go-version: 1.16
+          go-version: 1.17
         id: go
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2.3.5
       - name: Build
         run: |
-          sudo apt-get update -y
-          sudo apt install libasound2-dev -y
-          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
-          go test ./...
+          make all docker-build docker-build-ui
+#          sudo apt-get update -y
+#          sudo apt install libasound2-dev -y
+#          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
+#          go test ./...
 
-  build-darwin:
-    name: BuildOnDarwin
-    runs-on: macos-10.15
-    steps:
-      - name: Set up Go 1.16
-        uses: actions/setup-go@v2.1.4
-        with:
-          go-version: 1.16
-        id: go
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2.3.5
-      - name: Build
-        run: |
-          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
-          go test ./...
-
-  build-win:
-    name: BuildOnWindows
-    runs-on: windows-2019
-    steps:
-      - name: Set up Go 1.16
-        uses: actions/setup-go@v2.1.4
-        with:
-          go-version: 1.16
-        id: go
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2.3.5
-      - name: Build
-        run: |
-          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
-          go test ./...
+#  build-darwin:
+#    name: BuildOnDarwin
+#    runs-on: macos-10.15
+#    steps:
+#      - name: Set up Go 1.16
+#        uses: actions/setup-go@v2.1.4
+#        with:
+#          go-version: 1.16
+#        id: go
+#      - name: Check out code into the Go module directory
+#        uses: actions/checkout@v2.3.5
+#      - name: Build
+#        run: |
+#          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
+#          go test ./...
+#
+#  build-win:
+#    name: BuildOnWindows
+#    runs-on: windows-2019
+#    steps:
+#      - name: Set up Go 1.16
+#        uses: actions/setup-go@v2.1.4
+#        with:
+#          go-version: 1.16
+#        id: go
+#      - name: Check out code into the Go module directory
+#        uses: actions/checkout@v2.3.5
+#      - name: Build
+#        run: |
+#          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
+#          go test ./...
