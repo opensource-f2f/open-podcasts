@@ -3,6 +3,7 @@ import './Episodes.css'
 import $ from 'jquery'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import Button from 'cuke-ui/lib/button';
 
 class AudioControlPanel extends Component {
     constructor(props) {
@@ -63,7 +64,8 @@ class LaterButton extends Component {
     render() {
         if (this.props.show) {
             return (
-                <button action="later" episode={this.props.name} onClick={() => this.listenLater(this.props.name)}>Listen Later</button>
+                <Button action="later" type="primary" size="small" episode={this.props.name}
+                        onClick={() => this.listenLater(this.props.name)}>Listen Later</Button>
             );
         }
         return null
@@ -100,7 +102,7 @@ class Episodes extends Component {
 
     componentDidMount() {
         const name = localStorage.getItem('profile')
-        if (name === "" || !name || name == null) {
+        if (name === "" || !name) {
             this.fetchEpisodes([])
             return
         }
@@ -132,7 +134,8 @@ class Episodes extends Component {
                     <div id={item.metadata.name} src="" key={index}>
                         <span>{item.spec.title}</span><br/>
                         <ReactMarkdown children={item.spec.summary} remarkPlugins={[remarkGfm]} />
-                        <button episode={item.metadata.name} onClick={() => this.listenNow(item.metadata.name)}>Listen</button>
+                        <Button type="primary" size="small" episode={item.metadata.name}
+                                onClick={() => this.listenNow(item.metadata.name)}>Listen</Button>
                         <LaterButton name={item.metadata.name} show={item.later}/>
                         <AudioControlPanel show={item.show} play={item.play} source={item.spec.audioSource} episode={item.metadata.name}/>
                     </div>

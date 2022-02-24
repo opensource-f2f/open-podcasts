@@ -4,6 +4,7 @@ import './Profile.css'
 import avatar from './images/img_avatar.png'
 import Modal from 'react-modal'
 import GlobalAudio from './GlobalAudio'
+import Button from 'cuke-ui/lib/button';
 
 function createAudio(src, parent) {
     const source = $(document.createElement('source'))
@@ -223,7 +224,7 @@ class ProfileModal extends Component {
                     contentLabel="Example Modal"
                     style={customStyles}
                 >
-                    <button onClick={() => this.closeModal()} className="modal-close-but">Close</button>
+                    <Button size="small" type="warning" onClick={() => this.closeModal()} className="modal-close-but">Close</Button>
 
                     <div style={{display: "none"}} id="login-zone">
                         <label>
@@ -237,7 +238,7 @@ class ProfileModal extends Component {
                     <div>
                         <div>
                             <span>Listen Later List: </span>
-                            <button onClick={() => this.play()}>Play</button>
+                            <Button type="primary" size="small" onClick={() => this.play()}>Play</Button>
                             {laterPlayList.map((item, index) => (
                                     <span episode={item.name} key={index} className="later-play-item">{item.displayName}
                                         <i className="fa icon-trash" key={index} onClick={() => this.removeEpisode(item.name)}>&#xf014;</i>
@@ -255,7 +256,7 @@ class ProfileModal extends Component {
 
                     <div>
                         New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
-                        <button onClick={() => this.addRSS()}>Add</button>
+                        <Button type="primary" size="small" onClick={() => this.addRSS()}>Add</Button>
                     </div>
                 </Modal>
             </div>
