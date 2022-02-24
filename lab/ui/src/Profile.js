@@ -3,6 +3,7 @@ import $ from 'jquery'
 import './Profile.css'
 import avatar from './images/img_avatar.png'
 import Modal from 'react-modal'
+import GlobalAudio from './GlobalAudio'
 
 function createAudio(src, parent) {
     const source = $(document.createElement('source'))
@@ -24,17 +25,21 @@ function playEpisode(episdoe, callback) {
             source = '/stream' + source.replaceAll('https://', '/')
         }
 
-        createAudio(source, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
-            const episode = $(this).attr('episode')
-            const profile = window.localStorage.getItem('profile')
-            $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
-                $('span[episode=' + episode + ']').remove()
+        const player = GlobalAudio.play(source)
+        if (player) {
+            player.on('ended', function () {
+                // createAudio(source, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
+                const episode = $(this).attr('episode')
+                const profile = window.localStorage.getItem('profile')
+                $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
+                    $('span[episode=' + episode + ']').remove()
 
-                if (callback) {
-                    callback()
-                }
-            })
-        }).attr('episode', item.metadata.name)
+                    if (callback) {
+                        callback()
+                    }
+                })
+            }).attr('episode', item.metadata.name)
+        }
     })
 }
 
@@ -102,6 +107,7 @@ class ProfileModal extends Component {
             com.setState({
                 laterPlayList: res.spec.laterPlayList
             })
+            GlobalAudio.loadPlayList(res.spec.laterPlayList)
 
             if (res.spec.socialLinks) {
                 const github = res.spec.socialLinks["github"]

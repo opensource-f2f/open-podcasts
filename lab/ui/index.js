@@ -16,13 +16,17 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
 
 const https = require('follow-redirects').http
 app.get('/stream/*', (req, res) => {
-    const targetURL = req.url.replaceAll('/stream/', 'http://')
-    https.get(targetURL, (rsp) => {
-        for(let item in rsp.headers) {
-            res.setHeader(item, rsp.headers[item])
-        }
-        rsp.pipe(res)
-    })
+    try {
+        const targetURL = req.url.replaceAll('/stream/', 'http://')
+        https.get(targetURL, (rsp) => {
+            for(let item in rsp.headers) {
+                res.setHeader(item, rsp.headers[item])
+            }
+            rsp.pipe(res)
+        })
+    } catch (e) {
+        console.log(e)
+    }
 })
 
 app.get('/rsses', (req, res) => {

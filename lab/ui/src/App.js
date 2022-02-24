@@ -9,7 +9,7 @@ function App() {
             <Profile/>
             <RSSList/>
             <ForkMe/>
-            <GlobalAudio/>
+            {/*<GlobalAudio/>*/}
         </div>
     )
 }
