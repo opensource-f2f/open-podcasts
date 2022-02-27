@@ -5,6 +5,7 @@ const crd = require("./crds/episodes.json"); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const bodyParser = require('body-parser');
 const YAML = require("yaml");
+const toXML = require("to-xml").toXML
 app.use(bodyParser());
 const port = 5000;                  //Save the port number where your server will be listening
 
@@ -79,6 +80,47 @@ app.get('/rsses/export', (req, res) => {
             result += doc.toString()
         }
         res.send(result);
+    })
+})
+
+app.get('/rsses/opml/export', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/rsses.json')
+    const client = new Client({ version: '1.13' })
+    const YAML = require('yaml');
+    client.addCustomResourceDefinition(crd)
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
+    all.then(response => {
+        const items = response.body.items
+
+        const bodyItems = []
+        for(var i = 0; i < items.length; i++) {
+            bodyItems.push({
+                "@text": items[i].spec.title,
+                "@title": items[i].spec.title,
+                "@type": "rss",
+                "@xmlUrl": items[i].spec.address,
+                "@htmlUrl": ""
+            })
+        }
+        const opml = {
+            "?xml version='1.0' encoding='UTF-8' standalone='no' ?": null,
+            "opml": {
+                "@version": "2.0",
+                head: {
+                    title: 'From Open Podcasts',
+                    dateCreated: new Date().toISOString(),
+                },
+                body: {
+                    outline: bodyItems
+                }
+            }
+        }
+
+        res.set({"Content-Disposition":"attachment; filename=rsses.opml"});
+
+        res.send(toXML(opml, null, 2));
     })
 })
 
