@@ -214,6 +214,34 @@ class ProfileModal extends Component {
         })
     }
 
+    downloadYAML() {
+        fetch('/rsses/export').then((rsp) => {
+            const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
+            rsp.blob().then(blob => {
+                let blobUrl = window.URL.createObjectURL(blob);
+                let aElement = document.getElementById('downloadDiv');
+                aElement.href = blobUrl;
+                aElement.download = filename;
+                aElement.click();
+                window.URL.revokeObjectURL(blobUrl);
+            })
+        })
+    }
+
+    downloadOMPL() {
+        fetch('/rsses/opml/export').then((rsp) => {
+            const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
+            rsp.blob().then(blob => {
+                let blobUrl = window.URL.createObjectURL(blob);
+                let aElement = document.getElementById('downloadDiv');
+                aElement.href = blobUrl;
+                aElement.download = filename;
+                aElement.click();
+                window.URL.revokeObjectURL(blobUrl);
+            })
+        })
+    }
+
     render() {
         const {laterPlayList} = this.state;
         return (
@@ -258,6 +286,10 @@ class ProfileModal extends Component {
                         New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
                         <Button type="primary" size="small" onClick={() => this.addRSS()}>Add</Button>
                     </div>
+
+                    <Button type="primary" size="small" onClick={this.downloadYAML}>Download YAML</Button>
+                    <Button type="primary" size="small" onClick={this.downloadOMPL}>Download OMPL</Button>
+                    <a id="downloadDiv" style={{display: 'none'}}></a>
                 </Modal>
             </div>
         );

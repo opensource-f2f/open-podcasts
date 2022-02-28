@@ -14,8 +14,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: ghcr.io/linuxsuren/goplay
-  newTag: osf2f-dev
+  newName: ghcr.io/linuxsuren/open-podcasts
+  newTag: master
 - name: osf2f-ui
-  newName: ghcr.io/linuxsuren/goplay
-  newTag: osf2f-ui-dev
+  newName: ghcr.io/linuxsuren/open-podcasts-ui
+  newTag: master
