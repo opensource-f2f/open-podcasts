@@ -5,5 +5,6 @@ func init() {
 		&Episode{}, &EpisodeList{},
 		&RSS{}, &RSSList{},
 		&Profile{}, &ProfileList{},
+		&Notifier{}, &NotifierList{},
 	)
 }

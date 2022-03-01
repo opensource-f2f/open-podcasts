@@ -5,6 +5,7 @@ resources:
 - bases/osf2f.my.domain_rsses.yaml
 - bases/osf2f.my.domain_episodes.yaml
 - bases/osf2f.my.domain_profiles.yaml
+- bases/osf2f.my.domain_notifiers.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

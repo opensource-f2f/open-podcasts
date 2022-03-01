@@ -1,0 +1,61 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.8.0
+  creationTimestamp: null
+  name: notifiers.osf2f.my.domain
+spec:
+  group: osf2f.my.domain
+  names:
+    kind: Notifier
+    listKind: NotifierList
+    plural: notifiers
+    singular: notifier
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Notifier is the Schema for the notifiers API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: NotifierSpec defines the desired state of Notifier
+            properties:
+              slack:
+                description: SlackNotifier defines the spec for integrating with Slack
+                properties:
+                  channel:
+                    type: string
+                  icon_emoji:
+                    type: string
+                  username:
+                    type: string
+                  webhook_url:
+                    type: string
+                required:
+                - webhook_url
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
