@@ -129,14 +129,36 @@ func (r *RSSReconciler) storeEpisodes(items []*rss.Item, meta metav1.ObjectMeta)
 		rssMeta := meta.DeepCopy()
 		episodeName := fmt.Sprintf("%s-%d", meta.Name, i)
 
-		if err = r.storeEpisode(items[i], rssMeta, episodeName); err != nil {
+		var created bool
+		if created, err = r.storeEpisode(items[i], rssMeta, episodeName); err != nil {
 			return
+		}
+
+		if created {
+			_ = r.recordNewEpisodeEvent(meta.Name, episodeName, meta.Namespace)
 		}
 	}
 	return
 }
 
-func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, episodeName string) (err error) {
+func (r *RSSReconciler) recordNewEpisodeEvent(rssName, episodeName, ns string) (err error) {
+	rssObj := &v1alpha1.RSS{}
+	if err = r.Get(context.Background(), types.NamespacedName{
+		Namespace: ns,
+		Name:      rssName,
+	}, rssObj); err == nil {
+		episode := &v1alpha1.Episode{}
+		if err = r.Get(context.Background(), types.NamespacedName{
+			Namespace: ns,
+			Name:      episodeName,
+		}, episode); err == nil {
+			r.recorder.Eventf(rssObj, v1.EventTypeNormal, episodeName, "Got a new episode: %s", episode.Spec.Title)
+		}
+	}
+	return
+}
+
+func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, episodeName string) (created bool, err error) {
 	episode := &v1alpha1.Episode{}
 	if err = r.Client.Get(context.Background(), types.NamespacedName{
 		Namespace: meta.Namespace,
@@ -157,6 +179,7 @@ func (r *RSSReconciler) storeEpisode(item *rss.Item, meta *metav1.ObjectMeta, ep
 				}},
 			},
 		}
+		created = true
 		updateEpisode(episode, item)
 		err = r.Client.Create(context.Background(), episode)
 	} else {
