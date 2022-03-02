@@ -23,6 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -73,5 +74,31 @@ func (r *EventReconciler) Reconcile(ctx context.Context, req ctrl.Request) (resu
 func (r *EventReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1.Event{}).
+		WithEventFilter(&eventSourceFilter{component: "rss"}).
 		Complete(r)
+}
+
+type eventSourceFilter struct {
+	component string
+}
+
+func (f *eventSourceFilter) Create(e event.CreateEvent) bool {
+	if event, ok := e.Object.(*v1.Event); ok {
+		if event.Source.Component == f.component {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *eventSourceFilter) Delete(e event.DeleteEvent) bool {
+	return false
+}
+
+func (f *eventSourceFilter) Update(e event.UpdateEvent) bool {
+	return false
+}
+
+func (f *eventSourceFilter) Generic(e event.GenericEvent) bool {
+	return false
 }

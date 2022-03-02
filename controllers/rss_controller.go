@@ -83,6 +83,7 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 		return
 	}
 
+	rssObject = rssObject.DeepCopy()
 	rssObject.Spec.Title = feed.Title
 	rssObject.Spec.Description = feed.Description
 	rssObject.Spec.Link = feed.Link
