@@ -48,8 +48,8 @@ type EventReconciler struct {
 func (r *EventReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, err error) {
 	_ = log.FromContext(ctx)
 
-	event := &v1.Event{}
-	if err = r.Client.Get(ctx, req.NamespacedName, event); err != nil {
+	receiveEvent := &v1.Event{}
+	if err = r.Client.Get(ctx, req.NamespacedName, receiveEvent); err != nil {
 		err = client.IgnoreNotFound(err)
 		return
 	}
@@ -60,7 +60,11 @@ func (r *EventReconciler) Reconcile(ctx context.Context, req ctrl.Request) (resu
 			nofiter := notifiers.Items[i]
 
 			if nofiter.Spec.Slack != nil {
-				err = nofiter.Spec.Slack.Send(event.Message)
+				err = nofiter.Spec.Slack.Send(receiveEvent.Message)
+			}
+
+			if nofiter.Spec.Feishu != nil {
+				err = nofiter.Spec.Feishu.Send(receiveEvent.Message)
 			}
 		}
 	} else {
@@ -83,8 +87,8 @@ type eventSourceFilter struct {
 }
 
 func (f *eventSourceFilter) Create(e event.CreateEvent) bool {
-	if event, ok := e.Object.(*v1.Event); ok {
-		if event.Source.Component == f.component {
+	if receiveEvent, ok := e.Object.(*v1.Event); ok {
+		if receiveEvent.Source.Component == f.component && receiveEvent.Type == v1.EventTypeNormal {
 			return true
 		}
 	}

@@ -7,7 +7,8 @@ import (
 // NotifierSpec defines the desired state of Notifier
 // +k8s:openapi-gen=true
 type NotifierSpec struct {
-	Slack *SlackNotifier `json:"slack,omitempty"`
+	Slack  *SlackNotifier  `json:"slack,omitempty"`
+	Feishu *FeishuNotifier `json:"feishu,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
