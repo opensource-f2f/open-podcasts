@@ -83,7 +83,6 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 		return
 	}
 
-	rssObject = rssObject.DeepCopy()
 	rssObject.Spec.Title = feed.Title
 	rssObject.Spec.Description = feed.Description
 	rssObject.Spec.Link = feed.Link
@@ -95,7 +94,7 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 			rssObject.Spec.Image = feed.Image.Href
 		}
 	}
-	if err = r.Client.Update(context.Background(), rssObject); err != nil {
+	if err = r.updateRSS(rssObject.DeepCopy()); err != nil {
 		return
 	}
 
@@ -108,6 +107,20 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 			RequeueAfter: feed.Refresh.Sub(time.Now()),
 		}
 	}
+	return
+}
+
+func (r *RSSReconciler) updateRSS(newRSS *v1alpha1.RSS) (err error) {
+	existingRSS := &v1alpha1.RSS{}
+	if err = r.Client.Get(context.Background(), types.NamespacedName{
+		Namespace: newRSS.Namespace,
+		Name:      newRSS.Name,
+	}, existingRSS); err != nil {
+		return
+	}
+
+	existingRSS.Spec = newRSS.Spec
+	err = r.Client.Update(context.Background(), existingRSS)
 	return
 }
 
@@ -136,7 +149,10 @@ func (r *RSSReconciler) storeEpisodes(items []*rss.Item, meta metav1.ObjectMeta)
 		}
 
 		if created {
-			_ = r.recordNewEpisodeEvent(meta.Name, episodeName, meta.Namespace)
+			go func() {
+				time.Sleep(time.Second * 3)
+				_ = r.recordNewEpisodeEvent(meta.Name, episodeName, meta.Namespace)
+			}()
 		}
 	}
 	return
@@ -153,7 +169,8 @@ func (r *RSSReconciler) recordNewEpisodeEvent(rssName, episodeName, ns string) (
 			Namespace: ns,
 			Name:      episodeName,
 		}, episode); err == nil {
-			r.recorder.Eventf(rssObj, v1.EventTypeNormal, episodeName, "Got a new episode: %s", episode.Spec.Title)
+			r.recorder.Eventf(rssObj, v1.EventTypeNormal, episodeName, "《%s》更新节目了: '%s'",
+				rssObj.Spec.Title, episode.Spec.Title)
 		}
 	}
 	return

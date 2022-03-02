@@ -35,6 +35,15 @@ spec:
           spec:
             description: NotifierSpec defines the desired state of Notifier
             properties:
+              feishu:
+                description: FeishuNotifier defines the spec for integrating with
+                  Slack
+                properties:
+                  webhook_url:
+                    type: string
+                required:
+                - webhook_url
+                type: object
               slack:
                 description: SlackNotifier defines the spec for integrating with Slack
                 properties:

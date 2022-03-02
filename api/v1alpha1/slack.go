@@ -1,11 +1,7 @@
 package v1alpha1
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
 )
 
 // SlackNotifier defines the spec for integrating with Slack
@@ -18,7 +14,6 @@ type SlackNotifier struct {
 }
 
 func (n *SlackNotifier) Send(message string) error {
-	url := n.WebhookUrl
 	channel := ``
 	if n.Channel != `` {
 		channel = fmt.Sprintf(`, "channel":"%s"`, n.Channel)
@@ -31,22 +26,6 @@ func (n *SlackNotifier) Send(message string) error {
 	if n.IconEmoji != `` {
 		icon_emoji = fmt.Sprintf(`, "icon_emoji":"%s"`, n.IconEmoji)
 	}
-
-	var jsonStr = []byte(fmt.Sprintf(`{"text":"%s"%s%s%s}`, escapeString(message), channel, username, icon_emoji))
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(json.RawMessage(jsonStr)))
-	req.Header.Set("Content-Type", "application/json")
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return nil
-}
-
-func escapeString(str string) string {
-	// Escape double quotes (")
-	return strings.Replace(str, `"`, `\"`, -1)
+	payload := fmt.Sprintf(`{"text":"%s"%s%s%s}`, escapeString(message), channel, username, icon_emoji)
+	return sendJSON(n.WebhookUrl, payload)
 }

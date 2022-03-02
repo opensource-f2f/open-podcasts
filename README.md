@@ -6,6 +6,13 @@
 
 Demo address: http://103.61.38.146:30001/
 
+## Features
+* 添加 RSS 播客源
+* 添加待收听列表
+* 发送播客更新通知到：Slack、飞书
+
+## Get started
+
 ```shell
 k3d cluster create -p 30000:30000 -p 30001:30001 -p 30002:30002 -p 30003:30003
 ```
