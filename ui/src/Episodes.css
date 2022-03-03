@@ -2,7 +2,14 @@
     border-style: solid;
     margin-top: 15px;
 }
-#episodes > div > button {
+.episode-name {
+    cursor: pointer;
+    margin-left: 10px;
+}
+.button-group {
+
+}
+.episode-item-in-list > button {
     margin-left: 8px;
 }
 

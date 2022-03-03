@@ -5,6 +5,7 @@ const crd = require("./crds/episodes.json"); //Import the express dependency
 const app = express();              //Instantiate an express app, the main work horse of this server
 const bodyParser = require('body-parser');
 const YAML = require("yaml");
+const crdSub = require("./crds/subscriptions.json");
 const toXML = require("to-xml").toXML
 app.use(bodyParser());
 const port = 5000;                  //Save the port number where your server will be listening
@@ -30,19 +31,51 @@ app.get('/stream/*', (req, res) => {
     }
 })
 
+const commandArgs = require('minimist')(process.argv.slice(2))
+if (!commandArgs['defaultNamespace'] || commandArgs['defaultNamespace'] === "") {
+    commandArgs['defaultNamespace'] = 'osf2f-system'
+}
+const defaultNamespace = commandArgs['defaultNamespace']
+
+app.get('/namespaces', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const client = new Client({ version: '1.13' })
+
+    client.api.v1.namespaces.get().then(resp => {
+        res.end(JSON.stringify(resp.body.items, undefined, 2))
+    })
+})
+
 app.get('/rsses', (req, res) => {
     const Client = require('kubernetes-client').Client
     const crd = require('./crds/rsses.json')
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses.get()
     all.then(response => {
         var space = 0
         if(req.query.pretty === 'true'){
             space = 2
         }
         res.end(JSON.stringify(response.body.items, undefined, space))
+    })
+})
+
+app.get('/rsses/one', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/rsses.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses(name).get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body, undefined, space))
     })
 })
 
@@ -53,7 +86,7 @@ app.get('/rsses/export', (req, res) => {
     const YAML = require('yaml');
     client.addCustomResourceDefinition(crd)
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses.get()
     all.then(response => {
         const items = response.body.items
         const exportItems = []
@@ -90,7 +123,7 @@ app.get('/rsses/opml/export', (req, res) => {
     const YAML = require('yaml');
     client.addCustomResourceDefinition(crd)
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses.get()
     all.then(response => {
         const items = response.body.items
 
@@ -130,7 +163,7 @@ app.post('/rsses', (req, res) => {
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
 
-    client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses.post({
+    client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses.post({
         body: {
             apiVersion: 'osf2f.my.domain/v1alpha1',
             kind: 'RSS',
@@ -154,7 +187,7 @@ app.get('/episodes', (req, res) => {
     client.addCustomResourceDefinition(crdRSS)
     const rss = req.query.rss
 
-    const rssObject = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').rsses(rss).get()
+    const rssObject = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses(rss).get()
     rssObject.then(response => {
         const rssObj = response.body
         if (rssObj.status && rssObj.status.lastUpdateTime) {
@@ -163,7 +196,7 @@ app.get('/episodes', (req, res) => {
             })
         }
 
-        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes.get({ qs: { labelSelector: "rss=" + rss}})
+        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).episodes.get({ qs: { labelSelector: "rss=" + rss}})
         all.then(response => {
             var space = 0
             if(req.query.pretty === 'true'){
@@ -181,7 +214,7 @@ app.get('/episodes/one', (req, res) => {
     client.addCustomResourceDefinition(crd)
     const name = req.query.name
 
-    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').episodes(name).get()
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).episodes(name).get()
     all.then(response => {
         var space = 0
         if(req.query.pretty === 'true'){
@@ -198,17 +231,22 @@ app.get('/profiles', (req, res) => {
     client.addCustomResourceDefinition(crd)
     const name = req.query.name
 
+    var space = 0
+    if(req.query.pretty === 'true'){
+        space = 2
+    }
+
     try {
-        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+        const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name).get()
         all.then(response => {
-            var space = 0
-            if(req.query.pretty === 'true'){
-                space = 2
-            }
             res.end(JSON.stringify(response.body, undefined, space))
+        }).catch(err => {
+            console.error('Error: ', err)
+            res.send(JSON.stringify('{message:"error"}', undefined, space))
         })
     } catch (e) {
         console.error('Error: ', e)
+        res.send(JSON.stringify('{message:"error"}', undefined, space))
     }
 });
 
@@ -220,7 +258,7 @@ app.post('/profiles/create', (req, res) => {
     const name = req.query.name
 
     try {
-        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles.post({
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles.post({
             body: {
                 apiVersion: 'osf2f.my.domain/v1alpha1',
                 kind: 'Profile',
@@ -243,7 +281,7 @@ app.delete('/profile/playLater', (req, res) => {
     const client = new Client({version: '1.13'})
     client.addCustomResourceDefinition(crd)
 
-    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name).get()
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(req.query.name).get()
     profile.then(response => {
         var found = false
         targetProfile = response.body
@@ -262,7 +300,7 @@ app.delete('/profile/playLater', (req, res) => {
             }
         })
         if(found) {
-            client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name)
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(req.query.name)
                 .put({
                     body:targetProfile,
                 })
@@ -278,7 +316,7 @@ app.post('/profile/playLater', (req, res) => {
     const client = new Client({ version: '1.13' })
     client.addCustomResourceDefinition(crd)
 
-    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name).get()
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(req.query.name).get()
     profile.then(response => {
         var found = false
         targetProfile = response.body
@@ -300,7 +338,7 @@ app.post('/profile/playLater', (req, res) => {
                 name: req.query.episode
             })
 
-            client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(req.query.name)
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(req.query.name)
                 .put({
                     body:targetProfile,
                 })
@@ -319,7 +357,7 @@ app.post('/profile/playOver', (req, res) => {
     const name = req.query.name
     const episode = req.query.episode
 
-    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name).get()
     profile.then(response => {
         targetProfile = response.body
         targetProfile.spec.laterPlayList.forEach(function (item, index){
@@ -336,13 +374,85 @@ app.post('/profile/playOver', (req, res) => {
             }
         })
 
-        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name)
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name)
             .put({
                 body:targetProfile,
             })
     })
     res.status(200);
     res.end('ok')
+})
+
+app.post('/profile/notifier', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const crdNotifiers = require('./crds/notifiers.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    client.addCustomResourceDefinition(crdNotifiers)
+
+    const name = req.query.name
+    const url = req.query.url
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name).get()
+    profile.then(response => {
+        targetProfile = response.body
+        if (!targetProfile.spec.notifier) {
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).notifiers.post({
+                body: {
+                    apiVersion: 'osf2f.my.domain/v1alpha1',
+                    kind: 'Notifier',
+                    metadata: {
+                        generateName: name,
+                    },
+                    spec: {
+                        feishu: {
+                            webhook_url: url,
+                        },
+                    }
+                }
+            }).then(res => {
+                targetProfile.spec.notifier = {
+                    name: res.body.metadata.name,
+                }
+                client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name)
+                    .put({
+                        body: targetProfile,
+                    })
+            })
+        } else {
+            const notifierName = targetProfile.spec.notifier.name
+            const notifier = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).notifiers(notifierName).get()
+            notifier.then(notifierRes => {
+                const notifierObj = notifierRes.body
+                notifierObj.spec.feishu.webhook_url = url
+
+                client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).notifiers(notifierName)
+                    .put({
+                        body: notifierObj,
+                    })
+            })
+        }
+    })
+    res.status(200);
+    res.end('ok')
+})
+
+app.get('/notifiers/one', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/notifiers.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).notifiers(name).get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body, undefined, space))
+    })
 })
 
 app.post('/profile/social', (req, res) => {
@@ -355,7 +465,7 @@ app.post('/profile/social', (req, res) => {
     const kind = req.query.kind
     const account = req.query.account
 
-    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name).get()
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name).get()
     profile.then(response => {
         targetProfile = response.body
         if (!targetProfile.spec.socialLinks) {
@@ -363,13 +473,136 @@ app.post('/profile/social', (req, res) => {
         }
         targetProfile.spec.socialLinks[kind] = account
 
-        client.apis['osf2f.my.domain'].v1alpha1.namespaces('default').profiles(name)
+        client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(name)
             .put({
                 body:targetProfile,
             })
     })
     res.status(200);
     res.end('ok')
+})
+
+app.post('/subscribe', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const crdSub = require('./crds/subscriptions.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    client.addCustomResourceDefinition(crdSub)
+
+    const profileName = req.query.profile
+    const rss = req.query.rss
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(profileName).get()
+    profile.then(response => {
+        targetProfile = response.body
+        if (!targetProfile.spec.subscription) {
+            client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions.post({
+                body: {
+                    apiVersion: 'osf2f.my.domain/v1alpha1',
+                    kind: 'Subscription',
+                    metadata: {
+                        generateName: profileName,
+                    },
+                    spec: {
+                        rssList: [{
+                            name: rss,
+                        }],
+                    }
+                }
+            }).then(res => {
+                targetProfile.spec.subscription = {
+                    name: res.body.metadata.name,
+                }
+                client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(profileName)
+                    .put({
+                        body: targetProfile,
+                    })
+            })
+        } else {
+            const subName = targetProfile.spec.subscription.name
+            const sub = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName).get()
+            sub.then(subRes => {
+                subscription = subRes.body
+                if (subscription.spec.rssList) {
+                    subscription.spec.rssList.push({
+                        name: rss,
+                    })
+                } else {
+                    subscription.spec.rssList = [{
+                        name: rss,
+                    }]
+                }
+
+                client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName)
+                    .put({
+                        body:subscription,
+                    })
+            })
+        }
+    })
+    res.status(200);
+    res.end('ok')
+})
+
+app.post('/unsubscribe', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/profiles.json')
+    const crdSub = require('./crds/subscriptions.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    client.addCustomResourceDefinition(crdSub)
+
+    const profileName = req.query.profile
+    const rss = req.query.rss
+
+    profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(profileName).get()
+    profile.then(response => {
+        targetProfile = response.body
+        if (targetProfile.spec.subscription) {
+            const subName = targetProfile.spec.subscription.name
+            const sub = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName).get()
+            sub.then(subRes => {
+                subscription = subRes.body
+                if (subscription.spec.rssList) {
+                    let found = false
+                    subscription.spec.rssList.forEach(function (item, index){
+                        if(item.name === rss) {
+                            subscription.spec.rssList.splice(index, 1)
+                            found = true
+                            return false
+                        }
+                    })
+
+                    if (found) {
+                        client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName)
+                            .put({
+                                body:subscription,
+                            })
+                    }
+                }
+            })
+        }
+    })
+    res.status(200);
+    res.end('ok')
+})
+
+app.get('/subscriptions/one', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/subscriptions.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(name).get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body, undefined, space))
+    })
 })
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}

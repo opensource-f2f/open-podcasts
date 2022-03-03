@@ -34,6 +34,8 @@ type EventReconciler struct {
 }
 
 //+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch
+//+kubebuilder:rbac:groups=osf2f.my.domain,resources=profiles,verbs=list;get
+//+kubebuilder:rbac:groups=osf2f.my.domain,resources=subscriptions,verbs=list;get
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=notifiers,verbs=list;get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
@@ -54,22 +56,57 @@ func (r *EventReconciler) Reconcile(ctx context.Context, req ctrl.Request) (resu
 		return
 	}
 
-	notifiers := &v1alpha1.NotifierList{}
-	if err = r.Client.List(ctx, notifiers); err == nil {
-		for i := range notifiers.Items {
-			nofiter := notifiers.Items[i]
+	var notifiers []*v1alpha1.Notifier
+	if notifiers, err = r.getNotifierList(ctx, receiveEvent.InvolvedObject); err == nil {
+		for i := range notifiers {
+			notifier := notifiers[i]
 
-			if nofiter.Spec.Slack != nil {
-				err = nofiter.Spec.Slack.Send(receiveEvent.Message)
+			if notifier.Spec.Slack != nil {
+				err = notifier.Spec.Slack.Send(receiveEvent.Message)
 			}
 
-			if nofiter.Spec.Feishu != nil {
-				err = nofiter.Spec.Feishu.Send(receiveEvent.Message)
+			if notifier.Spec.Feishu != nil {
+				err = notifier.Spec.Feishu.Send(receiveEvent.Message)
 			}
 		}
 	} else {
 		// ignore if no notifier found
 		err = nil
+	}
+	return
+}
+
+func (r *EventReconciler) getNotifierList(ctx context.Context, objectRef v1.ObjectReference) (notifiers []*v1alpha1.Notifier, err error) {
+	profileList := &v1alpha1.ProfileList{}
+	if err = r.List(ctx, profileList); err != nil {
+		return
+	}
+
+	var notifierNames []v1.LocalObjectReference
+	for i := range profileList.Items {
+		profile := profileList.Items[i]
+
+		sub := profile.Spec.Subscription
+		if sub.Name == objectRef.Name {
+			notifierNames = append(notifierNames, sub)
+		}
+	}
+
+	// find all the notifiers, then filter the expected
+	notifierList := &v1alpha1.NotifierList{}
+	if err = r.Client.List(ctx, notifierList); err != nil {
+		return
+	}
+
+	for i := range notifierList.Items {
+		notifier := notifierList.Items[i]
+
+		for j := range notifierNames {
+			if notifierNames[j].Name == notifier.Name {
+				notifiers = append(notifiers, &notifier)
+				break
+			}
+		}
 	}
 	return
 }

@@ -28,6 +28,8 @@ type ProfileSpec struct {
 	SocialLinks   map[string]string         `json:"socialLinks,omitempty"`
 	LaterPlayList []PlayTodo                `json:"laterPlayList,omitempty"`
 	WatchedList   []v1.LocalObjectReference `json:"watchedList,omitempty"`
+	Notifier      v1.LocalObjectReference   `json:"notifier,omitempty"`
+	Subscription  v1.LocalObjectReference   `json:"subscription,omitempty"`
 }
 
 // PlayTodo represents a later play item
