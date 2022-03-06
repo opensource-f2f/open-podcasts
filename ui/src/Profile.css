@@ -26,3 +26,7 @@ img {
 .social-account-zone > div {
     margin-bottom: 5px;
 }
+
+.cuke-input-group-addon {
+    width: 80px;
+}

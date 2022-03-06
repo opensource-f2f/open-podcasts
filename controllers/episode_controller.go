@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -33,9 +35,12 @@ type EpisodeReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+const podcastTitle = "title.podcast"
+
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=episodes,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=episodes/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=episodes/finalizers,verbs=update
+//+kubebuilder:rbac:groups=osf2f.my.domain,resources=rsses,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -46,12 +51,39 @@ type EpisodeReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.11.0/pkg/reconcile
-func (r *EpisodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *EpisodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, err error) {
 	_ = log.FromContext(ctx)
+	episode := &osf2fv1alpha1.Episode{}
+	if err = r.Get(ctx, req.NamespacedName, episode); err != nil {
+		err = client.IgnoreNotFound(err)
+		return
+	}
 
-	// TODO(user): your logic here
+	var ownerRef v1.OwnerReference
+	if len(episode.OwnerReferences) > 0 {
+		ownerRef = episode.OwnerReferences[0]
+	} else {
+		return
+	}
 
-	return ctrl.Result{}, nil
+	rss := &osf2fv1alpha1.RSS{}
+	if err = r.Get(ctx, types.NamespacedName{
+		Namespace: req.Namespace,
+		Name:      ownerRef.Name,
+	}, rss); err != nil {
+		// TODO should remove the RSS or create an event for it?
+		return
+	}
+
+	title := episode.Annotations[podcastTitle]
+	if rss.Spec.Title != "" && rss.Spec.Title != title {
+		if episode.Annotations == nil {
+			episode.Annotations = map[string]string{}
+		}
+		episode.Annotations[podcastTitle] = rss.Spec.Title
+		err = r.Update(ctx, episode)
+	}
+	return
 }
 
 // SetupWithManager sets up the controller with the Manager.

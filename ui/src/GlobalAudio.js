@@ -67,7 +67,9 @@ class GlobalAudio extends Component {
         fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
-                comObject.loadPlayList(res.spec.laterPlayList)
+                if (res.spec && res.spec.laterPlayList) {
+                    comObject.loadPlayList(res.spec.laterPlayList)
+                }
             })
     }
 
@@ -120,6 +122,8 @@ class GlobalAudio extends Component {
                 preload: false,
                 onAudioEnded: this.onAudioEnded,
                 audioLists: this.state.playList,
+                remember: true,
+                autoPlay: false,
             }
             return (
                 <ReactJkMusicPlayer mode="full"

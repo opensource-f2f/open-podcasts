@@ -5,6 +5,7 @@ import avatar from './images/img_avatar.png'
 import Modal from 'react-modal'
 import GlobalAudio from './GlobalAudio'
 import Button from 'cuke-ui/lib/button';
+import Input from 'cuke-ui/lib/input';
 
 function createAudio(src, parent) {
     const source = $(document.createElement('source'))
@@ -60,9 +61,11 @@ class ProfileModal extends Component {
             isOpen: false,
             rssURL: "",
             rssName: "",
-            github: ""
+            github: "",
+            notifier: ""
         }
         this.removeEpisode = this.removeEpisode.bind(this);
+        this.notiferRef = React.createRef();
     }
 
     closeModal() {
@@ -105,12 +108,14 @@ class ProfileModal extends Component {
 
     reload(){
         this.getProfile(function (com, res){
-            com.setState({
-                laterPlayList: res.spec.laterPlayList
-            })
-            GlobalAudio.loadPlayList(res.spec.laterPlayList)
+            if (res.spec && res.spec.laterPlayList) {
+                com.setState({
+                    laterPlayList: res.spec.laterPlayList
+                })
+                GlobalAudio.loadPlayList(res.spec.laterPlayList)
+            }
 
-            if (res.spec.socialLinks) {
+            if (res.spec && res.spec.socialLinks) {
                 const github = res.spec.socialLinks["github"]
                 com.setState({
                     github: github
@@ -119,11 +124,25 @@ class ProfileModal extends Component {
                     $('#avatar').attr('src', 'https://avatars.githubusercontent.com/' + github)
                 }
             }
+
+            if (res.spec && res.spec.notifier) {
+                const notifier = res.spec.notifier.name
+                fetch('/notifiers/one?name=' + notifier)
+                    .then(res => res.json())
+                    .then(res => {
+                        com.setState({
+                            notifier: res.spec.feishu.webhook_url
+                        })
+                    })
+            }
         })
     }
 
     onOpen() {
         $('#social-account-github').val(this.state.github)
+        this.notiferRef.current.setState({
+            value: this.state.notifier,
+        })
         const profile = window.localStorage.getItem('profile')
         if (!profile) {
             $('#login-zone').show()
@@ -152,6 +171,24 @@ class ProfileModal extends Component {
             .then(() => (
                 this.setState({
                     github: currentValue
+                })
+            ))
+    }
+
+    setNotifier(currentValue) {
+        const oldValue = this.state.notifier
+        if (currentValue === oldValue) {
+            return
+        }
+        const profile = window.localStorage.getItem('profile')
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch('/profile/notifier?url=' + currentValue + '&name=' + profile, requestOptions)
+            .then(() => (
+                this.setState({
+                    notifier: currentValue
                 })
             ))
     }
@@ -285,6 +322,12 @@ class ProfileModal extends Component {
                     <div>
                         New RSS feed:<input onChange={(e) => this.setRSSURL(e)} id="new-rss-url" />
                         <Button type="primary" size="small" onClick={() => this.addRSS()}>Add</Button>
+                    </div>
+
+                    <div>
+                        <Input addonBefore="飞书" placeholder="请输入你的飞书机器人地址（webhook）"
+                               ref={this.notiferRef}
+                               onBlur={(e) => this.setNotifier(e.target.value)} />
                     </div>
 
                     <Button type="primary" size="small" onClick={this.downloadYAML}>Download YAML</Button>

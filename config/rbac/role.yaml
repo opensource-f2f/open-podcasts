@@ -98,3 +98,10 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - subscriptions
+  verbs:
+  - get
+  - list

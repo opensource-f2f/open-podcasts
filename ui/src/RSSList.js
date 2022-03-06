@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import $ from 'jquery'
 import './RSSList.css'
 import Episodes from "./Episodes"
 
@@ -42,6 +41,9 @@ class RSSList extends Component {
 
     loadEpisodes(name) {
         this.setState({rssName: name})
+        if (typeof this.props.goDetail === 'function') {
+            this.props.goDetail('detail', name)
+        }
     }
 
     render() {

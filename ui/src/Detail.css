@@ -1,0 +1,37 @@
+.rss-head {
+    text-align: center;
+}
+.rss-head > img {
+    margin-bottom: 5px;
+}
+.rss-head-title {
+    font-size: xx-large;
+}
+.rss-head-desc {
+    font-size: medium;
+}
+
+.rss-icon-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+.rss-icon-group > * {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.rss-icon {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+.rss-icon-svg {
+    display: block;
+    width: 0.625rem;
+    margin-right: 5px;
+}
+.cuke-switch {
+    width: 70px;
+}

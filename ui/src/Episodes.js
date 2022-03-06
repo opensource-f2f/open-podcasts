@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import './Episodes.css'
 import $ from 'jquery'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import Button from 'cuke-ui/lib/button';
 
 class AudioControlPanel extends Component {
@@ -109,7 +107,10 @@ class Episodes extends Component {
         fetch('/profiles?name=' + name)
             .then(res => res.json())
             .then(res => {
-                const laterPlayList = res.spec.laterPlayList
+                let laterPlayList = []
+                if (res.spec && res.spec.laterPlayList) {
+                    laterPlayList = res.spec.laterPlayList
+                }
                 this.fetchEpisodes(laterPlayList)
             })
     }
@@ -126,14 +127,22 @@ class Episodes extends Component {
         this.forceUpdate()
     }
 
+    goTo(rss, name) {
+        if (typeof this.props.goEpisode === 'function') {
+            this.props.goEpisode(rss, name)
+        }
+    }
+
     render() {
         const {episodes} = this.state
+        const rss = this.props.rss
         return (
             <div id="episodes">
                 {episodes.map((item, index) => (
-                    <div id={item.metadata.name} src="" key={index}>
-                        <span>{item.spec.title}</span><br/>
-                        <ReactMarkdown children={item.spec.summary} remarkPlugins={[remarkGfm]} />
+                    <div id={item.metadata.name} key={index} className="episode-item-in-list">
+                        <span onClick={() => this.goTo(rss, item.metadata.name)} className="episode-name">
+                            {item.spec.title}
+                        </span>
                         <Button type="primary" size="small" episode={item.metadata.name}
                                 onClick={() => this.listenNow(item.metadata.name)}>Listen</Button>
                         <LaterButton name={item.metadata.name} show={item.later}/>

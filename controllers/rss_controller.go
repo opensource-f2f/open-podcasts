@@ -84,7 +84,7 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 	}
 
 	rssObject.Spec.Title = feed.Title
-	rssObject.Spec.Description = feed.Description
+	rssObject.Spec.Description = strings.TrimSpace(strip.StripTags(feed.Description))
 	rssObject.Spec.Link = feed.Link
 	rssObject.Spec.Categories = feed.Categories
 	if feed.Image != nil {

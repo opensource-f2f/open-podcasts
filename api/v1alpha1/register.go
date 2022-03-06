@@ -6,5 +6,6 @@ func init() {
 		&RSS{}, &RSSList{},
 		&Profile{}, &ProfileList{},
 		&Notifier{}, &NotifierList{},
+		&Subscription{}, &SubscriptionList{},
 	)
 }
