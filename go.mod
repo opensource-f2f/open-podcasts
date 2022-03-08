@@ -3,7 +3,7 @@ module github.com/linuxsuren/open-podcasts
 go 1.17
 
 require (
-	github.com/SlyMarbo/rss v1.0.4-0.20220220181859-f6b6b2325f69
+	github.com/SlyMarbo/rss v1.0.4-0.20220308062855-de3fcdcd72ca
 	github.com/grokify/html-strip-tags-go v0.0.1
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0

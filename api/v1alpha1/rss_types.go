@@ -25,6 +25,7 @@ type RSSSpec struct {
 	// Title is the title of RSS
 	Title       string   `json:"title,omitempty"`
 	Language    string   `json:"language,omitempty"`
+	Author      string   `json:"author,omitempty"`
 	Address     string   `json:"address,omitempty"`
 	Image       string   `json:"image,omitempty"`
 	Link        string   `json:"link,omitempty"`

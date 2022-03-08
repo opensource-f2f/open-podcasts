@@ -90,8 +90,14 @@ class GlobalAudio extends Component {
                         source = '/stream' + source.replaceAll('https://', '/')
                     }
 
+                    let author
+                    if (item.metadata.annotations && item.metadata.annotations["title.podcast"]) {
+                        author = item.metadata.annotations["title.podcast"]
+                    }
+
                     audioList.push({
                         id: item.metadata.name,
+                        singer: author,
                         name: item.spec.title,
                         musicSrc: source,
                         cover: item.spec.coverImage,
