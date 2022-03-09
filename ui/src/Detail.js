@@ -91,11 +91,12 @@ class Detail extends Component {
         const rss = this.props.name
         let image = ''
         if (this.state.rss.spec) {
+            let language =""
             let lan = this.state.rss.spec.language
-            if (lan.length > 2) {
+            if (lan && lan.length > 2) {
                 lan = lan.replaceAll(lan.substring((lan.length - 2)), lan.substring((lan.length - 2)).toUpperCase())
+                lan = LocaleCode.default.getLanguageNativeName(lan)
             }
-            const language = LocaleCode.default.getLanguageNativeName(lan)
 
             image = (
                 <div className="rss-head">
@@ -115,6 +116,9 @@ class Detail extends Component {
                             </div>
                         </a>
                         <span>{language}</span>
+                        {this.state.rss.spec.categories.map((item, index) => (
+                            <span key={index}>{item}</span>
+                        ))}
                         <Switch checkedChildren="取消" unCheckedChildren="收藏" ref={this.switchRef}
                                 onChange={(e) => this.subscribe(e)} />
                     </div>
