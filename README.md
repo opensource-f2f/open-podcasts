@@ -13,9 +13,16 @@ Demo address: http://103.61.38.146:30001/
 
 ## Get started
 
-```shell
-k3d cluster create -p 30000:30000 -p 30001:30001 -p 30002:30002 -p 30003:30003
-```
+* 安装 Docker 环境
+* 安装 k3d，你可以通过官方给出的教程或者下面的命令 [hd](https://github.com/LinuxSuRen/http-downloader/) 来安装
+  * `hd install k3d`
+* 安装 k3s（简化版的 Kubernetes）
+  * `k3d cluster create -p 30000:30000 -p 30001:30001 -p 30002:30002 -p 30003:30003`
+* 安装本项目
+  * `make deploy`
+* 安装其他可选工具：`kubectl`、`k9s`
+  * `hd install kubectl`
+  * `hd install k9s`
 
 ## Create new API
 

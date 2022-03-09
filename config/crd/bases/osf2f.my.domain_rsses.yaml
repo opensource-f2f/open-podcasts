@@ -46,6 +46,8 @@ spec:
             properties:
               address:
                 type: string
+              author:
+                type: string
               categories:
                 items:
                   type: string

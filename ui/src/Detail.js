@@ -3,6 +3,7 @@ import Button from 'cuke-ui/lib/button';
 import Switch from 'cuke-ui/lib/switch';
 import Episodes from "./Episodes"
 import "./Detail.css"
+var  LocaleCode = require('locale-code')
 
 class Detail extends Component {
     constructor(props) {
@@ -90,6 +91,13 @@ class Detail extends Component {
         const rss = this.props.name
         let image = ''
         if (this.state.rss.spec) {
+            let language =""
+            let lan = this.state.rss.spec.language
+            if (lan && lan.length > 2) {
+                lan = lan.replaceAll(lan.substring((lan.length - 2)), lan.substring((lan.length - 2)).toUpperCase())
+                language = LocaleCode.default.getLanguageNativeName(lan)
+            }
+
             image = (
                 <div className="rss-head">
                     <div className="rss-head-title">
@@ -107,6 +115,10 @@ class Detail extends Component {
                                 <div>RSS</div>
                             </div>
                         </a>
+                        <span>{language}</span>
+                        {this.state.rss.spec.categories.map((item, index) => (
+                            <span key={index}>{item}</span>
+                        ))}
                         <Switch checkedChildren="取消" unCheckedChildren="收藏" ref={this.switchRef}
                                 onChange={(e) => this.subscribe(e)} />
                     </div>
