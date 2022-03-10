@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import $ from 'jquery'
 import './Profile.css'
-import avatar from './images/img_avatar.png'
+import avatar from '../images/img_avatar.png'
 import Modal from 'react-modal'
-import GlobalAudio from './GlobalAudio'
+import GlobalAudio from '../GlobalAudio'
 import Button from 'cuke-ui/lib/button';
 import Input from 'cuke-ui/lib/input';
 

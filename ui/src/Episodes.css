@@ -1,6 +1,7 @@
 #episodes > div {
-    border-style: solid;
+    border-bottom: 1px solid #e8e8e8;
     margin-top: 15px;
+    padding-top: 5px;
 }
 .episode-name {
     cursor: pointer;
