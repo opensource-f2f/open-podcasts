@@ -30,7 +30,8 @@ class PageController extends Component {
                 <Detail goHome={() => this.goPage('list')}
                         goEpisode={(rss, name) => this.goPage('episode', rss, name)} name={rss}/>
             )
-        } else if (page === 'list') {
+        } else
+            if (page === 'list') {
             return (
                 <RSSList goDetail={(page, rss) => this.goPage(page, rss)}/>
             )

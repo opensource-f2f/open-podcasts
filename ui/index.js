@@ -62,6 +62,34 @@ app.get('/rsses', (req, res) => {
     })
 })
 
+app.get('/rsses/search', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/rsses.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const category = req.query.category
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses.get()
+    all.then(response => {
+        let items = response.body.items
+        items = items.filter(function (val, index, arr) {
+            if (val.spec.categories) {
+                const result = val.spec.categories.filter(function (categoryName) {
+                    return category === categoryName
+                })
+                return result.length > 0
+            }
+            return false
+        })
+
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(items, undefined, space))
+    })
+})
+
 app.get('/rsses/one', (req, res) => {
     const Client = require('kubernetes-client').Client
     const crd = require('./crds/rsses.json')

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './RSSList.css'
 import Episodes from "./Episodes"
+import {Link} from "react-router-dom";
 
 class RSSItem extends Component {
     constructor(props) {
@@ -10,8 +11,9 @@ class RSSItem extends Component {
         if (this.props.image) {
             return (
                 <div rss={this.props.name}>
-                    <img width="150px" src={this.props.image} alt={this.props.name}
-                         onClick={() => this.props.loadEpisodes(this.props.name)}/>
+                    <Link to={"/rsses/" + this.props.name + "/episodes"}>
+                        <img width="150px" src={this.props.image} alt={this.props.name} />
+                    </Link>
                 </div>
             )
         }
@@ -60,8 +62,7 @@ class RSSList extends Component {
             <div>
                 <div id="rss_list">
                     {rsses.map((item, index) => (
-                        <RSSItem name={item.metadata.name} key={index} image={item.spec.image}
-                                 loadEpisodes={this.loadEpisodes}/>
+                        <RSSItem name={item.metadata.name} key={index} image={item.spec.image} />
                     ))}
                 </div>
                 {episodes}
