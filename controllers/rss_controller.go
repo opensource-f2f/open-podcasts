@@ -87,7 +87,7 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 	rssObject.Spec.Language = feed.Language
 	rssObject.Spec.Author = feed.Author
 	rssObject.Spec.Description = strings.TrimSpace(strip.StripTags(feed.Description))
-	rssObject.Spec.Link = feed.Link
+	rssObject.Spec.Link = getFixedLink(address, feed)
 	rssObject.Spec.Categories = feed.Categories
 	if feed.Image != nil {
 		if feed.Image.URL != "" {
@@ -110,6 +110,13 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 		}
 	}
 	return
+}
+
+func getFixedLink(source string, feed *rss.Feed) string {
+	if strings.HasPrefix(source, feed.Link) && strings.HasPrefix(source, "http://www.ximalaya.com") {
+		return strings.TrimSuffix(source, ".xml")
+	}
+	return feed.Link
 }
 
 func (r *RSSReconciler) updateRSS(newRSS *v1alpha1.RSS) (err error) {
