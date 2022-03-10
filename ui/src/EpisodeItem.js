@@ -37,17 +37,26 @@ class EpisodeItem extends Component {
 
     render() {
         let content = ''
+        let coverImage = ''
         if (this.state.object && this.state.object.spec) {
             content = (
                 <ReactMarkdown children={this.state.object.spec.summary} remarkPlugins={[remarkGfm]} />
             )
+            if (this.state.object.spec.coverImage) {
+                coverImage = (
+                    <img src={this.state.object.spec.coverImage} alt={this.state.object.metadata.name} width="200"/>
+                )
+            }
         }
         return (
             <div className="episode-item">
                 <Button type="primary" size="small" onClick={() => this.goHome()}>Go Home</Button>
                 <Button type="primary" size="small" onClick={() => this.goRSS(this.props.rss)}>Go Back</Button>
 
-                {content}
+                <div>
+                    {coverImage}
+                    {content}
+                </div>
             </div>
         )
     }

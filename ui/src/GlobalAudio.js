@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import ReactJkMusicPlayer from 'react-jinke-music-player'
 import 'react-jinke-music-player/assets/index.css'
 import $ from "jquery";
+import ReactAplayer from 'react-aplayer';
 
 class GlobalAudio extends Component {
     constructor(props) {
@@ -101,6 +102,11 @@ class GlobalAudio extends Component {
                         name: item.spec.title,
                         musicSrc: source,
                         cover: item.spec.coverImage,
+
+                        // for aplayer
+                        url: source,
+                        artist: author,
+                        theme: '#ebd0c2',
                     })
                 })
             }
@@ -118,6 +124,20 @@ class GlobalAudio extends Component {
         if (this.state.mode === "native") {
             return (
                 <div id="global-audio-zone" className="global-audio"></div>
+            )
+        } else if (this.state.mode === "aplayer" ) {
+            const props = {
+                theme: '#F57F17',
+                lrcType: 0,
+                audio: this.state.playList
+            };
+
+            return (
+                <div>
+                <ReactAplayer
+                    {...props}
+                />
+                </div>
             )
         } else {
             const clearPriorAudioLists = true

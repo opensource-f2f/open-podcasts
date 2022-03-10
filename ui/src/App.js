@@ -1,17 +1,23 @@
-import ForkMe from "./ForkMe";
-import Profile from "./Profile";
 import PageController from "./PageController";
-import BackTop from 'cuke-ui/lib/back-top';
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+import About from "./Pages/About"
+import Layout from "./Pages/Layout";
 
 function App() {
     return (
-        <div>
-            <Profile/>
-            <PageController/>
-            <ForkMe/>
-
-            <BackTop visibilityHeight={300} style={{right: 50,bottom: 100}} />
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout/>}>
+                    <Route index element={<PageController/>} />
+                </Route>
+                <Route path="/about" element={<About/>}/>
+            </Routes>
+        </BrowserRouter>
+        // <div>
+        //     <Profile/>
+        //     <PageController/>
+        //     <ForkMe/>
+        // </div>
     )
 }
 
