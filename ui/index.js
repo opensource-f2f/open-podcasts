@@ -75,7 +75,7 @@ app.get('/rsses/search', (req, res) => {
         items = items.filter(function (val, index, arr) {
             if (val.spec.categories) {
                 const result = val.spec.categories.filter(function (categoryName) {
-                    return category === categoryName
+                    return category.toLowerCase() === categoryName.toLowerCase()
                 })
                 return result.length > 0
             }
@@ -624,6 +624,23 @@ app.get('/subscriptions/one', (req, res) => {
     const name = req.query.name
 
     const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(name).get()
+    all.then(response => {
+        var space = 0
+        if(req.query.pretty === 'true'){
+            space = 2
+        }
+        res.end(JSON.stringify(response.body, undefined, space))
+    })
+})
+
+app.get('/categories', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/categories.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    const name = req.query.name
+
+    const all = client.apis['osf2f.my.domain'].v1alpha1.categories().get()
     all.then(response => {
         var space = 0
         if(req.query.pretty === 'true'){

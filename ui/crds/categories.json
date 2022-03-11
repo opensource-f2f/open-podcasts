@@ -6,31 +6,26 @@
       "controller-gen.kubebuilder.io/version": "v0.8.0"
     },
     "creationTimestamp": null,
-    "name": "rsses.osf2f.my.domain"
+    "name": "categories.osf2f.my.domain"
   },
   "spec": {
     "group": "osf2f.my.domain",
     "names": {
-      "kind": "RSS",
-      "listKind": "RSSList",
-      "plural": "rsses",
-      "singular": "rss"
+      "categories": [
+        "devops"
+      ],
+      "kind": "Category",
+      "listKind": "CategoryList",
+      "plural": "categories",
+      "singular": "category"
     },
-    "scope": "Namespaced",
+    "scope": "Cluster",
     "versions": [
       {
-        "additionalPrinterColumns": [
-          {
-            "description": "The title of an episode",
-            "jsonPath": ".spec.title",
-            "name": "Title",
-            "type": "string"
-          }
-        ],
         "name": "v1alpha1",
         "schema": {
           "openAPIV3Schema": {
-            "description": "RSS is the Schema for the rsses API",
+            "description": "Category is the Schema for the categories API",
             "properties": {
               "apiVersion": {
                 "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
@@ -44,38 +39,17 @@
                 "type": "object"
               },
               "spec": {
-                "description": "RSSSpec defines the desired state of RSS",
+                "description": "CategorySpec defines the desired state of Category",
                 "properties": {
-                  "address": {
-                    "type": "string"
-                  },
-                  "categories": {
-                    "items": {
-                      "type": "string"
-                    },
-                    "type": "array"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "image": {
-                    "type": "string"
-                  },
-                  "language": {
-                    "type": "string"
-                  },
-                  "link": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "description": "Title is the title of RSS",
+                  "foo": {
+                    "description": "Description is the description of Category",
                     "type": "string"
                   }
                 },
                 "type": "object"
               },
               "status": {
-                "description": "RSSStatus defines the observed state of RSS",
+                "description": "CategoryStatus defines the observed state of Category",
                 "properties": {
                   "lastUpdateTime": {
                     "format": "date-time",

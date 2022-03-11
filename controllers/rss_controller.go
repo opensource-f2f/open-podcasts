@@ -22,6 +22,7 @@ import (
 	"github.com/SlyMarbo/rss"
 	strip "github.com/grokify/html-strip-tags-go"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
@@ -63,6 +64,10 @@ func (r *RSSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result
 		return
 	}
 
+	if err = r.linkToCategory(rssObj); err != nil {
+		return
+	}
+
 	address := rssObj.Spec.Address
 	if address == "" {
 		result = ctrl.Result{RequeueAfter: time.Minute}
@@ -73,6 +78,60 @@ func (r *RSSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result
 
 	result, err = r.fetchByRSS(address, rssObj)
 	return
+}
+
+func (r *RSSReconciler) linkToCategory(rss *v1alpha1.RSS) (err error) {
+	ctx := context.Background()
+	categories := rss.Spec.Categories
+	if len(categories) == 0 {
+		return
+	}
+
+	for i := range categories {
+		categoryName := strings.ToLower(categories[i])
+		category := &v1alpha1.Category{}
+		category.SetName(categoryName)
+		AddOwnerReference(category, rss.TypeMeta, rss.ObjectMeta)
+
+		if err = r.Get(ctx, types.NamespacedName{Name: categoryName}, category); err != nil {
+			if errors.IsNotFound(err) {
+				// create it if is not found
+				err = r.Create(ctx, category)
+			} else {
+				return
+			}
+		} else {
+			AddOwnerReference(category, rss.TypeMeta, rss.ObjectMeta)
+			err = r.Update(ctx, category)
+		}
+	}
+	return
+}
+
+func AddOwnerReference(object metav1.Object, typeMeta metav1.TypeMeta, objectMeta metav1.ObjectMeta) {
+	SetOwnerReference(object, metav1.OwnerReference{
+		Kind:       typeMeta.Kind,
+		APIVersion: typeMeta.APIVersion,
+		Name:       objectMeta.Name,
+		UID:        objectMeta.UID,
+	})
+}
+
+func SetOwnerReference(object metav1.Object, ownerRef metav1.OwnerReference) {
+	allRefs := object.GetOwnerReferences()
+	if len(allRefs) == 0 {
+		object.SetOwnerReferences([]metav1.OwnerReference{ownerRef})
+	} else {
+		for i, ref := range allRefs {
+			if ref.Name == ownerRef.Name && ref.Kind == ownerRef.Kind &&
+				ref.APIVersion == ownerRef.APIVersion {
+				allRefs[i] = ownerRef
+				return
+			}
+		}
+
+		object.SetOwnerReferences(append(object.GetOwnerReferences(), ownerRef))
+	}
 }
 
 func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (result ctrl.Result, err error) {

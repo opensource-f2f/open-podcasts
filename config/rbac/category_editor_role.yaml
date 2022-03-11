@@ -1,0 +1,24 @@
+# permissions for end users to edit categories.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: category-editor-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - categories
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - categories/status
+  verbs:
+  - get

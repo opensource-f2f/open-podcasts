@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    name: BuildOnLinux
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Go 1.17
@@ -22,7 +21,6 @@ jobs:
           make all docker-build docker-build-ui
 
   ImageForBackend:
-    name: BuildOnLinux
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Go 1.17
@@ -37,7 +35,6 @@ jobs:
           make docker-build docker-build-ui
 
   ImageForFrontend:
-    name: BuildOnLinux
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Go 1.17

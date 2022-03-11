@@ -7,5 +7,6 @@ func init() {
 		&Profile{}, &ProfileList{},
 		&Notifier{}, &NotifierList{},
 		&Subscription{}, &SubscriptionList{},
+		&Category{}, &CategoryList{},
 	)
 }
