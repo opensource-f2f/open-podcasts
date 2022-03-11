@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import Button from 'cuke-ui/lib/button';
 import Switch from 'cuke-ui/lib/switch';
+import Tag from 'cuke-ui/lib/tag';
 import "./Detail.css"
 import {Router, Route, Link, useParams} from 'react-router-dom'
 import Episodes from "./Episodes";
@@ -121,7 +122,9 @@ class Detail extends Component {
                         </a>
                         {language}
                         {this.state.rss.spec.categories.map((item, index) => (
-                            <Link key={index} to={"/rsses/search?category=" + item}>{item}</Link>
+                            <Link key={index} to={"/rsses/search?category=" + item}>
+                                <Tag type="info">{item}</Tag>
+                            </Link>
                         ))}
                         <a href={this.state.rss.spec.link} target="_blank">
                             <div className="rss-icon">
