@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import Button from 'cuke-ui/lib/button';
 import Switch from 'cuke-ui/lib/switch';
-import Episodes from "./Episodes"
 import "./Detail.css"
-import { Router, Route, Link } from 'react-router-dom'
+import {Router, Route, Link, useParams} from 'react-router-dom'
+import Episodes from "./Episodes";
 var  LocaleCode = require('locale-code')
 
 class Detail extends Component {
@@ -144,7 +144,9 @@ class Detail extends Component {
 
         return (
             <div>
-                <Button type="primary" size="small" onClick={() => this.goTo()}>Go Home</Button>
+                <Link to="/">
+                    <Button type="primary" size="small">Go Home</Button>
+                </Link>
 
                 {image}
                 <Episodes rss={rss} goEpisode={(rss, name) => this.goTo(rss, name)} />
@@ -153,4 +155,7 @@ class Detail extends Component {
     }
 }
 
-export default Detail
+export default function () {
+    let { id } = useParams();
+    return <Detail name={id}/>;
+}
