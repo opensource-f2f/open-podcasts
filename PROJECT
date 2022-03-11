@@ -2,7 +2,7 @@ domain: my.domain
 layout:
 - go.kubebuilder.io/v3
 projectName: osf2f
-repo: github.com/linuxsuren/goplay/lab/osf2f
+repo: github.com/linuxsuren/open-podcasts
 resources:
 - api:
     crdVersion: v1
@@ -11,7 +11,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: RSS
-  path: github.com/linuxsuren/goplay/lab/osf2f/api/v1alpha1
+  path: github.com/linuxsuren/open-podcasts/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -20,7 +20,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: Episode
-  path: github.com/linuxsuren/goplay/lab/osf2f/api/v1alpha1
+  path: ggithub.com/linuxsuren/open-podcasts/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -29,6 +29,15 @@ resources:
   domain: my.domain
   group: osf2f
   kind: Profile
-  path: github.com/linuxsuren/goplay/lab/osf2f/api/v1alpha1
+  path: ggithub.com/linuxsuren/open-podcasts/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: my.domain
+  group: osf2f
+  kind: Category
+  path: github.com/linuxsuren/open-podcasts/api/v1alpha1
   version: v1alpha1
 version: "3"

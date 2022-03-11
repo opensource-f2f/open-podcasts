@@ -1,0 +1,7 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: Category
+metadata:
+  name: category-sample
+spec:
+  # Add fields here
+  foo: bar

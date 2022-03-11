@@ -1,0 +1,20 @@
+# permissions for end users to view categories.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: category-viewer-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - categories
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - categories/status
+  verbs:
+  - get

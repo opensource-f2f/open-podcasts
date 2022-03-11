@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import Episodes from "./Episodes";
 import Button from "cuke-ui/lib/button";
 import "./RSSByCategory.css"
+import Badge from "cuke-ui/lib/badge";
 
 class RSSItem extends Component {
     constructor(props) {
@@ -28,6 +29,7 @@ class RSSList extends Component {
         super(props);
         this.state = {
             rsses:[],
+            categories: [],
             rssName: "",
             category: "",
         };
@@ -37,6 +39,14 @@ class RSSList extends Component {
     componentDidMount() {
         const category = this.props.category
         this.loadRsses(category)
+
+        fetch('/categories')
+            .then(res => res.json())
+            .then(res => {
+                this.setState({
+                    categories: res.items,
+                })
+            })
     }
 
     loadRsses(category) {
@@ -76,6 +86,7 @@ class RSSList extends Component {
     render() {
         const rsses = this.state.rsses
         const name = this.state.rssName
+        const categories = this.state.categories
 
         let episodes
         if (name) {
@@ -88,13 +99,20 @@ class RSSList extends Component {
         if (this.props.category && this.props.category !== "") {
             filter = (
                 <Link to="/">
-                    <Button type="primary" size="small">Go Home</Button>
+                    <div><Button type="primary" size="small">Go Home</Button></div>
                 </Link>
             )
         }
         return (
             <div>
                 {filter}
+                {categories.map((item, index) => (
+                    <Badge count={item.metadata.ownerReferences.length} key={index}>
+                        <Link key={index} to={"/rsses/search?category=" + item.metadata.name}>
+                            <Button>{item.metadata.name}</Button>
+                        </Link>
+                    </Badge>
+                ))}
                 <div id="rss_list">
                     {rsses.map((item, index) => (
                         <RSSItem name={item.metadata.name} title={item.spec.title} key={index} image={item.spec.image}/>

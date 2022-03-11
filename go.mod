@@ -75,3 +75,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/SlyMarbo/rss v1.0.4-0.20220308062855-de3fcdcd72ca => github.com/LinuxSuRen/rss v1.0.4-rc.1
