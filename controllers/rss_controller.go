@@ -88,7 +88,7 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 	rssObject.Spec.Author = feed.Author
 	rssObject.Spec.Description = strings.TrimSpace(strip.StripTags(feed.Description))
 	rssObject.Spec.Link = getFixedLink(address, feed)
-	rssObject.Spec.Categories = feed.Categories
+	rssObject.Spec.Categories = removeDuplicateStr(feed.Categories)
 	if feed.Image != nil {
 		if feed.Image.URL != "" {
 			rssObject.Spec.Image = feed.Image.URL
@@ -110,6 +110,18 @@ func (r *RSSReconciler) fetchByRSS(address string, rssObject *v1alpha1.RSS) (res
 		}
 	}
 	return
+}
+
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }
 
 func getFixedLink(source string, feed *rss.Feed) string {

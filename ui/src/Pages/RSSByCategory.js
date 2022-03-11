@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import { useSearchParams, Link, NavLink } from 'react-router-dom';
-import Episodes from "../Episodes";
+import { useSearchParams, Link } from 'react-router-dom';
+import Episodes from "./Episodes";
 import Button from "cuke-ui/lib/button";
+import "./RSSByCategory.css"
+
 class RSSItem extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +15,7 @@ class RSSItem extends Component {
                     <Link to={"/rsses/" + this.props.name + "/episodes"}>
                         <img width="150px" src={this.props.image} alt={this.props.name} />
                     </Link>
+                    <div className="rss-title">{this.props.title}</div>
                 </div>
             )
         }
@@ -94,7 +97,7 @@ class RSSList extends Component {
                 {filter}
                 <div id="rss_list">
                     {rsses.map((item, index) => (
-                        <RSSItem name={item.metadata.name} key={index} image={item.spec.image}/>
+                        <RSSItem name={item.metadata.name} title={item.spec.title} key={index} image={item.spec.image}/>
                     ))}
                 </div>
                 {episodes}
