@@ -125,7 +125,7 @@ class ProfileModal extends Component {
                 }
             }
 
-            if (res.spec && res.spec.notifier) {
+            if (res.spec && res.spec.notifier && res.spec.notifier.name) {
                 const notifier = res.spec.notifier.name
                 fetch('/notifiers/one?name=' + notifier)
                     .then(res => res.json())

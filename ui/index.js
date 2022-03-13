@@ -16,6 +16,10 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     res.sendFile('build/index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
 });
 
+app.get('/healthz', (req, res) => {        //get requests to the root ("/") will route here
+    res.end('ok')
+});
+
 const https = require('follow-redirects').http
 app.get('/stream/*', (req, res) => {
     try {
@@ -480,6 +484,9 @@ app.get('/notifiers/one', (req, res) => {
             space = 2
         }
         res.end(JSON.stringify(response.body, undefined, space))
+    }).catch(err => {
+        console.error('Error: ', err)
+        res.send(JSON.stringify('{message:"error"}', undefined, space))
     })
 })
 
