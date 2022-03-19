@@ -12,6 +12,7 @@ function App() {
                 <Route path="/" element={<Layout/>}>
                     <Route index element={<RSSByCategory/>} />
                     <Route path="/rsses/search" element={<RSSByCategory/>} />
+                    <Route path="/rsses/subscription" element={<RSSByCategory/>} />
                     <Route path="/rsses/:id/episodes" element={<Detail/>} />
                     <Route path="/rsses/:rss/episodes/:episode" element={<EpisodeItem/>}/>
                 </Route>

@@ -94,6 +94,44 @@ app.get('/rsses/search', (req, res) => {
     })
 })
 
+app.get('/rsses/subscribed', (req, res) => {
+    const Client = require('kubernetes-client').Client
+    const crd = require('./crds/rsses.json')
+    const crdProfiles = require('./crds/profiles.json')
+    const crdSubscriptions = require('./crds/subscriptions.json')
+    const client = new Client({ version: '1.13' })
+    client.addCustomResourceDefinition(crd)
+    client.addCustomResourceDefinition(crdProfiles)
+    client.addCustomResourceDefinition(crdSubscriptions)
+    const profileName = req.query.profile
+    var space = 0
+    if(req.query.pretty === 'true'){
+        space = 2
+    }
+
+    const rsses = []
+    const all = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(profileName).get()
+    all.then(response => {
+        const profile = response.body
+        if (profile.spec && profile.spec.subscription && profile.spec.subscription.name) {
+            const subName = profile.spec.subscription.name
+            const subscription = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName).get()
+            subscription.then(async rsp => {
+                if (rsp.body.spec && rsp.body.spec.rssList) {
+                    for (let i = 0; i < rsp.body.spec.rssList.length; i++) {
+                        const item = rsp.body.spec.rssList[i]
+                        const rss = await client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).rsses(item.name).get()
+                        rsses.push(rss.body)
+                    }
+                    res.end(JSON.stringify(rsses, undefined, space))
+                }
+            })
+        } else {
+            res.end(JSON.stringify(rsses, undefined, space))
+        }
+    })
+})
+
 app.get('/rsses/one', (req, res) => {
     const Client = require('kubernetes-client').Client
     const crd = require('./crds/rsses.json')
