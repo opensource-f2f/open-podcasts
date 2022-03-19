@@ -17,16 +17,6 @@
       "matches": ["https://www.ximalaya.com/album/*"],
       "run_at": "document_idle",
       "js": ["ximalaya.js"]
-    },
-    {
-      "matches": ["https://www.meijutt.tv/*"],
-      "run_at": "document_idle",
-      "js": ["pure-meijutt.js"]
-    },
-    {
-      "matches": ["https://github.com/*/*/pull/*/files"],
-      "run_at": "document_idle",
-      "js": ["github.js"]
     }
   ]
 }

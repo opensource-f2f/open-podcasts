@@ -531,7 +531,7 @@ app.post('/subscribe', (req, res) => {
     profile = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).profiles(profileName).get()
     profile.then(response => {
         targetProfile = response.body
-        if (!targetProfile.spec.subscription) {
+        if (!targetProfile.spec.subscription || !targetProfile.spec.subscription.name) {
             client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions.post({
                 body: {
                     apiVersion: 'osf2f.my.domain/v1alpha1',
@@ -559,6 +559,7 @@ app.post('/subscribe', (req, res) => {
             const sub = client.apis['osf2f.my.domain'].v1alpha1.namespaces(defaultNamespace).subscriptions(subName).get()
             sub.then(subRes => {
                 subscription = subRes.body
+                console.log(subscription + "-----" + subName)
                 if (subscription.spec.rssList) {
                     subscription.spec.rssList.push({
                         name: rss,
