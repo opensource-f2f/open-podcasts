@@ -22,6 +22,8 @@ jobs:
           docker login ghcr.io/linuxsuren -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
       - name: Publish Backend Image
         run: |
+          echo $GOPROXY
+          export GOPROXY=''
           IMG=ghcr.io/linuxsuren/open-podcasts:${{ github.ref_name }} make docker-build docker-push
       - name: Publish UI Image
         run: |
