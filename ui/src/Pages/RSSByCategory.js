@@ -38,7 +38,8 @@ class RSSList extends Component {
 
     componentDidMount() {
         const category = this.props.category
-        this.loadRsses(category)
+        const profile = this.props.profile
+        this.loadRsses(category, profile)
 
         fetch('/categories')
             .then(res => res.json())
@@ -49,15 +50,25 @@ class RSSList extends Component {
             })
     }
 
-    loadRsses(category) {
+    loadRsses(category, profile) {
         if (!category || category === "") {
-            fetch('/rsses')
-                .then(res => res.json())
-                .then(res => {
-                    this.setState({
-                        rsses: res,
+            if (!profile || profile === "") {
+                fetch('/rsses')
+                    .then(res => res.json())
+                    .then(res => {
+                        this.setState({
+                            rsses: res,
+                        })
                     })
-                })
+            } else {
+                fetch('/rsses/subscribed?profile=' + profile)
+                    .then(res => res.json())
+                    .then(res => {
+                        this.setState({
+                            rsses: res,
+                        })
+                    })
+            }
         } else {
             fetch('/rsses/search?category=' + category)
                 .then(res => res.json())
@@ -70,8 +81,8 @@ class RSSList extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        if (nextProps.category !== this.props.category) {
-            this.loadRsses(nextProps.category)
+        if (nextProps.category !== this.props.category || nextProps.profile !== this.props.profile) {
+            this.loadRsses(nextProps.category, nextProps.profile)
         }
         return true
     }
@@ -88,6 +99,16 @@ class RSSList extends Component {
         const name = this.state.rssName
         const categories = this.state.categories
 
+        let mySubscripted
+        const profileName = localStorage.getItem('profile')
+        if (profileName) {
+            mySubscripted = (
+                <Link to={"/rsses/subscription?profile=" + profileName}>
+                    <Button type="primary" size="small">My Subscriptions</Button>
+                </Link>
+            )
+        }
+
         let episodes
         if (name) {
             episodes = (
@@ -99,13 +120,16 @@ class RSSList extends Component {
         if (this.props.category && this.props.category !== "") {
             filter = (
                 <Link to="/">
-                    <div><Button type="primary" size="small">Go Home</Button></div>
+                    <Button type="primary" size="small">Go Home</Button>
                 </Link>
             )
         }
         return (
             <div>
-                {filter}
+                <div>
+                    {mySubscripted}
+                    {filter}
+                </div>
                 {categories.map((item, index) => (
                     <Badge count={item.metadata.ownerReferences.length} key={index}>
                         <Link key={index} to={"/rsses/search?category=" + item.metadata.name}>
@@ -127,9 +151,10 @@ class RSSList extends Component {
 const RSSByCategory = () => {
     const [searchParams] = useSearchParams();
     const category = searchParams.get("category")
+    const profile = searchParams.get("profile")
 
     return (
-        <RSSList category={category}/>
+        <RSSList category={category} profile={profile}/>
     )
 }
 export default RSSByCategory
