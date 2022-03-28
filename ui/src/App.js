@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { HashRouter, Routes, Route} from "react-router-dom";
 import About from "./Pages/About"
 import Layout from "./Pages/Layout";
 import RSSByCategory from "./Pages/RSSByCategory";
@@ -7,7 +7,7 @@ import EpisodeItem from "./Pages/EpisodeItem";
 
 function App() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path="/" element={<Layout/>}>
                     <Route index element={<RSSByCategory/>} />
@@ -18,7 +18,7 @@ function App() {
                 </Route>
                 <Route path="/about" element={<About/>}/>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 
