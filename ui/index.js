@@ -4,7 +4,7 @@ const express = require('express');
 const { http: https } = require('follow-redirects');
 const { toXML } = require("to-xml");
 const YAML = require('yaml');
-const compare = require('compare')
+const compare = require('./compare')
 
 const crdCategories = require('./crds/categories.json')
 const crdEpisodes = require('./crds/episodes.json')
