@@ -4,6 +4,7 @@ const express = require('express');
 const { http: https } = require('follow-redirects');
 const { toXML } = require("to-xml");
 const YAML = require('yaml');
+const compare = require('./compare.js')
 
 const crdCategories = require('./crds/categories.json')
 const crdEpisodes = require('./crds/episodes.json')
@@ -305,7 +306,7 @@ app.get('/episodes', (req, res) => {
                     if (req.query.pretty === 'true') {
                         space = 2
                     }
-                    res.end(JSON.stringify(response.body.items, undefined, space))
+                    res.end(JSON.stringify(response.body.items.sort(compare.compareRevert), undefined, space))
                 })
         })
 });

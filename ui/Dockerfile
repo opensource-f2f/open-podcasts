@@ -6,7 +6,7 @@ COPY crds ./crds
 COPY public ./public
 COPY src ./src
 COPY static ./static
-COPY package.json index.js ./
+COPY package.json index.js compare.js ./
 
 RUN npm install
 RUN npm run build
