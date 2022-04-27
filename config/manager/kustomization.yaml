@@ -14,8 +14,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: ghcr.io/linuxsuren/open-podcasts
+  newName: ghcr.io/opensource-f2f/open-podcasts
   newTag: master
 - name: osf2f-ui
-  newName: ghcr.io/linuxsuren/open-podcasts-ui
+  newName: ghcr.io/opensource-f2f/open-podcasts-ui
   newTag: master

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/linuxsuren/open-podcasts/cli/cmd"
+	"github.com/opensource-f2f/open-podcasts/cli/cmd"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= ghcr.io/linuxsuren/open-podcasts:master
-IMG-UI ?= ghcr.io/linuxsuren/open-podcasts-ui:master
+IMG ?= ghcr.io/opensource-f2f/open-podcasts:master
+IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:master
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
 

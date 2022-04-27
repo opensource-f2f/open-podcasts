@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	osf2fv1alpha1 "github.com/linuxsuren/open-podcasts/api/v1alpha1"
+	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/api/v1alpha1"
 	//+kubebuilder:scaffold:imports
 )
 

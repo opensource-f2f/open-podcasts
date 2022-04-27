@@ -31,8 +31,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	osf2fv1alpha1 "github.com/linuxsuren/open-podcasts/api/v1alpha1"
-	"github.com/linuxsuren/open-podcasts/controllers"
+	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/api/v1alpha1"
+	"github.com/opensource-f2f/open-podcasts/controllers"
 	//+kubebuilder:scaffold:imports
 )
 

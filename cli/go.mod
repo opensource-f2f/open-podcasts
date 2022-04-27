@@ -1,4 +1,4 @@
-module github.com/linuxsuren/open-podcasts/cli
+module github.com/opensource-f2f/open-podcasts/cli
 
 go 1.16
 

@@ -1,5 +1,5 @@
 FROM node:16.14 as builder
-LABEL org.opencontainers.image.source=https://github.com/linuxsuren/open-podcasts
+LABEL org.opencontainers.image.source=https://github.com/opensource-f2f/open-podcasts
 WORKDIR /usr/src/app
 
 COPY crds ./crds
