@@ -23,7 +23,7 @@ spec:
         app: osf2f-ui
     spec:
       containers:
-        - image: ghcr.io/linuxsuren/goplay:osf2f-ui-dev
+        - image: ghcr.io/opensource-f2f/goplay:osf2f-ui-dev
           imagePullPolicy: IfNotPresent
           name: osf2f-ui
           resources: {}

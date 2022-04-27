@@ -3,7 +3,7 @@
   "name": "Open Podcasts",
   "description": "Open Podcasts",
   "version": "0.0.1",
-  "homepage_url": "https://github.com/LinuxSuRen/open-podcasts",
+  "homepage_url": "https://github.com/opensource-f2f/open-podcasts",
   "permissions": [
     "unlimitedStorage",
     "notifications",

@@ -1,4 +1,4 @@
-module github.com/linuxsuren/open-podcasts
+module github.com/opensource-f2f/open-podcasts
 
 go 1.17
 
