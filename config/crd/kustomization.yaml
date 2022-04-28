@@ -7,6 +7,7 @@ resources:
 - bases/osf2f.my.domain_profiles.yaml
 - bases/osf2f.my.domain_notifiers.yaml
 - bases/osf2f.my.domain_categories.yaml
+- bases/osf2f.my.domain_subscriptions.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

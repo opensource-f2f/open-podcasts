@@ -33,10 +33,10 @@ type EventReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch
+//+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch;create;update;patch
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=profiles,verbs=list;get
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=subscriptions,verbs=list;get
-//+kubebuilder:rbac:groups=osf2f.my.domain,resources=notifiers,verbs=list;get
+//+kubebuilder:rbac:groups=osf2f.my.domain,resources=notifiers,verbs=list;get;watch
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
