@@ -668,7 +668,7 @@ app.post('/subscribe', (req, res) => {
         .get()
         .then(response => {
             targetProfile = response.body
-            if (!targetProfile.spec.subscription || !targetProfile.spec.subscription.name) {
+            if (!targetProfile.spec || !targetProfile.spec.subscription || !targetProfile.spec.subscription.name) {
                 client
                     .apis['osf2f.my.domain']
                     .v1alpha1
@@ -688,6 +688,9 @@ app.post('/subscribe', (req, res) => {
                             }
                         }
                     }).then(res => {
+                        if (!targetProfile.spec) {
+                            targetProfile.spec = {}
+                        }
                         targetProfile.spec.subscription = {
                             name: res.body.metadata.name,
                         }
