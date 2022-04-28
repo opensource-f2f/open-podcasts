@@ -141,6 +141,7 @@ class Episodes extends Component {
             <div id="episodes">
                 {episodes.map((item, index) => (
                     <div id={item.metadata.name} key={index} className="episode-item-in-list">
+                        {item.spec.date}
                         <Link to={"/rsses/" + rss + "/episodes/" + item.metadata.name}>
                             <span className="episode-name">
                                 {item.spec.title}

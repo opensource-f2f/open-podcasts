@@ -1,7 +1,16 @@
+#episodes {
+    margin-bottom: 80px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
 #episodes > div {
     border-bottom: 1px solid #e8e8e8;
     margin-top: 15px;
     padding-top: 5px;
+}
+#episodes > div > button {
+    margin-left: 100px;
 }
 .episode-name {
     cursor: pointer;
