@@ -47,6 +47,7 @@ type ProfileStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
+// +genclient
 // +kubebuilder:printcolumn:name="DisplayName",type=string,JSONPath=`.spec.displayName`,description="The displayName of a profile"
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
