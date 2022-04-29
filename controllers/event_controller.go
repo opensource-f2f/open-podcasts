@@ -18,7 +18,7 @@ package controllers
 
 import (
 	"context"
-	"github.com/opensource-f2f/open-podcasts/api/v1alpha1"
+	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"

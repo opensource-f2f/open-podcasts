@@ -20,44 +20,44 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EpisodeSpec defines the desired state of Episode
-type EpisodeSpec struct {
-	Title       string `json:"title,omitempty"`
-	Summary     string `json:"summary,omitempty"`
-	Content     string `json:"content,omitempty"`
-	CoverImage  string `json:"coverImage,omitempty"`
-	AudioSource string `json:"audioSource,omitempty"`
-	AudioType   string `json:"audioType,omitempty"`
-	AudioLength uint   `json:"audioLength,omitempty"`
-	// Link is the link of Episode. Edit episode_types.go to remove/update
-	Link string      `json:"link,omitempty"`
-	Date metav1.Time `json:"date,omitempty"`
+// RSSSpec defines the desired state of RSS
+type RSSSpec struct {
+	// Title is the title of RSS
+	Title       string   `json:"title,omitempty"`
+	Language    string   `json:"language,omitempty"`
+	Author      string   `json:"author,omitempty"`
+	Address     string   `json:"address,omitempty"`
+	Image       string   `json:"image,omitempty"`
+	Link        string   `json:"link,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Categories  []string `json:"categories,omitempty"`
 }
 
-// EpisodeStatus defines the observed state of Episode
-type EpisodeStatus struct {
-	Hints          int64       `json:"hints,omitempty"`
+// RSSStatus defines the observed state of RSS
+type RSSStatus struct {
 	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
 }
 
+// +genclient
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`,description="The title of an episode"
+//+kubebuilder:printcolumn:name="LastUpdate",type=date,JSONPath=`.status.lastUpdateTime`,description="Last update time"
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// Episode is the Schema for the episodes API
-type Episode struct {
+// RSS is the Schema for the rsses API
+type RSS struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   EpisodeSpec   `json:"spec,omitempty"`
-	Status EpisodeStatus `json:"status,omitempty"`
+	Spec   RSSSpec   `json:"spec,omitempty"`
+	Status RSSStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// EpisodeList contains a list of Episode
-type EpisodeList struct {
+// RSSList contains a list of RSS
+type RSSList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Episode `json:"items"`
+	Items           []RSS `json:"items"`
 }

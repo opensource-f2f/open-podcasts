@@ -17,32 +17,39 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// SubscriptionSpec defines the desired state of Profile
-type SubscriptionSpec struct {
-	RSSList []v1.LocalObjectReference `json:"rssList,omitempty"`
+// CategorySpec defines the desired state of Category
+type CategorySpec struct {
+	// Description is the description of Category
+	Description string `json:"foo,omitempty"`
 }
 
+// CategoryStatus defines the observed state of Category
+type CategoryStatus struct {
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
+}
+
+// +genclient
 //+kubebuilder:object:root=true
+//+kubebuilder:resource:categories="devops",scope="Cluster"
 //+kubebuilder:subresource:status
 
-// Subscription is the Schema for the subscriptions API
-type Subscription struct {
+// Category is the Schema for the categories API
+type Category struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   SubscriptionSpec `json:"spec,omitempty"`
-	Status ProfileStatus    `json:"status,omitempty"`
+	Spec   CategorySpec   `json:"spec,omitempty"`
+	Status CategoryStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// SubscriptionList contains a list of Subscription
-type SubscriptionList struct {
+// CategoryList contains a list of Category
+type CategoryList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Subscription `json:"items"`
+	Items           []Category `json:"items"`
 }
