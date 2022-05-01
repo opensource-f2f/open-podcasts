@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import "./EpisodeItem.css"
 import {Link, useParams} from "react-router-dom";
+import authHeaders from "../Service/request"
 
 class EpisodeItem extends Component {
     constructor(props) {
@@ -27,7 +28,7 @@ class EpisodeItem extends Component {
 
     componentDidMount() {
         const name = this.props.name
-        fetch('/episodes/one?name=' + name)
+        fetch('/episodes/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({

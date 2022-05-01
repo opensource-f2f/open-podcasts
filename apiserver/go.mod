@@ -6,7 +6,9 @@ require (
 	github.com/emicklei/go-restful-openapi/v2 v2.8.0
 	github.com/emicklei/go-restful/v3 v3.7.4
 	github.com/golang-jwt/jwt/v4 v4.4.1
-	github.com/opensource-f2f/open-podcasts v0.0.8-0.20220429132018-419591bd4093
+	github.com/opensource-f2f/open-podcasts v0.0.8-0.20220429140423-1c7043ea741a
+	github.com/stretchr/testify v1.7.0
+	k8s.io/apimachinery v0.23.5
 	k8s.io/client-go v0.23.5
 )
 
@@ -30,6 +32,7 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
@@ -43,9 +46,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	k8s.io/api v0.23.5 // indirect
-	k8s.io/apimachinery v0.23.5 // indirect
 	k8s.io/klog/v2 v2.30.0 // indirect
-	k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65 // indirect
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
 	sigs.k8s.io/controller-runtime v0.11.0 // indirect
 	sigs.k8s.io/json v0.0.0-20211020170558-c049b76a60c6 // indirect

@@ -6,6 +6,7 @@ import Modal from 'react-modal'
 import GlobalAudio from './GlobalAudio'
 import Button from 'cuke-ui/lib/button';
 import Input from 'cuke-ui/lib/input';
+import authHeaders from "../Service/request"
 
 function createAudio(src, parent) {
     const source = $(document.createElement('source'))
@@ -20,7 +21,7 @@ function createAudio(src, parent) {
 }
 
 function playEpisode(episdoe, callback) {
-    $.getJSON('/episodes/one?name=' + episdoe, function (item){
+    $.getJSON('/episodes/' + episdoe, function (item){
         let source = item.spec.audioSource
         const proxy = localStorage.getItem('proxy')
         if (proxy === 'true') {
@@ -73,13 +74,11 @@ class ProfileModal extends Component {
     }
 
     addRSS() {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        const requestOptions = authHeaders('POST')
+        requestOptions.headers['Content-Type'] = 'application/json'
+        requestOptions.body = JSON.stringify({
                 address: this.state.rssURL
             })
-        };
         fetch('/rsses', requestOptions).then(() => {
             $('#new-rss-url').val('')
             alert('success')
@@ -97,7 +96,7 @@ class ProfileModal extends Component {
             return
         }
         const profileObj = this
-        fetch('/profiles?name=' + name)
+        fetch('/profiles/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 if (callback instanceof Function) {
@@ -127,7 +126,7 @@ class ProfileModal extends Component {
 
             if (res.spec && res.spec.notifier && res.spec.notifier.name) {
                 const notifier = res.spec.notifier.name
-                fetch('/notifiers/one?name=' + notifier)
+                fetch('/notifiers/one?name=' + notifier, authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         com.setState({
@@ -163,11 +162,7 @@ class ProfileModal extends Component {
             return
         }
         const profile = window.localStorage.getItem('profile')
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        };
-        fetch('/profile/social?kind=github&account=' + currentValue + '&name=' + profile, requestOptions)
+        fetch('/profile/social?kind=github&account=' + currentValue + '&name=' + profile, authHeaders('POST'))
             .then(() => (
                 this.setState({
                     github: currentValue
@@ -181,11 +176,7 @@ class ProfileModal extends Component {
             return
         }
         const profile = window.localStorage.getItem('profile')
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        };
-        fetch('/profile/notifier?url=' + currentValue + '&name=' + profile, requestOptions)
+        fetch('/profile/notifier?url=' + currentValue + '&name=' + profile, authHeaders('POST'))
             .then(() => (
                 this.setState({
                     notifier: currentValue
@@ -194,12 +185,9 @@ class ProfileModal extends Component {
     }
 
     removeEpisode(episode) {
-        const requestOptions = {
-            method: 'DELETE',
-        };
         const profileCom = this
         const name = localStorage.getItem('profile')
-        fetch('/profile/playLater?name=' + name + '&episode=' + episode, requestOptions)
+        fetch('/profile/playLater?name=' + name + '&episode=' + episode, authHeaders('DELETE'))
             .then(res => {
                 $('button[action="later"][episode="' + episode + '"]').remove()
                 profileCom.reload()
@@ -238,21 +226,21 @@ class ProfileModal extends Component {
 
     register() {
         const name = $('#login-name').val()
-        $.post('/profiles/create?name=' + name, function (){
+        fetch('/profiles?name=' + name, authHeaders('POST')).then(() => {
             window.location.reload()
         })
     }
 
     login() {
         const name = $('#login-name').val()
-        $.get('/profiles?name=' + name, function (){
+        fetch('/profiles/' + name).then(() => {
             localStorage.setItem('profile', $('#login-name').val())
             window.location.reload()
         })
     }
 
     downloadYAML() {
-        fetch('/rsses/export').then((rsp) => {
+        fetch('/rsses/export', authHeaders()).then((rsp) => {
             const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
             rsp.blob().then(blob => {
                 let blobUrl = window.URL.createObjectURL(blob);
@@ -266,7 +254,7 @@ class ProfileModal extends Component {
     }
 
     downloadOMPL() {
-        fetch('/rsses/opml/export').then((rsp) => {
+        fetch('/rsses/opml/export', authHeaders()).then((rsp) => {
             const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
             rsp.blob().then(blob => {
                 let blobUrl = window.URL.createObjectURL(blob);

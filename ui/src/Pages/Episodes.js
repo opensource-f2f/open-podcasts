@@ -3,6 +3,7 @@ import './Episodes.css'
 import $ from 'jquery'
 import Button from 'cuke-ui/lib/button';
 import {Link} from "react-router-dom";
+import authHeaders from "../Service/request"
 
 class AudioControlPanel extends Component {
     constructor(props) {
@@ -13,11 +14,8 @@ class AudioControlPanel extends Component {
     }
 
     playOver(episode) {
-        const requestOptions = {
-            method: 'POST',
-        };
         const name = localStorage.getItem('profile')
-        fetch('/profile/playOver?name=' + name + '&episode=' + episode, requestOptions)
+        fetch('/profile/playOver?name=' + name + '&episode=' + episode, authHeaders("POST"))
             .then(res => {
                 $('#profiles').trigger('reload')
             })
@@ -48,11 +46,8 @@ class LaterButton extends Component {
     }
 
     listenLater(episode) {
-        const requestOptions = {
-            method: 'POST',
-        };
         const name = localStorage.getItem('profile')
-        fetch('/profile/playLater?name=' + name + '&episode=' + episode, requestOptions)
+        fetch('/profile/playLater?name=' + name + '&episode=' + episode, authHeaders("POST"))
             .then(res => {
                 $('button[action="later"][episode="' + episode + '"]').remove()
 
@@ -81,7 +76,7 @@ class Episodes extends Component {
         const name = localStorage.getItem('profile')
         const hasProfile = (name !== "" && name != null)
 
-        fetch('/episodes?rss=' + this.props.rss)
+        fetch('/episodes?rss=' + this.props.rss, authHeaders())
             .then(res => res.json())
             .then(res => {
                 for (var i = 0; i < res.length; i++) {
@@ -105,7 +100,7 @@ class Episodes extends Component {
             this.fetchEpisodes([])
             return
         }
-        fetch('/profiles?name=' + name)
+        fetch('/profiles/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 let laterPlayList = []

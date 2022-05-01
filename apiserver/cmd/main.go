@@ -5,13 +5,24 @@ import (
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/apiserver/server/filter"
 	"github.com/opensource-f2f/open-podcasts/apiserver/server/handler"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/user"
 	"log"
 	"net/http"
 )
 
 func main() {
 	rss := &handler.RSS{}
+	category := &handler.Category{}
+	episode := &handler.Episode{}
+	profile := &handler.Profile{}
+	subscription := &handler.Subscription{}
+	userws := &user.User{}
 	restful.DefaultContainer.Add(rss.WebService())
+	restful.DefaultContainer.Add(category.WebService())
+	restful.DefaultContainer.Add(episode.WebService())
+	restful.DefaultContainer.Add(profile.WebService())
+	restful.DefaultContainer.Add(subscription.WebService())
+	restful.DefaultContainer.Add(userws.WebService())
 
 	setupFilter(restful.RegisteredWebServices())
 
@@ -21,8 +32,8 @@ func main() {
 	}
 	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(config))
 
-	log.Printf("start listening on localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("start listening on localhost:8000")
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
 func setupFilter(wss []*restful.WebService) {
