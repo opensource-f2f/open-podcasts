@@ -14,14 +14,24 @@ import (
 const ns = "default"
 
 type RSS struct {
+	pathParam          *restful.Parameter
+	queryCategoryParam *restful.Parameter
 }
 
 func (r RSS) WebService() (ws *restful.WebService) {
 	ws = new(restful.WebService)
 	ws.Path("/rsses")
 
+	r.pathParam = restful.PathParameter("rss", "rss id")
+	r.queryCategoryParam = restful.QueryParameter("category", "The category of RSSes")
+
 	ws.Route(ws.GET("/").
+		Param(r.queryCategoryParam).
 		To(r.findAll).
+		Returns(http.StatusOK, "OK", []RSS{}))
+	ws.Route(ws.GET("/{rss}").
+		Param(r.pathParam).
+		To(r.findOne).
 		Returns(http.StatusOK, "OK", []RSS{}))
 	return
 }
@@ -34,9 +44,31 @@ func (r RSS) findAll(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	//scheme.AddToScheme(clientsetscheme.Scheme)
-	rssList, err := clientset.MyV1alpha1().RSSs(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := clientset.MyV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
 
-	data, err := json.Marshal(rssList)
+	var filter rssFilter
+	if categoryQuery := request.QueryParameter(r.queryCategoryParam.Data().Name); categoryQuery != "" {
+		filter = &rssCategoryFilter{keyword: categoryQuery}
+	} else {
+		filter = &rssNonFilter{}
+	}
+
+	data, err := json.Marshal(filter.filter(rssList.Items))
+	response.Write(data)
+}
+
+func (r RSS) findOne(request *restful.Request, response *restful.Response) {
+	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	name := request.PathParameter(r.pathParam.Data().Name)
+
+	ctx := context.Background()
+	clientset, err := client.NewForConfig(config)
+	rss, err := clientset.MyV1alpha1().RSSes(ns).Get(ctx, name, metav1.GetOptions{})
+
+	data, err := json.Marshal(rss)
 	response.Write(data)
 }

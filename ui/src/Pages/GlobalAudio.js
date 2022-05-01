@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from 'react-dom'
 import ReactJkMusicPlayer from 'react-jinke-music-player'
 import 'react-jinke-music-player/assets/index.css'
+import authHeaders from "../Service/request"
 import $ from "jquery";
 
 class GlobalAudio extends Component {
@@ -68,7 +69,7 @@ class GlobalAudio extends Component {
             return
         }
         const comObject = this
-        fetch('/profiles?name=' + name)
+        fetch('/profiles/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 if (res.spec && res.spec.laterPlayList) {
@@ -87,7 +88,7 @@ class GlobalAudio extends Component {
             for (let i = 0; i < laterPlayList.length; i++) {
                 const episode =  laterPlayList[i]
 
-                await $.getJSON('/episodes/one?name=' + episode.name, function (item) {
+                await $.getJSON('/episodes/' + episode.name, function (item) {
                     let source = item.spec.audioSource
                     const proxy = localStorage.getItem('proxy')
                     if (proxy === 'true') {
