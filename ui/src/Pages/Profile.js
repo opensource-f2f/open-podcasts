@@ -128,7 +128,7 @@ class ProfileModal extends Component {
 
             if (res.spec && res.spec.notifier && res.spec.notifier.name) {
                 const notifier = res.spec.notifier.name
-                fetch('/notifiers/one?name=' + notifier, authHeaders())
+                fetch('/notifiers/' + notifier, authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         com.setState({
@@ -178,7 +178,7 @@ class ProfileModal extends Component {
             return
         }
         const profile = window.localStorage.getItem('profile')
-        fetch('/profile/notifier?url=' + currentValue + '&name=' + profile, authHeaders('POST'))
+        fetch('/profiles/' + profile + '/notifier?feishu=' + currentValue, authHeaders('POST'))
             .then(() => (
                 this.setState({
                     notifier: currentValue
@@ -242,7 +242,7 @@ class ProfileModal extends Component {
     }
 
     downloadYAML() {
-        fetch('/rsses/export', authHeaders()).then((rsp) => {
+        fetch('/rsses/yaml/export', authHeaders()).then((rsp) => {
             const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
             rsp.blob().then(blob => {
                 let blobUrl = window.URL.createObjectURL(blob);
@@ -266,6 +266,18 @@ class ProfileModal extends Component {
                 aElement.click();
                 window.URL.revokeObjectURL(blobUrl);
             })
+        })
+    }
+
+    downloadBlob(rsp) {
+        const [, filename] = rsp.headers.get('Content-Disposition').split('filename=');
+        rsp.blob().then(blob => {
+            let blobUrl = window.URL.createObjectURL(blob);
+            let aElement = document.getElementById('downloadDiv');
+            aElement.href = blobUrl;
+            aElement.download = filename;
+            aElement.click();
+            window.URL.revokeObjectURL(blobUrl);
         })
     }
 
