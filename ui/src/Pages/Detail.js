@@ -32,7 +32,7 @@ class Detail extends Component {
     }
 
     componentDidMount() {
-        fetch('/rsses', authHeaders())
+        fetch('/api/rsses', authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({
@@ -41,7 +41,7 @@ class Detail extends Component {
             })
 
         const name = this.props.name
-        fetch('/rsses/' + name, authHeaders())
+        fetch('/api/rsses/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({
@@ -54,11 +54,11 @@ class Detail extends Component {
         if (profile === "" || !profile) {
             return
         }
-        fetch('/profiles/' + profile, authHeaders())
+        fetch('/api/profiles/' + profile, authHeaders())
             .then(res => res.json())
             .then(res => {
                 if (res.spec && res.spec.subscription && res.spec.subscription.name) {
-                    fetch('/subscriptions/' + res.spec.subscription.name, authHeaders())
+                    fetch('/api/subscriptions/' + res.spec.subscription.name, authHeaders())
                         .then(res => res.json())
                         .then(res => {
                             for (const rss of res.spec.rssList) {
@@ -81,9 +81,9 @@ class Detail extends Component {
 
         const rss = this.state.rss.metadata.name
         if (e) {
-            fetch('/profiles/' + profile + '/subscribe?rss=' + rss, authHeaders('POST'))
+            fetch('/api/profiles/' + profile + '/subscribe?rss=' + rss, authHeaders('POST'))
         } else {
-            fetch('/profiles/' + profile + '/unsubscribe?rss=' + rss, authHeaders('POST'))
+            fetch('/api/profiles/' + profile + '/unsubscribe?rss=' + rss, authHeaders('POST'))
         }
     }
 

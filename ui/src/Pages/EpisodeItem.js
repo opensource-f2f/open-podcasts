@@ -28,7 +28,7 @@ class EpisodeItem extends Component {
 
     componentDidMount() {
         const name = this.props.name
-        fetch('/episodes/' + name, authHeaders())
+        fetch('/api/episodes/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({

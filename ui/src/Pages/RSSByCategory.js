@@ -43,7 +43,7 @@ class RSSList extends Component {
         const profile = this.props.profile
         this.loadRsses(category, profile)
 
-        fetch('/categories', authHeaders())
+        fetch('/api/categories', authHeaders())
             .then(res => res.json())
             .then(res => {
                 let total = 0
@@ -60,7 +60,7 @@ class RSSList extends Component {
     loadRsses(category, profile) {
         if (!category || category === "") {
             if (!profile || profile === "") {
-                fetch('/rsses', authHeaders())
+                fetch('/api/rsses', authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         this.setState({
@@ -68,7 +68,7 @@ class RSSList extends Component {
                         })
                     })
             } else {
-                fetch('/profiles/' + profile + '/subscriptions', authHeaders())
+                fetch('/api/profiles/' + profile + '/subscriptions', authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         this.setState({
@@ -77,7 +77,7 @@ class RSSList extends Component {
                     })
             }
         } else {
-            fetch('/rsses?category=' + category, authHeaders())
+            fetch('/api/rsses?category=' + category, authHeaders())
                 .then(res => res.json())
                 .then(res => {
                     this.setState({
