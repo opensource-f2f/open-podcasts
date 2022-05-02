@@ -27,6 +27,8 @@ type Interface interface {
 	Categories() CategoryInformer
 	// Episodes returns a EpisodeInformer.
 	Episodes() EpisodeInformer
+	// Notifiers returns a NotifierInformer.
+	Notifiers() NotifierInformer
 	// Profiles returns a ProfileInformer.
 	Profiles() ProfileInformer
 	// RSSs returns a RSSInformer.
@@ -54,6 +56,11 @@ func (v *version) Categories() CategoryInformer {
 // Episodes returns a EpisodeInformer.
 func (v *version) Episodes() EpisodeInformer {
 	return &episodeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Notifiers returns a NotifierInformer.
+func (v *version) Notifiers() NotifierInformer {
+	return &notifierInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Profiles returns a ProfileInformer.

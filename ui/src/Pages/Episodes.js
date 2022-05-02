@@ -47,7 +47,7 @@ class LaterButton extends Component {
 
     listenLater(episode) {
         const name = localStorage.getItem('profile')
-        fetch('/profile/playLater?name=' + name + '&episode=' + episode, authHeaders("POST"))
+        fetch('/profiles/' + name + '/playLater?episode=' + episode, authHeaders("POST"))
             .then(res => {
                 $('button[action="later"][episode="' + episode + '"]').remove()
 

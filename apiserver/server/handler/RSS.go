@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/emicklei/go-restful/v3"
+	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
 	_ "github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
 	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,6 +26,10 @@ func (r RSS) WebService() (ws *restful.WebService) {
 	r.pathParam = restful.PathParameter("rss", "rss id")
 	r.queryCategoryParam = restful.QueryParameter("category", "The category of RSSes")
 
+	ws.Route(ws.POST("/").
+		Param(r.queryCategoryParam).
+		To(r.create).
+		Returns(http.StatusOK, "OK", []RSS{}))
 	ws.Route(ws.GET("/").
 		Param(r.queryCategoryParam).
 		To(r.findAll).
@@ -34,6 +39,23 @@ func (r RSS) WebService() (ws *restful.WebService) {
 		To(r.findOne).
 		Returns(http.StatusOK, "OK", []RSS{}))
 	return
+}
+
+func (r RSS) create(request *restful.Request, response *restful.Response) {
+	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ctx := context.Background()
+	clientset, err := client.NewForConfig(config)
+
+	rss := &v1alpha1.RSS{}
+	request.ReadEntity(rss) // TODO handle the error case
+
+	rss.GenerateName = "auto"
+	clientset.MyV1alpha1().RSSes(ns).Create(ctx, rss, metav1.CreateOptions{})
+	response.Write([]byte("ok"))
 }
 
 func (r RSS) findAll(request *restful.Request, response *restful.Response) {

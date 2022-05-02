@@ -15,7 +15,8 @@ type Profile struct {
 	nameQuery    *restful.Parameter
 	rssQuery     *restful.Parameter
 	episodeQuery *restful.Parameter
-	namePath     *restful.Parameter
+	profilePath  *restful.Parameter
+	feishuQuery  *restful.Parameter
 }
 
 func (r Profile) WebService() (ws *restful.WebService) {
@@ -26,7 +27,8 @@ func (r Profile) WebService() (ws *restful.WebService) {
 	r.nameQuery = restful.QueryParameter("name", "The name of a profile")
 	r.rssQuery = restful.QueryParameter("rss", "The name of a rss")
 	r.episodeQuery = restful.QueryParameter("episode", "The name of an episode")
-	r.namePath = restful.PathParameter("profile", "The name of a profile")
+	r.profilePath = restful.PathParameter("profile", "The name of a profile")
+	r.feishuQuery = restful.QueryParameter("feishu", "The webhook of Feishu")
 
 	// set the routes
 	ws.Route(ws.POST("/").
@@ -34,27 +36,37 @@ func (r Profile) WebService() (ws *restful.WebService) {
 		To(r.create).
 		Returns(http.StatusOK, "OK", []RSS{}))
 	ws.Route(ws.GET("/{profile}").
-		Param(r.namePath).
+		Param(r.profilePath).
 		To(r.findOne).
-		Returns(http.StatusOK, "OK", []RSS{}))
+		Returns(http.StatusOK, "OK", v1alpha1.Profile{}))
 	ws.Route(ws.POST("/{profile}/subscribe").
-		Param(r.namePath).
+		Param(r.profilePath).
 		Param(r.rssQuery).
 		To(r.subscribe).
 		Returns(http.StatusOK, "OK", []RSS{}))
 	ws.Route(ws.POST("/{profile}/unsubscribe").
-		Param(r.namePath).
+		Param(r.profilePath).
 		Param(r.rssQuery).
 		To(r.unsubscribe).
 		Returns(http.StatusOK, "OK", []RSS{}))
 	ws.Route(ws.GET("/{profile}/subscriptions").
-		Param(r.namePath).
+		Param(r.profilePath).
 		To(r.subscriptions).
-		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
+		Returns(http.StatusOK, "OK", []v1alpha1.Subscription{}))
 	ws.Route(ws.POST("/{profile}/playLater").
-		Param(r.namePath).
+		Param(r.profilePath).
 		Param(r.episodeQuery).
 		To(r.playLater).
+		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
+	ws.Route(ws.DELETE("/{profile}/playLater").
+		Param(r.profilePath).
+		Param(r.episodeQuery).
+		To(r.playOver).
+		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
+	ws.Route(ws.DELETE("/{profile}/notifier").
+		Param(r.profilePath).
+		Param(r.feishuQuery).
+		To(r.playOver).
 		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
 	return
 }
@@ -81,7 +93,7 @@ func (r Profile) findOne(request *restful.Request, response *restful.Response) {
 	if err != nil {
 		panic(err.Error())
 	}
-	name := request.PathParameter(r.namePath.Data().Name)
+	name := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
@@ -95,7 +107,7 @@ func (r Profile) subscribe(request *restful.Request, response *restful.Response)
 		panic(err.Error())
 	}
 	rss := request.QueryParameter(r.rssQuery.Data().Name)
-	profileName := request.PathParameter(r.namePath.Data().Name)
+	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
@@ -127,7 +139,7 @@ func (r Profile) unsubscribe(request *restful.Request, response *restful.Respons
 		panic(err.Error())
 	}
 	rss := request.QueryParameter(r.rssQuery.Data().Name)
-	profileName := request.PathParameter(r.namePath.Data().Name)
+	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
@@ -149,7 +161,7 @@ func (r Profile) subscriptions(request *restful.Request, response *restful.Respo
 	if err != nil {
 		panic(err.Error())
 	}
-	profileName := request.PathParameter(r.namePath.Data().Name)
+	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
@@ -168,6 +180,96 @@ func (r Profile) subscriptions(request *restful.Request, response *restful.Respo
 }
 
 func (r Profile) playLater(req *restful.Request, resp *restful.Response) {
+	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	if err != nil {
+		panic(err.Error())
+	}
+	profileName := req.PathParameter(r.profilePath.Data().Name)
+	episodeName := req.QueryParameter(r.episodeQuery.Data().Name)
+
+	ctx := context.Background()
+	clientset, err := client.NewForConfig(config)
+	profile, err := clientset.MyV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+
+	var added bool
+	profile.Spec.LaterPlayList, added = uniquePlayToDoAppend(profile.Spec.LaterPlayList, v1alpha1.PlayTodo{
+		LocalObjectReference: v1.LocalObjectReference{Name: episodeName},
+	})
+	if added {
+		clientset.MyV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+	}
+}
+
+func (r Profile) playOver(req *restful.Request, resp *restful.Response) {
+	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	if err != nil {
+		panic(err.Error())
+	}
+	profileName := req.PathParameter(r.profilePath.Data().Name)
+	episodeName := req.QueryParameter(r.episodeQuery.Data().Name)
+
+	ctx := context.Background()
+	clientset, err := client.NewForConfig(config)
+	profile, err := clientset.MyV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+
+	var removed bool
+	profile.Spec.LaterPlayList, removed = removePlayTodo(profile.Spec.LaterPlayList, v1alpha1.PlayTodo{
+		LocalObjectReference: v1.LocalObjectReference{Name: episodeName},
+	})
+	if removed {
+		clientset.MyV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+	}
+}
+
+func (r Profile) notifier(req *restful.Request, resp *restful.Response) {
+	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	if err != nil {
+		panic(err.Error())
+	}
+	profileName := req.PathParameter(r.profilePath.Data().Name)
+	feishuWebhook := req.QueryParameter(r.feishuQuery.Data().Name)
+
+	ctx := context.Background()
+	clientset, err := client.NewForConfig(config)
+	profile, err := clientset.MyV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+
+	if profile.Spec.Notifier.Name == "" {
+		notifier := &v1alpha1.Notifier{}
+		notifier.GenerateName = "auto"
+		notifier.Spec.Feishu = &v1alpha1.FeishuNotifier{
+			WebhookUrl: feishuWebhook,
+		}
+	}
+}
+
+func removePlayTodo(todoList []v1alpha1.PlayTodo, todo v1alpha1.PlayTodo) (result []v1alpha1.PlayTodo, removed bool) {
+	for i := range todoList {
+		if todoList[i].Name == todo.Name {
+			result = append(todoList[:i], todoList[i+1:]...)
+			removed = true
+			break
+		}
+	}
+	if !removed {
+		result = todoList
+	}
+	return
+}
+
+func uniquePlayToDoAppend(todoList []v1alpha1.PlayTodo, todo v1alpha1.PlayTodo) (result []v1alpha1.PlayTodo, added bool) {
+	found := false
+	for i := range todoList {
+		if todoList[i].Name == todo.Name {
+			found = true
+			break
+		}
+	}
+	result = todoList
+	if !found {
+		result = append(result, todo)
+		added = true
+	}
+	return
 }
 
 func removeLocalObjectReference(list []v1.LocalObjectReference, reference v1.LocalObjectReference) (

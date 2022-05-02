@@ -29,6 +29,7 @@ type MyV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	CategoriesGetter
 	EpisodesGetter
+	NotifiersGetter
 	ProfilesGetter
 	RSSesGetter
 	SubscriptionsGetter
@@ -45,6 +46,10 @@ func (c *MyV1alpha1Client) Categories(namespace string) CategoryInterface {
 
 func (c *MyV1alpha1Client) Episodes(namespace string) EpisodeInterface {
 	return newEpisodes(c, namespace)
+}
+
+func (c *MyV1alpha1Client) Notifiers(namespace string) NotifierInterface {
+	return newNotifiers(c, namespace)
 }
 
 func (c *MyV1alpha1Client) Profiles(namespace string) ProfileInterface {

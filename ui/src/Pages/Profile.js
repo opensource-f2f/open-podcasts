@@ -21,7 +21,7 @@ function createAudio(src, parent) {
 }
 
 function playEpisode(episdoe, callback) {
-    $.getJSON('/episodes/' + episdoe, function (item){
+    fetch('/episodes/' + episdoe, authHeaders()).then((item) => {
         let source = item.spec.audioSource
         const proxy = localStorage.getItem('proxy')
         if (proxy === 'true') {
@@ -34,7 +34,7 @@ function playEpisode(episdoe, callback) {
                 // createAudio(source, $('#global-audio-zone').show()).trigger('play').on('ended', function () {
                 const episode = $(this).attr('episode')
                 const profile = window.localStorage.getItem('profile')
-                $.post('/profile/playOver?name=' + profile + '&episode=' + episode, function (){
+                fetch('/profiles/' + profile + '/?episode=' + episode, authHeaders('POST')).then(() => {
                     $('span[episode=' + episode + ']').remove()
 
                     if (callback) {
@@ -77,7 +77,9 @@ class ProfileModal extends Component {
         const requestOptions = authHeaders('POST')
         requestOptions.headers['Content-Type'] = 'application/json'
         requestOptions.body = JSON.stringify({
-                address: this.state.rssURL
+                spec: {
+                    address: this.state.rssURL
+                },
             })
         fetch('/rsses', requestOptions).then(() => {
             $('#new-rss-url').val('')
@@ -187,7 +189,7 @@ class ProfileModal extends Component {
     removeEpisode(episode) {
         const profileCom = this
         const name = localStorage.getItem('profile')
-        fetch('/profile/playLater?name=' + name + '&episode=' + episode, authHeaders('DELETE'))
+        fetch('/profiles/' + name + '/playLater?episode=' + episode, authHeaders('DELETE'))
             .then(res => {
                 $('button[action="later"][episode="' + episode + '"]').remove()
                 profileCom.reload()
