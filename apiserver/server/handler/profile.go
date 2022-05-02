@@ -63,10 +63,10 @@ func (r Profile) WebService() (ws *restful.WebService) {
 		Param(r.episodeQuery).
 		To(r.playOver).
 		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
-	ws.Route(ws.DELETE("/{profile}/notifier").
+	ws.Route(ws.POST("/{profile}/notifier").
 		Param(r.profilePath).
 		Param(r.feishuQuery).
-		To(r.playOver).
+		To(r.notifier).
 		Returns(http.StatusOK, "OK", []v1alpha1.RSS{}))
 	return
 }
@@ -239,7 +239,15 @@ func (r Profile) notifier(req *restful.Request, resp *restful.Response) {
 		notifier.Spec.Feishu = &v1alpha1.FeishuNotifier{
 			WebhookUrl: feishuWebhook,
 		}
+
+		notifier, _ = clientset.MyV1alpha1().Notifiers(ns).Create(ctx, notifier, metav1.CreateOptions{})
+
+		profile.Spec.Notifier = v1.LocalObjectReference{
+			Name: notifier.Name,
+		}
+		clientset.MyV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
 	}
+	resp.Write([]byte("ok"))
 }
 
 func removePlayTodo(todoList []v1alpha1.PlayTodo, todo v1alpha1.PlayTodo) (result []v1alpha1.PlayTodo, removed bool) {
