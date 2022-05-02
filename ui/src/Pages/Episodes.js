@@ -15,7 +15,7 @@ class AudioControlPanel extends Component {
 
     playOver(episode) {
         const name = localStorage.getItem('profile')
-        fetch('/profile/playOver?name=' + name + '&episode=' + episode, authHeaders("POST"))
+        fetch('/api/profile/playOver?name=' + name + '&episode=' + episode, authHeaders("POST"))
             .then(res => {
                 $('#profiles').trigger('reload')
             })
@@ -47,7 +47,7 @@ class LaterButton extends Component {
 
     listenLater(episode) {
         const name = localStorage.getItem('profile')
-        fetch('/profiles/' + name + '/playLater?episode=' + episode, authHeaders("POST"))
+        fetch('/api/profiles/' + name + '/playLater?episode=' + episode, authHeaders("POST"))
             .then(res => {
                 $('button[action="later"][episode="' + episode + '"]').remove()
 
@@ -76,7 +76,7 @@ class Episodes extends Component {
         const name = localStorage.getItem('profile')
         const hasProfile = (name !== "" && name != null)
 
-        fetch('/episodes?rss=' + this.props.rss, authHeaders())
+        fetch('/api/episodes?rss=' + this.props.rss, authHeaders())
             .then(res => res.json())
             .then(res => {
                 for (var i = 0; i < res.length; i++) {
@@ -100,7 +100,7 @@ class Episodes extends Component {
             this.fetchEpisodes([])
             return
         }
-        fetch('/profiles/' + name, authHeaders())
+        fetch('/api/profiles/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 let laterPlayList = []

@@ -2,6 +2,7 @@
 # Image URL to use all building/pushing image targets
 IMG ?= ghcr.io/opensource-f2f/open-podcasts:master
 IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:master
+IMG-SERVER ?= ghcr.io/opensource-f2f/open-podcasts-apiserver:master
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
 
@@ -88,6 +89,14 @@ docker-build-ui:
 .PHONY: docker-push-ui
 docker-push-ui:
 	docker push ${IMG-UI}
+
+.PHONY: docker-build-apiserver
+docker-build-apiserver:
+	docker build -t ${IMG-SERVER} apiserver
+
+.PHONY: docker-push-apiserver
+docker-push-apiserver:
+	docker push ${IMG-SERVER}
 
 ##@ Deployment
 

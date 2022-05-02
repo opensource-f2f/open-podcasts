@@ -69,7 +69,7 @@ class GlobalAudio extends Component {
             return
         }
         const comObject = this
-        fetch('/profiles/' + name, authHeaders())
+        fetch('/api/profiles/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 if (res.spec && res.spec.laterPlayList) {
@@ -88,7 +88,7 @@ class GlobalAudio extends Component {
             for (let i = 0; i < laterPlayList.length; i++) {
                 const episode =  laterPlayList[i]
 
-                await fetch('/episodes/' + episode.name, authHeaders())
+                await fetch('/api/episodes/' + episode.name, authHeaders())
                     .then(res => res.json())
                     .then((item) => {
                     let source = item.spec.audioSource
