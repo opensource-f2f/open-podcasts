@@ -33,6 +33,14 @@ type EpisodeListerExpansion interface{}
 // EpisodeNamespaceLister.
 type EpisodeNamespaceListerExpansion interface{}
 
+// NotifierListerExpansion allows custom methods to be added to
+// NotifierLister.
+type NotifierListerExpansion interface{}
+
+// NotifierNamespaceListerExpansion allows custom methods to be added to
+// NotifierNamespaceLister.
+type NotifierNamespaceListerExpansion interface{}
+
 // ProfileListerExpansion allows custom methods to be added to
 // ProfileLister.
 type ProfileListerExpansion interface{}

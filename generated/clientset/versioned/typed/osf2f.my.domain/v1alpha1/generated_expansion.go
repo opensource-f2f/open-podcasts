@@ -21,6 +21,8 @@ type CategoryExpansion interface{}
 
 type EpisodeExpansion interface{}
 
+type NotifierExpansion interface{}
+
 type ProfileExpansion interface{}
 
 type RSSExpansion interface{}

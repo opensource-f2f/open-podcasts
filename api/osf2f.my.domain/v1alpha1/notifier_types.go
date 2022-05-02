@@ -11,6 +11,7 @@ type NotifierSpec struct {
 	Feishu *FeishuNotifier `json:"feishu,omitempty"`
 }
 
+// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // Notifier is the Schema for the notifiers API

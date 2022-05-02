@@ -35,6 +35,10 @@ func (c *FakeMyV1alpha1) Episodes(namespace string) v1alpha1.EpisodeInterface {
 	return &FakeEpisodes{c, namespace}
 }
 
+func (c *FakeMyV1alpha1) Notifiers(namespace string) v1alpha1.NotifierInterface {
+	return &FakeNotifiers{c, namespace}
+}
+
 func (c *FakeMyV1alpha1) Profiles(namespace string) v1alpha1.ProfileInterface {
 	return &FakeProfiles{c, namespace}
 }

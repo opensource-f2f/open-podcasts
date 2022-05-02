@@ -88,7 +88,9 @@ class GlobalAudio extends Component {
             for (let i = 0; i < laterPlayList.length; i++) {
                 const episode =  laterPlayList[i]
 
-                await $.getJSON('/episodes/' + episode.name, function (item) {
+                await fetch('/episodes/' + episode.name, authHeaders())
+                    .then(res => res.json())
+                    .then((item) => {
                     let source = item.spec.audioSource
                     const proxy = localStorage.getItem('proxy')
                     if (proxy === 'true') {
