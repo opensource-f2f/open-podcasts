@@ -1,0 +1,24 @@
+# permissions for end users to edit shows.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: show-editor-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - shows
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - shows/status
+  verbs:
+  - get

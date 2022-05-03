@@ -25,49 +25,64 @@ import (
 	rest "k8s.io/client-go/rest"
 )
 
-type MyV1alpha1Interface interface {
+type Osf2fV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	CategoriesGetter
 	EpisodesGetter
 	NotifiersGetter
 	ProfilesGetter
 	RSSesGetter
+	ShowsGetter
+	ShowItemsGetter
+	StoragesGetter
 	SubscriptionsGetter
 }
 
-// MyV1alpha1Client is used to interact with features provided by the my.domain group.
-type MyV1alpha1Client struct {
+// Osf2fV1alpha1Client is used to interact with features provided by the osf2f.my.domain group.
+type Osf2fV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *MyV1alpha1Client) Categories(namespace string) CategoryInterface {
+func (c *Osf2fV1alpha1Client) Categories(namespace string) CategoryInterface {
 	return newCategories(c, namespace)
 }
 
-func (c *MyV1alpha1Client) Episodes(namespace string) EpisodeInterface {
+func (c *Osf2fV1alpha1Client) Episodes(namespace string) EpisodeInterface {
 	return newEpisodes(c, namespace)
 }
 
-func (c *MyV1alpha1Client) Notifiers(namespace string) NotifierInterface {
+func (c *Osf2fV1alpha1Client) Notifiers(namespace string) NotifierInterface {
 	return newNotifiers(c, namespace)
 }
 
-func (c *MyV1alpha1Client) Profiles(namespace string) ProfileInterface {
+func (c *Osf2fV1alpha1Client) Profiles(namespace string) ProfileInterface {
 	return newProfiles(c, namespace)
 }
 
-func (c *MyV1alpha1Client) RSSes(namespace string) RSSInterface {
+func (c *Osf2fV1alpha1Client) RSSes(namespace string) RSSInterface {
 	return newRSSes(c, namespace)
 }
 
-func (c *MyV1alpha1Client) Subscriptions(namespace string) SubscriptionInterface {
+func (c *Osf2fV1alpha1Client) Shows(namespace string) ShowInterface {
+	return newShows(c, namespace)
+}
+
+func (c *Osf2fV1alpha1Client) ShowItems(namespace string) ShowItemInterface {
+	return newShowItems(c, namespace)
+}
+
+func (c *Osf2fV1alpha1Client) Storages(namespace string) StorageInterface {
+	return newStorages(c, namespace)
+}
+
+func (c *Osf2fV1alpha1Client) Subscriptions(namespace string) SubscriptionInterface {
 	return newSubscriptions(c, namespace)
 }
 
-// NewForConfig creates a new MyV1alpha1Client for the given config.
+// NewForConfig creates a new Osf2fV1alpha1Client for the given config.
 // NewForConfig is equivalent to NewForConfigAndClient(c, httpClient),
 // where httpClient was generated with rest.HTTPClientFor(c).
-func NewForConfig(c *rest.Config) (*MyV1alpha1Client, error) {
+func NewForConfig(c *rest.Config) (*Osf2fV1alpha1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -79,9 +94,9 @@ func NewForConfig(c *rest.Config) (*MyV1alpha1Client, error) {
 	return NewForConfigAndClient(&config, httpClient)
 }
 
-// NewForConfigAndClient creates a new MyV1alpha1Client for the given config and http client.
+// NewForConfigAndClient creates a new Osf2fV1alpha1Client for the given config and http client.
 // Note the http client provided takes precedence over the configured transport values.
-func NewForConfigAndClient(c *rest.Config, h *http.Client) (*MyV1alpha1Client, error) {
+func NewForConfigAndClient(c *rest.Config, h *http.Client) (*Osf2fV1alpha1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -90,12 +105,12 @@ func NewForConfigAndClient(c *rest.Config, h *http.Client) (*MyV1alpha1Client, e
 	if err != nil {
 		return nil, err
 	}
-	return &MyV1alpha1Client{client}, nil
+	return &Osf2fV1alpha1Client{client}, nil
 }
 
-// NewForConfigOrDie creates a new MyV1alpha1Client for the given config and
+// NewForConfigOrDie creates a new Osf2fV1alpha1Client for the given config and
 // panics if there is an error in the config.
-func NewForConfigOrDie(c *rest.Config) *MyV1alpha1Client {
+func NewForConfigOrDie(c *rest.Config) *Osf2fV1alpha1Client {
 	client, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
@@ -103,9 +118,9 @@ func NewForConfigOrDie(c *rest.Config) *MyV1alpha1Client {
 	return client
 }
 
-// New creates a new MyV1alpha1Client for the given RESTClient.
-func New(c rest.Interface) *MyV1alpha1Client {
-	return &MyV1alpha1Client{c}
+// New creates a new Osf2fV1alpha1Client for the given RESTClient.
+func New(c rest.Interface) *Osf2fV1alpha1Client {
+	return &Osf2fV1alpha1Client{c}
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -123,7 +138,7 @@ func setConfigDefaults(config *rest.Config) error {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *MyV1alpha1Client) RESTClient() rest.Interface {
+func (c *Osf2fV1alpha1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}

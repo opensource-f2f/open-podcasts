@@ -31,13 +31,13 @@ import (
 
 // FakeCategories implements CategoryInterface
 type FakeCategories struct {
-	Fake *FakeMyV1alpha1
+	Fake *FakeOsf2fV1alpha1
 	ns   string
 }
 
-var categoriesResource = schema.GroupVersionResource{Group: "my.domain", Version: "v1alpha1", Resource: "categories"}
+var categoriesResource = schema.GroupVersionResource{Group: "osf2f.my.domain", Version: "v1alpha1", Resource: "categories"}
 
-var categoriesKind = schema.GroupVersionKind{Group: "my.domain", Version: "v1alpha1", Kind: "Category"}
+var categoriesKind = schema.GroupVersionKind{Group: "osf2f.my.domain", Version: "v1alpha1", Kind: "Category"}
 
 // Get takes name of the category, and returns the corresponding category object, and an error if there is any.
 func (c *FakeCategories) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Category, err error) {

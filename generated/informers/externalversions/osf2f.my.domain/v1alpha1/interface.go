@@ -33,6 +33,12 @@ type Interface interface {
 	Profiles() ProfileInformer
 	// RSSs returns a RSSInformer.
 	RSSs() RSSInformer
+	// Shows returns a ShowInformer.
+	Shows() ShowInformer
+	// ShowItems returns a ShowItemInformer.
+	ShowItems() ShowItemInformer
+	// Storages returns a StorageInformer.
+	Storages() StorageInformer
 	// Subscriptions returns a SubscriptionInformer.
 	Subscriptions() SubscriptionInformer
 }
@@ -71,6 +77,21 @@ func (v *version) Profiles() ProfileInformer {
 // RSSs returns a RSSInformer.
 func (v *version) RSSs() RSSInformer {
 	return &rSSInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Shows returns a ShowInformer.
+func (v *version) Shows() ShowInformer {
+	return &showInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// ShowItems returns a ShowItemInformer.
+func (v *version) ShowItems() ShowItemInformer {
+	return &showItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Storages returns a StorageInformer.
+func (v *version) Storages() StorageInformer {
+	return &storageInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Subscriptions returns a SubscriptionInformer.

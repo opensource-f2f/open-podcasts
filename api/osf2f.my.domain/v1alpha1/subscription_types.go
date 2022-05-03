@@ -39,6 +39,8 @@ type Subscription struct {
 	Status ProfileStatus    `json:"status,omitempty"`
 }
 
+//+kubebuilder:object:root=true
+
 // SubscriptionList contains a list of Subscription
 type SubscriptionList struct {
 	metav1.TypeMeta `json:",inline"`

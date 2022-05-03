@@ -1,0 +1,20 @@
+# permissions for end users to view showitems.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: showitem-viewer-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems/status
+  verbs:
+  - get

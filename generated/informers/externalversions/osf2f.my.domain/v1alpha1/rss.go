@@ -61,13 +61,13 @@ func NewFilteredRSSInformer(client versioned.Interface, namespace string, resync
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.MyV1alpha1().RSSs(namespace).List(context.TODO(), options)
+				return client.Osf2fV1alpha1().RSSs(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.MyV1alpha1().RSSs(namespace).Watch(context.TODO(), options)
+				return client.Osf2fV1alpha1().RSSs(namespace).Watch(context.TODO(), options)
 			},
 		},
 		&osf2fmydomainv1alpha1.RSS{},

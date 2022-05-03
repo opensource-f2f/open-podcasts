@@ -23,37 +23,49 @@ import (
 	testing "k8s.io/client-go/testing"
 )
 
-type FakeMyV1alpha1 struct {
+type FakeOsf2fV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeMyV1alpha1) Categories(namespace string) v1alpha1.CategoryInterface {
+func (c *FakeOsf2fV1alpha1) Categories(namespace string) v1alpha1.CategoryInterface {
 	return &FakeCategories{c, namespace}
 }
 
-func (c *FakeMyV1alpha1) Episodes(namespace string) v1alpha1.EpisodeInterface {
+func (c *FakeOsf2fV1alpha1) Episodes(namespace string) v1alpha1.EpisodeInterface {
 	return &FakeEpisodes{c, namespace}
 }
 
-func (c *FakeMyV1alpha1) Notifiers(namespace string) v1alpha1.NotifierInterface {
+func (c *FakeOsf2fV1alpha1) Notifiers(namespace string) v1alpha1.NotifierInterface {
 	return &FakeNotifiers{c, namespace}
 }
 
-func (c *FakeMyV1alpha1) Profiles(namespace string) v1alpha1.ProfileInterface {
+func (c *FakeOsf2fV1alpha1) Profiles(namespace string) v1alpha1.ProfileInterface {
 	return &FakeProfiles{c, namespace}
 }
 
-func (c *FakeMyV1alpha1) RSSes(namespace string) v1alpha1.RSSInterface {
+func (c *FakeOsf2fV1alpha1) RSSes(namespace string) v1alpha1.RSSInterface {
 	return &FakeRSSes{c, namespace}
 }
 
-func (c *FakeMyV1alpha1) Subscriptions(namespace string) v1alpha1.SubscriptionInterface {
+func (c *FakeOsf2fV1alpha1) Shows(namespace string) v1alpha1.ShowInterface {
+	return &FakeShows{c, namespace}
+}
+
+func (c *FakeOsf2fV1alpha1) ShowItems(namespace string) v1alpha1.ShowItemInterface {
+	return &FakeShowItems{c, namespace}
+}
+
+func (c *FakeOsf2fV1alpha1) Storages(namespace string) v1alpha1.StorageInterface {
+	return &FakeStorages{c, namespace}
+}
+
+func (c *FakeOsf2fV1alpha1) Subscriptions(namespace string) v1alpha1.SubscriptionInterface {
 	return &FakeSubscriptions{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *FakeMyV1alpha1) RESTClient() rest.Interface {
+func (c *FakeOsf2fV1alpha1) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }

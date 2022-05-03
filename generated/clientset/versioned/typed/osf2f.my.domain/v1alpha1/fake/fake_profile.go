@@ -31,13 +31,13 @@ import (
 
 // FakeProfiles implements ProfileInterface
 type FakeProfiles struct {
-	Fake *FakeMyV1alpha1
+	Fake *FakeOsf2fV1alpha1
 	ns   string
 }
 
-var profilesResource = schema.GroupVersionResource{Group: "my.domain", Version: "v1alpha1", Resource: "profiles"}
+var profilesResource = schema.GroupVersionResource{Group: "osf2f.my.domain", Version: "v1alpha1", Resource: "profiles"}
 
-var profilesKind = schema.GroupVersionKind{Group: "my.domain", Version: "v1alpha1", Kind: "Profile"}
+var profilesKind = schema.GroupVersionKind{Group: "osf2f.my.domain", Version: "v1alpha1", Kind: "Profile"}
 
 // Get takes name of the profile, and returns the corresponding profile object, and an error if there is any.
 func (c *FakeProfiles) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Profile, err error) {

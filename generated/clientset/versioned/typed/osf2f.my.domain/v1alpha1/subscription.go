@@ -56,7 +56,7 @@ type subscriptions struct {
 }
 
 // newSubscriptions returns a Subscriptions
-func newSubscriptions(c *MyV1alpha1Client, namespace string) *subscriptions {
+func newSubscriptions(c *Osf2fV1alpha1Client, namespace string) *subscriptions {
 	return &subscriptions{
 		client: c.RESTClient(),
 		ns:     namespace,

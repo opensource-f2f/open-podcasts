@@ -31,13 +31,13 @@ import (
 
 // FakeNotifiers implements NotifierInterface
 type FakeNotifiers struct {
-	Fake *FakeMyV1alpha1
+	Fake *FakeOsf2fV1alpha1
 	ns   string
 }
 
-var notifiersResource = schema.GroupVersionResource{Group: "my.domain", Version: "v1alpha1", Resource: "notifiers"}
+var notifiersResource = schema.GroupVersionResource{Group: "osf2f.my.domain", Version: "v1alpha1", Resource: "notifiers"}
 
-var notifiersKind = schema.GroupVersionKind{Group: "my.domain", Version: "v1alpha1", Kind: "Notifier"}
+var notifiersKind = schema.GroupVersionKind{Group: "osf2f.my.domain", Version: "v1alpha1", Kind: "Notifier"}
 
 // Get takes name of the notifier, and returns the corresponding notifier object, and an error if there is any.
 func (c *FakeNotifiers) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Notifier, err error) {

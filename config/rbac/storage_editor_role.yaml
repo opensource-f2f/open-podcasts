@@ -1,0 +1,24 @@
+# permissions for end users to edit storages.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: storage-editor-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages/status
+  verbs:
+  - get

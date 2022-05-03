@@ -1,0 +1,11 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: ShowItem
+metadata:
+  name: showitem-sample
+  labels:
+    show.ref: show-sample
+spec:
+  showRef: show-sample
+  title: episode-1
+  description: 'This is a demo episode'
+  image: "fake.png"

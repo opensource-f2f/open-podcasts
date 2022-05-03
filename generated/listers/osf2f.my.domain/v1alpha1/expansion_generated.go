@@ -57,6 +57,30 @@ type RSSListerExpansion interface{}
 // RSSNamespaceLister.
 type RSSNamespaceListerExpansion interface{}
 
+// ShowListerExpansion allows custom methods to be added to
+// ShowLister.
+type ShowListerExpansion interface{}
+
+// ShowNamespaceListerExpansion allows custom methods to be added to
+// ShowNamespaceLister.
+type ShowNamespaceListerExpansion interface{}
+
+// ShowItemListerExpansion allows custom methods to be added to
+// ShowItemLister.
+type ShowItemListerExpansion interface{}
+
+// ShowItemNamespaceListerExpansion allows custom methods to be added to
+// ShowItemNamespaceLister.
+type ShowItemNamespaceListerExpansion interface{}
+
+// StorageListerExpansion allows custom methods to be added to
+// StorageLister.
+type StorageListerExpansion interface{}
+
+// StorageNamespaceListerExpansion allows custom methods to be added to
+// StorageNamespaceLister.
+type StorageNamespaceListerExpansion interface{}
+
 // SubscriptionListerExpansion allows custom methods to be added to
 // SubscriptionLister.
 type SubscriptionListerExpansion interface{}

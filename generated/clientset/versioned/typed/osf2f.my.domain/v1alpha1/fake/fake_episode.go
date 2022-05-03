@@ -31,13 +31,13 @@ import (
 
 // FakeEpisodes implements EpisodeInterface
 type FakeEpisodes struct {
-	Fake *FakeMyV1alpha1
+	Fake *FakeOsf2fV1alpha1
 	ns   string
 }
 
-var episodesResource = schema.GroupVersionResource{Group: "my.domain", Version: "v1alpha1", Resource: "episodes"}
+var episodesResource = schema.GroupVersionResource{Group: "osf2f.my.domain", Version: "v1alpha1", Resource: "episodes"}
 
-var episodesKind = schema.GroupVersionKind{Group: "my.domain", Version: "v1alpha1", Kind: "Episode"}
+var episodesKind = schema.GroupVersionKind{Group: "osf2f.my.domain", Version: "v1alpha1", Kind: "Episode"}
 
 // Get takes name of the episode, and returns the corresponding episode object, and an error if there is any.
 func (c *FakeEpisodes) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Episode, err error) {

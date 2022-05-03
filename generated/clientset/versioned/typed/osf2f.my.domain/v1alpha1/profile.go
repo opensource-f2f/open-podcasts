@@ -56,7 +56,7 @@ type profiles struct {
 }
 
 // newProfiles returns a Profiles
-func newProfiles(c *MyV1alpha1Client, namespace string) *profiles {
+func newProfiles(c *Osf2fV1alpha1Client, namespace string) *profiles {
 	return &profiles{
 		client: c.RESTClient(),
 		ns:     namespace,

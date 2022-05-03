@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	myv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1"
+	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -29,19 +29,19 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	MyV1alpha1() myv1alpha1.MyV1alpha1Interface
+	Osf2fV1alpha1() osf2fv1alpha1.Osf2fV1alpha1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	myV1alpha1 *myv1alpha1.MyV1alpha1Client
+	osf2fV1alpha1 *osf2fv1alpha1.Osf2fV1alpha1Client
 }
 
-// MyV1alpha1 retrieves the MyV1alpha1Client
-func (c *Clientset) MyV1alpha1() myv1alpha1.MyV1alpha1Interface {
-	return c.myV1alpha1
+// Osf2fV1alpha1 retrieves the Osf2fV1alpha1Client
+func (c *Clientset) Osf2fV1alpha1() osf2fv1alpha1.Osf2fV1alpha1Interface {
+	return c.osf2fV1alpha1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -84,7 +84,7 @@ func NewForConfigAndClient(c *rest.Config, httpClient *http.Client) (*Clientset,
 
 	var cs Clientset
 	var err error
-	cs.myV1alpha1, err = myv1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
+	cs.osf2fV1alpha1, err = osf2fv1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.myV1alpha1 = myv1alpha1.New(c)
+	cs.osf2fV1alpha1 = osf2fv1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

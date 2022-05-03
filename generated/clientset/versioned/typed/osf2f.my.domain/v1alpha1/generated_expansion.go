@@ -27,4 +27,10 @@ type ProfileExpansion interface{}
 
 type RSSExpansion interface{}
 
+type ShowExpansion interface{}
+
+type ShowItemExpansion interface{}
+
+type StorageExpansion interface{}
+
 type SubscriptionExpansion interface{}

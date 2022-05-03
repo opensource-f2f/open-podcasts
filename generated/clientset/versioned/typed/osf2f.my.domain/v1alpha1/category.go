@@ -56,7 +56,7 @@ type categories struct {
 }
 
 // newCategories returns a Categories
-func newCategories(c *MyV1alpha1Client, namespace string) *categories {
+func newCategories(c *Osf2fV1alpha1Client, namespace string) *categories {
 	return &categories{
 		client: c.RESTClient(),
 		ns:     namespace,
