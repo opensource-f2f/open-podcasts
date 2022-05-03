@@ -56,7 +56,7 @@ type episodes struct {
 }
 
 // newEpisodes returns a Episodes
-func newEpisodes(c *MyV1alpha1Client, namespace string) *episodes {
+func newEpisodes(c *Osf2fV1alpha1Client, namespace string) *episodes {
 	return &episodes{
 		client: c.RESTClient(),
 		ns:     namespace,

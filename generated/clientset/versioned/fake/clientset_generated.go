@@ -19,8 +19,8 @@ package fake
 
 import (
 	clientset "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
-	myv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1"
-	fakemyv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1/fake"
+	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1"
+	fakeosf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned/typed/osf2f.my.domain/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -78,7 +78,7 @@ var (
 	_ testing.FakeClient  = &Clientset{}
 )
 
-// MyV1alpha1 retrieves the MyV1alpha1Client
-func (c *Clientset) MyV1alpha1() myv1alpha1.MyV1alpha1Interface {
-	return &fakemyv1alpha1.FakeMyV1alpha1{Fake: &c.Fake}
+// Osf2fV1alpha1 retrieves the Osf2fV1alpha1Client
+func (c *Clientset) Osf2fV1alpha1() osf2fv1alpha1.Osf2fV1alpha1Interface {
+	return &fakeosf2fv1alpha1.FakeOsf2fV1alpha1{Fake: &c.Fake}
 }

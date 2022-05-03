@@ -12,6 +12,9 @@ func init() {
 		&Notifier{}, &NotifierList{},
 		&Subscription{}, &SubscriptionList{},
 		&Category{}, &CategoryList{},
+		&Show{}, &ShowList{},
+		&ShowItem{}, &ShowItemList{},
+		&Storage{}, &StorageList{},
 	)
 }
 

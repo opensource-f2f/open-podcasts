@@ -1,0 +1,20 @@
+# permissions for end users to view storages.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: storage-viewer-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages/status
+  verbs:
+  - get

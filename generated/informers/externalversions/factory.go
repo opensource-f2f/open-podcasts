@@ -171,9 +171,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	My() osf2fmydomain.Interface
+	Osf2f() osf2fmydomain.Interface
 }
 
-func (f *sharedInformerFactory) My() osf2fmydomain.Interface {
+func (f *sharedInformerFactory) Osf2f() osf2fmydomain.Interface {
 	return osf2fmydomain.New(f, f.namespace, f.tweakListOptions)
 }

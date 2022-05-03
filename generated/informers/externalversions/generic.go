@@ -51,19 +51,25 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=my.domain, Version=v1alpha1
+	// Group=osf2f.my.domain, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("categories"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().Categories().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Categories().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("episodes"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().Episodes().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Episodes().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("notifiers"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().Notifiers().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Notifiers().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("profiles"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().Profiles().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Profiles().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("rsss"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().RSSs().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().RSSs().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("shows"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Shows().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("showitems"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().ShowItems().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("storages"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Storages().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("subscriptions"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.My().V1alpha1().Subscriptions().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Osf2f().V1alpha1().Subscriptions().Informer()}, nil
 
 	}
 

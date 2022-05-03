@@ -56,7 +56,7 @@ type rSSes struct {
 }
 
 // newRSSes returns a RSSes
-func newRSSes(c *MyV1alpha1Client, namespace string) *rSSes {
+func newRSSes(c *Osf2fV1alpha1Client, namespace string) *rSSes {
 	return &rSSes{
 		client: c.RESTClient(),
 		ns:     namespace,

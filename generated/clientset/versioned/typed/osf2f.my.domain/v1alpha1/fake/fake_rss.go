@@ -31,13 +31,13 @@ import (
 
 // FakeRSSes implements RSSInterface
 type FakeRSSes struct {
-	Fake *FakeMyV1alpha1
+	Fake *FakeOsf2fV1alpha1
 	ns   string
 }
 
-var rssesResource = schema.GroupVersionResource{Group: "my.domain", Version: "v1alpha1", Resource: "rsses"}
+var rssesResource = schema.GroupVersionResource{Group: "osf2f.my.domain", Version: "v1alpha1", Resource: "rsses"}
 
-var rssesKind = schema.GroupVersionKind{Group: "my.domain", Version: "v1alpha1", Kind: "RSS"}
+var rssesKind = schema.GroupVersionKind{Group: "osf2f.my.domain", Version: "v1alpha1", Kind: "RSS"}
 
 // Get takes name of the rSS, and returns the corresponding rSS object, and an error if there is any.
 func (c *FakeRSSes) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.RSS, err error) {

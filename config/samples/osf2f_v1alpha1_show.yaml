@@ -1,0 +1,12 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: Show
+metadata:
+  name: show-sample
+spec:
+  title: DevOps Talk
+  description: This is a DevOps talk
+  author: Jenkins
+  contact: rick@jenkins-zh.cn
+  image: "fake.png"
+  storage:
+    name: storage-sample

@@ -55,7 +55,7 @@ type notifiers struct {
 }
 
 // newNotifiers returns a Notifiers
-func newNotifiers(c *MyV1alpha1Client, namespace string) *notifiers {
+func newNotifiers(c *Osf2fV1alpha1Client, namespace string) *notifiers {
 	return &notifiers{
 		client: c.RESTClient(),
 		ns:     namespace,

@@ -1,0 +1,20 @@
+apiVersion: osf2f.my.domain/v1alpha1
+kind: Storage
+metadata:
+  name: storage-sample
+spec:
+  images:
+    - registry:
+        name: dockerhub
+        namespace: default
+      name: dockerhub
+      repo: surenpi/test
+      filepath: /
+  gitProviderReleases:
+    - name: github
+      provider: github
+      secret:
+        name: github
+        namespace: default
+      owner: linuxsuren-bot
+      repo: test
