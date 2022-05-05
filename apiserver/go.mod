@@ -6,7 +6,7 @@ require (
 	github.com/emicklei/go-restful-openapi/v2 v2.8.0
 	github.com/emicklei/go-restful/v3 v3.7.4
 	github.com/golang-jwt/jwt/v4 v4.4.1
-	github.com/opensource-f2f/open-podcasts v0.0.8-0.20220502050604-b2648197d2cc
+	github.com/opensource-f2f/open-podcasts v0.0.8-0.20220503074839-e9615d2f96db
 	github.com/stretchr/testify v1.7.0
 	k8s.io/apimachinery v0.23.5
 	k8s.io/client-go v0.23.5
@@ -27,6 +27,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/eduncan911/podcast v1.4.2 // indirect
 	github.com/evanphx/json-patch v4.12.0+incompatible // indirect
 	github.com/form3tech-oss/jwt-go v3.2.3+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
@@ -39,7 +40,9 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-github/v44 v44.0.0 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/googleapis/gnostic v0.5.5 // indirect

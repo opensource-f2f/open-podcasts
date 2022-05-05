@@ -38,6 +38,6 @@ func (r Notifier) findOne(request *restful.Request, response *restful.Response) 
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	notifier, err := clientset.MyV1alpha1().Notifiers(ns).Get(ctx, name, metav1.GetOptions{})
+	notifier, err := clientset.Osf2fV1alpha1().Notifiers(ns).Get(ctx, name, metav1.GetOptions{})
 	response.WriteAsJson(notifier)
 }

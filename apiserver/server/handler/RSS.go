@@ -63,7 +63,7 @@ func (r RSS) create(request *restful.Request, response *restful.Response) {
 	request.ReadEntity(rss) // TODO handle the error case
 
 	rss.GenerateName = "auto"
-	clientset.MyV1alpha1().RSSes(ns).Create(ctx, rss, metav1.CreateOptions{})
+	clientset.Osf2fV1alpha1().RSSes(ns).Create(ctx, rss, metav1.CreateOptions{})
 	response.Write([]byte("ok"))
 }
 
@@ -75,7 +75,7 @@ func (r RSS) findAll(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.MyV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
 
 	var filter rssFilter
 	if categoryQuery := request.QueryParameter(r.queryCategoryParam.Data().Name); categoryQuery != "" {
@@ -96,7 +96,7 @@ func (r RSS) findOne(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	rss, err := clientset.MyV1alpha1().RSSes(ns).Get(ctx, name, metav1.GetOptions{})
+	rss, err := clientset.Osf2fV1alpha1().RSSes(ns).Get(ctx, name, metav1.GetOptions{})
 	response.WriteAsJson(rss)
 }
 
@@ -108,7 +108,7 @@ func (r RSS) opmlExport(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.MyV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
 	response.Header().Set("Content-Type", "application/octet-stream")
 	response.Header().Set("Content-Disposition", "attachment; filename=rsses.opml")
 
@@ -159,7 +159,7 @@ func (r RSS) yamlExport(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.MyV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
 	response.Header().Set("Content-Type", "application/octet-stream")
 	response.Header().Set("Content-Disposition", "attachment; filename=rsses.yaml")
 	data, err := yaml.Marshal(rssList)

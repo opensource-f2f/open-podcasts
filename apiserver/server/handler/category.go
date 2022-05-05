@@ -31,7 +31,7 @@ func (r Category) findAll(request *restful.Request, response *restful.Response) 
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	categoryList, err := clientset.MyV1alpha1().Categories(ns).List(ctx, metav1.ListOptions{})
+	categoryList, err := clientset.Osf2fV1alpha1().Categories(ns).List(ctx, metav1.ListOptions{})
 
 	data, err := json.Marshal(categoryList)
 	response.Write(data)

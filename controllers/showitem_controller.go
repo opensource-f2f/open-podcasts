@@ -18,11 +18,17 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"github.com/eduncan911/podcast"
+	"github.com/google/go-github/v44/github"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
+	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"net/http"
+	"os"
+	"path"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -31,7 +37,8 @@ import (
 // ShowItemReconciler reconciles a ShowItem object
 type ShowItemReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme         *runtime.Scheme
+	ExternalServer string
 }
 
 //+kubebuilder:rbac:groups=osf2f.my.domain,resources=showitems,verbs=get;list;watch;create;update;patch;delete
@@ -76,13 +83,14 @@ func (r *ShowItemReconciler) Reconcile(ctx context.Context, req ctrl.Request) (r
 		return
 	}
 
-	rssXML := generateRSS(show, showItemList)
-
+	rssXML := generateRSS(r.ExternalServer, show, showItemList)
 	err = r.saveRSSXML(rssXML, show.Namespace, show.Spec.Storage)
+
+	err = r.storeDataFile(show.Namespace, show.Spec.Storage, showItem)
 	return
 }
 
-func generateRSS(show *v1alpha1.Show, showItems *v1alpha1.ShowItemList) string {
+func generateRSS(externalServer string, show *v1alpha1.Show, showItems *v1alpha1.ShowItemList) string {
 	ti, l, d := show.Spec.Title, show.Spec.Link, show.Spec.Description
 	pubDate, updatedDate := show.CreationTimestamp.Time, show.CreationTimestamp.Time
 
@@ -100,7 +108,7 @@ func generateRSS(show *v1alpha1.Show, showItems *v1alpha1.ShowItemList) string {
 			Comments:    "notes",
 			PubDate:     &item.CreationTimestamp.Time,
 			Enclosure: &podcast.Enclosure{
-				URL: "audio",
+				URL: fmt.Sprintf("%s/showitems/%s/download", externalServer, item.Name),
 			},
 		})
 	}
@@ -124,6 +132,84 @@ func (r *ShowItemReconciler) saveRSSXML(rssXML, namespace string, storageRef *v1
 
 	storage.Annotations[v1alpha1.AnnotationKeyRSS] = rssXML
 	err = r.Update(ctx, storage)
+	return
+}
+
+func (r *ShowItemReconciler) storeDataFile(ns string, storageRef *v1.LocalObjectReference, showItem *v1alpha1.ShowItem) (
+	err error) {
+	downloadURL := showItem.Annotations[v1alpha1.AnnotationKeyDownloadURL]
+	if storageRef == nil || downloadURL == "" {
+		return
+	}
+
+	ctx := context.Background()
+	storage := &v1alpha1.Storage{}
+	if err = r.Get(ctx, types.NamespacedName{
+		Namespace: ns,
+		Name:      storageRef.Name,
+	}, storage); err != nil {
+		return
+	}
+
+	releases := storage.Spec.GitProviderReleases
+	for i := range releases {
+		item := releases[i]
+
+		if item.Name == "" || item.Provider == "" {
+			continue
+		}
+
+		secret := &v1.Secret{}
+		var err error
+		if err = r.Get(context.Background(), types.NamespacedName{
+			Namespace: item.Secret.Namespace,
+			Name:      item.Secret.Name,
+		}, secret); err != nil {
+			continue
+		}
+
+		gitClient, err := GetGitProvider(item.Provider, item.Server, string(secret.Data["token"]))
+		if err != nil {
+			continue
+		} else {
+			name := github.String(fmt.Sprintf("%d", showItem.Spec.Index))
+			var release *github.RepositoryRelease
+			release, _, err = gitClient.Repositories.CreateRelease(context.Background(), item.Owner, item.Repo, &github.RepositoryRelease{
+				Name:    name,
+				TagName: name,
+			})
+			if err == nil {
+				var f *os.File
+				f, err = getLocalFile(downloadURL, path.Join(os.TempDir(), showItem.Spec.Filename))
+				if err == nil {
+					_, _, err = gitClient.Repositories.UploadReleaseAsset(context.Background(), item.Owner, item.Repo, *release.ID,
+						&github.UploadOptions{}, f)
+				}
+			}
+
+			fmt.Println(err)
+		}
+	}
+	return
+}
+
+func getLocalFile(downloadURL, localFile string) (f *os.File, err error) {
+	if _, err = os.Stat(localFile); err != nil {
+		var resp *http.Response
+		if resp, err = http.Get(downloadURL); err != nil {
+			return
+		}
+
+		var data []byte
+		if data, err = ioutil.ReadAll(resp.Body); err == nil {
+			err = ioutil.WriteFile(localFile, data, 0644)
+		}
+	}
+
+	if err == nil {
+		// TODO do the hash check
+		f, err = os.OpenFile(localFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	}
 	return
 }
 
