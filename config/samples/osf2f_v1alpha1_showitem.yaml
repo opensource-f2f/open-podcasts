@@ -8,4 +8,5 @@ spec:
   showRef: show-sample
   title: episode-1
   description: 'This is a demo episode'
+  filename: "open.mp3"
   image: "fake.png"

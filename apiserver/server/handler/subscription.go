@@ -39,7 +39,7 @@ func (r Subscription) findOne(req *restful.Request, resp *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	subscription, _ := clientset.MyV1alpha1().Subscriptions(ns).Get(ctx, subName, metav1.GetOptions{})
+	subscription, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Get(ctx, subName, metav1.GetOptions{})
 	resp.WriteAsJson(subscription)
 }
 

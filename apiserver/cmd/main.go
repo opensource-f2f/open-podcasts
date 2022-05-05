@@ -17,6 +17,7 @@ func main() {
 	profile := &handler.Profile{}
 	subscription := &handler.Subscription{}
 	notifier := &handler.Notifier{}
+	showItem := &handler.ShowItem{}
 	userws := &user.User{}
 	restful.DefaultContainer.Add(rss.WebService())
 	restful.DefaultContainer.Add(category.WebService())
@@ -24,6 +25,7 @@ func main() {
 	restful.DefaultContainer.Add(profile.WebService())
 	restful.DefaultContainer.Add(subscription.WebService())
 	restful.DefaultContainer.Add(notifier.WebService())
+	restful.DefaultContainer.Add(showItem.WebService())
 	restful.DefaultContainer.Add(userws.WebService())
 
 	setupFilter(restful.RegisteredWebServices())

@@ -47,7 +47,7 @@ func (r Episode) findAll(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	spisodeList, err := clientset.MyV1alpha1().Episodes(ns).List(ctx, metav1.ListOptions{
+	spisodeList, err := clientset.Osf2fV1alpha1().Episodes(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("rss=%s", rss),
 	})
 
@@ -66,7 +66,7 @@ func (r Episode) findOne(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	episode, err := clientset.MyV1alpha1().Episodes(ns).Get(ctx, name, metav1.GetOptions{})
+	episode, err := clientset.Osf2fV1alpha1().Episodes(ns).Get(ctx, name, metav1.GetOptions{})
 
 	data, err := json.Marshal(episode)
 	response.Write(data)

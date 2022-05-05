@@ -58,3 +58,5 @@ type ShowItemList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []ShowItem `json:"items"`
 }
+
+const AnnotationKeyDownloadURL = "show.item.download.url"
