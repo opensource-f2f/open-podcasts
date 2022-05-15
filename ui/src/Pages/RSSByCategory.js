@@ -32,6 +32,7 @@ class RSSList extends Component {
             categories: [],
             rssName: "",
             category: "",
+            total: 0,
         };
         this.loadEpisodes = this.loadEpisodes.bind(this);
     }
@@ -44,8 +45,13 @@ class RSSList extends Component {
         fetch('/categories')
             .then(res => res.json())
             .then(res => {
+                let total = 0
+                res.items.map((item, index) => (
+                    total += item.metadata.ownerReferences.length
+                ))
                 this.setState({
                     categories: res.items,
+                    total: total,
                 })
             })
     }
@@ -130,6 +136,11 @@ class RSSList extends Component {
                     {mySubscripted}
                     {filter}
                 </div>
+                    <Badge count={this.state.total}>
+                        <Link to={"/"}>
+                            <Button>All</Button>
+                        </Link>
+                    </Badge>
                 {categories.map((item, index) => (
                     <Badge count={item.metadata.ownerReferences.length} key={index}>
                         <Link key={index} to={"/rsses/search?category=" + item.metadata.name}>
