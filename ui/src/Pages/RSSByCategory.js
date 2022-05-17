@@ -136,13 +136,13 @@ class RSSList extends Component {
                     {mySubscripted}
                     {filter}
                 </div>
-                    <Badge count={this.state.total}>
+                    <Badge count={this.state.total} overflowCount={1000}>
                         <Link to={"/"}>
                             <Button>All</Button>
                         </Link>
                     </Badge>
                 {categories.map((item, index) => (
-                    <Badge count={item.metadata.ownerReferences.length} key={index}>
+                    <Badge count={item.metadata.ownerReferences.length} key={index} overflowCount={200}>
                         <Link key={index} to={"/rsses/search?category=" + item.metadata.name}>
                             <Button>{item.metadata.name}</Button>
                         </Link>

@@ -11,6 +11,10 @@ Demo address: http://103.61.38.146:30001/
 * 添加待收听列表
 * 发送播客更新通知到：Slack、飞书
 
+## Screenshot
+
+<img src="./ui/static/open-podcasts-screenshot.png"></img>
+
 ## Get started
 
 * 安装 Docker 环境
