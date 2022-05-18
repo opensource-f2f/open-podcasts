@@ -4,6 +4,7 @@ IMG ?= ghcr.io/opensource-f2f/open-podcasts:master
 IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:master
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
+CONTAINER_CLI ?= docker
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -72,19 +73,19 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build
 docker-build: #test ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	${CONTAINER_CLI} build -t ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+	${CONTAINER_CLI} push ${IMG}
 
 .PHONY: docker-build-ui
 docker-build-ui:
-	docker build -t ${IMG-UI} ui
+	${CONTAINER_CLI} build -t ${IMG-UI} ui
 
 .PHONY: docker-push-ui
 docker-push-ui:
-	docker push ${IMG-UI}
+	${CONTAINER_CLI} push ${IMG-UI}
 
 ##@ Deployment
 
@@ -113,7 +114,7 @@ print-deploy: manifests kustomize
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
-CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
+CONTROLLER_GEN = $(shell which controller-gen)
 .PHONY: controller-gen
 controller-gen: ## Download controller-gen locally if necessary.
 	$(call go-get-tool,$(CONTROLLER_GEN),sigs.k8s.io/controller-tools/cmd/controller-gen@v0.8.0)

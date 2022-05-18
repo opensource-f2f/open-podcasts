@@ -1,0 +1,24 @@
+# permissions for end users to edit authors.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: author-editor-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - authors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - authors/status
+  verbs:
+  - get

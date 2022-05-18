@@ -8,5 +8,6 @@ func init() {
 		&Notifier{}, &NotifierList{},
 		&Subscription{}, &SubscriptionList{},
 		&Category{}, &CategoryList{},
+		&Author{}, &AuthorList{},
 	)
 }

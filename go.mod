@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/SlyMarbo/rss v1.0.4-0.20220308062855-de3fcdcd72ca
 	github.com/grokify/html-strip-tags-go v0.0.1
+	github.com/linuxsuren/golang-chinese-to-pinyin v0.0.1
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
 	k8s.io/api v0.23.0
@@ -48,6 +49,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.28.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
+	github.com/qiniu/iconv v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
