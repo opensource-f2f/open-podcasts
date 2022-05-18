@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/SlyMarbo/rss"
 	strip "github.com/grokify/html-strip-tags-go"
-	"github.com/linuxsuren/golang-chinese-to-pinyin"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -71,9 +70,9 @@ func (r *RSSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result
 		return
 	}
 
-	if err = r.linkToAuthor(rssObj); err != nil {
-		return
-	}
+	//if err = r.linkToAuthor(rssObj); err != nil {
+	//	return
+	//}
 
 	address := rssObj.Spec.Address
 	if address == "" {
@@ -87,35 +86,35 @@ func (r *RSSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result
 	return
 }
 
-func (r *RSSReconciler) linkToAuthor(rss *v1alpha1.RSS) (err error) {
-	ctx := context.Background()
-	authorName := rss.Spec.Author
-
-	py := pinyin.New()
-	py.Split = "-"
-	py.Upper = false
-
-	authorNamePy, _ := py.Convert(authorName)
-
-	author := &v1alpha1.Author{
-		Spec: v1alpha1.AuthorSpec{
-			Name: authorName,
-		},
-	}
-	author.SetName(authorNamePy)
-	AddOwnerReference(author, rss.TypeMeta, rss.ObjectMeta)
-
-	if err = r.Get(ctx, types.NamespacedName{Name: authorNamePy}, author); err != nil {
-		if errors.IsNotFound(err) {
-			// create it if is not found
-			err = r.Create(ctx, author)
-		}
-	} else {
-		AddOwnerReference(author, rss.TypeMeta, rss.ObjectMeta)
-		err = r.Update(ctx, author)
-	}
-	return
-}
+//func (r *RSSReconciler) linkToAuthor(rss *v1alpha1.RSS) (err error) {
+//	ctx := context.Background()
+//	authorName := rss.Spec.Author
+//
+//	py := pinyin.New()
+//	py.Split = "-"
+//	py.Upper = false
+//
+//	authorNamePy, _ := py.Convert(authorName)
+//
+//	author := &v1alpha1.Author{
+//		Spec: v1alpha1.AuthorSpec{
+//			Name: authorName,
+//		},
+//	}
+//	author.SetName(authorNamePy)
+//	AddOwnerReference(author, rss.TypeMeta, rss.ObjectMeta)
+//
+//	if err = r.Get(ctx, types.NamespacedName{Name: authorNamePy}, author); err != nil {
+//		if errors.IsNotFound(err) {
+//			// create it if is not found
+//			err = r.Create(ctx, author)
+//		}
+//	} else {
+//		AddOwnerReference(author, rss.TypeMeta, rss.ObjectMeta)
+//		err = r.Update(ctx, author)
+//	}
+//	return
+//}
 
 func (r *RSSReconciler) linkToCategory(rss *v1alpha1.RSS) (err error) {
 	ctx := context.Background()
