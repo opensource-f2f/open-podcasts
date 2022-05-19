@@ -40,4 +40,13 @@ resources:
   kind: Category
   path: github.com/opensource-f2f/open-podcasts/api/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: my.domain
+  group: osf2f
+  kind: Author
+  path: github.com/opensource-f2f/open-podcasts/api/v1alpha1
+  version: v1alpha1
 version: "3"

@@ -20,6 +20,32 @@ rules:
 - apiGroups:
   - osf2f.my.domain
   resources:
+  - authors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - authors/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - authors/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
   - categories
   verbs:
   - create
