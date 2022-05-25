@@ -29,7 +29,7 @@ func (r Notifier) WebService() (ws *restful.WebService) {
 }
 
 func (r Notifier) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

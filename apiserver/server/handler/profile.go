@@ -72,7 +72,7 @@ func (r Profile) WebService() (ws *restful.WebService) {
 }
 
 func (r Profile) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -89,7 +89,7 @@ func (r Profile) create(request *restful.Request, response *restful.Response) {
 }
 
 func (r Profile) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -102,7 +102,7 @@ func (r Profile) findOne(request *restful.Request, response *restful.Response) {
 }
 
 func (r Profile) subscribe(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -134,7 +134,7 @@ func (r Profile) subscribe(request *restful.Request, response *restful.Response)
 }
 
 func (r Profile) unsubscribe(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -157,7 +157,7 @@ func (r Profile) unsubscribe(request *restful.Request, response *restful.Respons
 }
 
 func (r Profile) subscriptions(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -180,7 +180,7 @@ func (r Profile) subscriptions(request *restful.Request, response *restful.Respo
 }
 
 func (r Profile) playLater(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -201,7 +201,7 @@ func (r Profile) playLater(req *restful.Request, resp *restful.Response) {
 }
 
 func (r Profile) playOver(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -222,7 +222,7 @@ func (r Profile) playOver(req *restful.Request, resp *restful.Response) {
 }
 
 func (r Profile) notifier(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

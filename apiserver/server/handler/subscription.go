@@ -31,7 +31,7 @@ func (r Subscription) WebService() (ws *restful.WebService) {
 }
 
 func (r Subscription) findOne(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

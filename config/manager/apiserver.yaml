@@ -20,24 +20,20 @@ spec:
       securityContext:
         runAsNonRoot: true
       containers:
-        - command:
-            - /manager
-          args:
-            - --leader-elect
-          image: controller:latest
+        - image: apiserver:latest
           name: apiserver
           securityContext:
             allowPrivilegeEscalation: false
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: 8081
+              path: /apidocs.json
+              port: 8000
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /readyz
-              port: 8081
+              path: /apidocs.json
+              port: 8000
             initialDelaySeconds: 5
             periodSeconds: 10
           # TODO(user): Configure the resources accordingly based on the project requirements.

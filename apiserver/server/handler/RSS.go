@@ -51,7 +51,7 @@ func (r RSS) WebService() (ws *restful.WebService) {
 }
 
 func (r RSS) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -68,7 +68,7 @@ func (r RSS) create(request *restful.Request, response *restful.Response) {
 }
 
 func (r RSS) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -87,7 +87,7 @@ func (r RSS) findAll(request *restful.Request, response *restful.Response) {
 }
 
 func (r RSS) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -101,7 +101,7 @@ func (r RSS) findOne(request *restful.Request, response *restful.Response) {
 }
 
 func (r RSS) opmlExport(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -152,7 +152,7 @@ var opmlTemplate = `<?xml version='1.0' encoding='UTF-8' standalone='no' ?>
 `
 
 func (r RSS) yamlExport(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

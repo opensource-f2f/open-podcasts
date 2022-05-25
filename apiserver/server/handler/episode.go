@@ -39,7 +39,7 @@ func (r Episode) WebService() (ws *restful.WebService) {
 }
 
 func (r Episode) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -57,7 +57,7 @@ func (r Episode) findAll(request *restful.Request, response *restful.Response) {
 }
 
 func (r Episode) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

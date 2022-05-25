@@ -48,7 +48,7 @@ func (r ShowItem) WebService() (ws *restful.WebService) {
 }
 
 func (r ShowItem) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -75,7 +75,7 @@ func (r ShowItem) create(request *restful.Request, response *restful.Response) {
 }
 
 func (r ShowItem) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -95,7 +95,7 @@ func (r ShowItem) findAll(request *restful.Request, response *restful.Response) 
 }
 
 func (r ShowItem) upload(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -126,7 +126,7 @@ func (r ShowItem) upload(request *restful.Request, response *restful.Response) {
 }
 
 func (r ShowItem) download(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "/Users/rick/.kube/config")
+	config, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		panic(err.Error())
 	}

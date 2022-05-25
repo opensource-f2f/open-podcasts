@@ -1,8 +1,8 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= ghcr.io/opensource-f2f/open-podcasts:master
-IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:master
-IMG-SERVER ?= ghcr.io/opensource-f2f/open-podcasts-apiserver:master
+IMG ?= ghcr.io/opensource-f2f/open-podcasts:dev
+IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:dev
+IMG-SERVER ?= ghcr.io/opensource-f2f/open-podcasts-apiserver:dev
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
 CONTAINER_CLI ?= docker
@@ -75,13 +75,16 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
+
+docker-all: docker-build docker-push docker-build-apiserver docker-push-apiserver docker-build-ui docker-push-ui
+
 .PHONY: docker-build
 docker-build: #test ## Build docker image with the manager.
 	${CONTAINER_CLI} build -t ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+	${CONTAINER_CLI} push ${IMG}
 
 .PHONY: docker-build-ui
 docker-build-ui:
@@ -89,7 +92,7 @@ docker-build-ui:
 
 .PHONY: docker-push-ui
 docker-push-ui:
-	docker push ${IMG-UI}
+	${CONTAINER_CLI} push ${IMG-UI}
 
 .PHONY: docker-build-apiserver
 docker-build-apiserver:
@@ -97,7 +100,7 @@ docker-build-apiserver:
 
 .PHONY: docker-push-apiserver
 docker-push-apiserver:
-	docker push ${IMG-SERVER}
+	${CONTAINER_CLI} push ${IMG-SERVER}
 
 ##@ Deployment
 

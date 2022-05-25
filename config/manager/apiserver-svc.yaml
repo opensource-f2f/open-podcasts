@@ -2,19 +2,18 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: osf2f-ui
-  name: osf2f-ui
+    app: open-podcast-apiserver
+  name: open-podcast-apiserver
   namespace: osf2f-system
 spec:
   externalTrafficPolicy: Cluster
   ports:
     - name: front
-      nodePort: 30001
-      port: 80
+      port: 8000
       protocol: TCP
-      targetPort: 80
+      targetPort: 8000
   selector:
-    app: osf2f-ui
+    control-plane: apiserver
   sessionAffinity: None
   type: NodePort
 status:
