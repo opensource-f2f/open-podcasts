@@ -9,6 +9,13 @@ spec:
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
+  name: 0ey6xfdg7h
+spec:
+  address: https://qapodcast.typlog.io/feed/audio.xml
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
   name: 15ebpwjw95
 spec:
   address: https://feeds.fireside.fm/forkit/rss
@@ -26,6 +33,13 @@ metadata:
   name: 2e5uoctdck
 spec:
   address: https://feeds.buzzsprout.com/1112270.rss
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: 323rtknc8tw
+spec:
+  address: http://www.ximalaya.com/album/42177281.xml
 ---
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
@@ -82,6 +96,13 @@ metadata:
   name: 62ll6kbmt7
 spec:
   address: https://talkcdn.swift.gg/static/rss.xml
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: 6411irrkwr
+spec:
+  address: https://www.ximalaya.com/album/41912837.xml
 ---
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
@@ -345,6 +366,13 @@ spec:
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
+  name: h9qv9rqsdf
+spec:
+  address: https://fast.wistia.com/channels/ol6mhqoo22/rss
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
   name: haud3tpvq5
 spec:
   address: http://www.ximalaya.com/album/4494083.xml
@@ -390,6 +418,13 @@ metadata:
   name: jing
 spec:
   address: http://www.ximalaya.com/album/3785430.xml
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: jjjt8jltvw
+spec:
+  address: https://pie.wetime.com/feed/podcast
 ---
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
@@ -443,6 +478,13 @@ spec:
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
+  name: lr6i3x9hg9
+spec:
+  address: https://www.ximalaya.com/album/46414298.xml
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
   name: luehkqdft4
 spec:
   address: http://www.ximalaya.com/album/24043533.xml
@@ -464,9 +506,23 @@ spec:
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
+  name: mmrbi6rbjl
+spec:
+  address: https://feeds.fireside.fm/communitypulse/rss
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
   name: ofh2dfwr4k2
 spec:
   address: http://www.ximalaya.com/album/39324317.xml
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: onmhyj86bn
+spec:
+  address: https://developerrelations.com/feed/podcast/devrel-book-club
 ---
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
@@ -569,6 +625,13 @@ spec:
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
+  name: t6e49k5mqml
+spec:
+  address: https://devrelradio.libsyn.com/rss
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
   name: talking
 spec:
   address: https://www.ximalaya.com/album/32915040.xml
@@ -593,6 +656,13 @@ metadata:
   name: wt9dek8jg5
 spec:
   address: https://c.qingting.fm/podcast/v1/vchannels/318085
+---
+apiVersion: osf2f.my.domain/v1alpha1
+kind: RSS
+metadata:
+  name: x3xyurxfzm
+spec:
+  address: https://anchor.fm/s/59804b44/podcast/rss
 ---
 apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
