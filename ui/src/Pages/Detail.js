@@ -133,6 +133,7 @@ class Detail extends Component {
                                 </div>
                             </div>
                         </a>
+                        <div>{this.state.rss.spec.author}</div>
                         <Switch checkedChildren="取消" unCheckedChildren="收藏" ref={this.switchRef}
                                 onChange={(e) => this.subscribe(e)} />
                     </div>

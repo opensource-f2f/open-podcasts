@@ -45,3 +45,13 @@ cd ui && npm i && npm run start
 ```shell
 kubebuilder create api --group osf2f --version v1alpha1 --kind Profile
 ```
+
+## WSL
+
+我们可以在 WSL 中把 podman 当做容器环境，安装 k3d 来开发调试：
+
+执行下面的命令，启动 podman 服务，然后创建 docker.sock 文件：`sudo ln -s /home/$USER/podman.sock /var/run/docker.sock`
+
+```shell
+podman system service --time=0 unix:///home/$USER/podman.sock
+```
