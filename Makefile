@@ -93,7 +93,6 @@ docker-build-ui:
 .PHONY: docker-push-ui
 docker-push-ui:
 	${CONTAINER_CLI} push ${IMG-UI}
-<<<<<<< HEAD
 
 .PHONY: docker-build-apiserver
 docker-build-apiserver:

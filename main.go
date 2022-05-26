@@ -113,7 +113,6 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Category")
 		os.Exit(1)
 	}
-<<<<<<< HEAD
 	if err = (&controllers.ShowReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
@@ -133,13 +132,13 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ShowItem")
-=======
+		os.Exit(1)
+	}
 	if err = (&controllers.AuthorReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Author")
->>>>>>> upstream/master
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
