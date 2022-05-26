@@ -23,6 +23,9 @@ jobs:
       - name: Publish Backend Image
         run: |
           IMG=ghcr.io/opensource-f2f/open-podcasts:${{ github.ref_name }} make docker-build docker-push
+      - name: Publish APIServer Image
+        run: |
+          IMG-UI=ghcr.io/opensource-f2f/open-podcasts-apiserver:${{ github.ref_name }} make docker-build-apiserver docker-push-apiserver
       - name: Publish UI Image
         run: |
           IMG-UI=ghcr.io/opensource-f2f/open-podcasts-ui:${{ github.ref_name }} make docker-build-ui docker-push-ui
