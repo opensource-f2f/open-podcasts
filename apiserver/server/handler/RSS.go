@@ -3,21 +3,20 @@ package handler
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
 	_ "github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 	"sigs.k8s.io/yaml"
 	"text/template"
 	"time"
 )
 
-const ns = "default"
-
 type RSS struct {
+	common.CommonOption
 	pathParam          *restful.Parameter
 	queryCategoryParam *restful.Parameter
 }
@@ -51,31 +50,20 @@ func (r RSS) WebService() (ws *restful.WebService) {
 }
 
 func (r RSS) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
 
 	rss := &v1alpha1.RSS{}
 	request.ReadEntity(rss) // TODO handle the error case
 
 	rss.GenerateName = "auto"
-	clientset.Osf2fV1alpha1().RSSes(ns).Create(ctx, rss, metav1.CreateOptions{})
+	r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).Create(ctx, rss, metav1.CreateOptions{})
 	response.Write([]byte("ok"))
 }
 
 func (r RSS) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).List(ctx, metav1.ListOptions{})
+	fmt.Println(err)
 
 	var filter rssFilter
 	if categoryQuery := request.QueryParameter(r.queryCategoryParam.Data().Name); categoryQuery != "" {
@@ -87,31 +75,21 @@ func (r RSS) findAll(request *restful.Request, response *restful.Response) {
 }
 
 func (r RSS) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	name := request.PathParameter(r.pathParam.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	rss, err := clientset.Osf2fV1alpha1().RSSes(ns).Get(ctx, name, metav1.GetOptions{})
+	rss, err := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).Get(ctx, name, metav1.GetOptions{})
+	fmt.Println(err)
 	response.WriteAsJson(rss)
 }
 
 func (r RSS) opmlExport(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).List(ctx, metav1.ListOptions{})
 	response.Header().Set("Content-Type", "application/octet-stream")
 	response.Header().Set("Content-Disposition", "attachment; filename=rsses.opml")
 
+	fmt.Println(err)
 	data, err := (&opmlRSSList{
 		Title:      "Open Podcast",
 		CreateDate: time.Now(),
@@ -152,14 +130,9 @@ var opmlTemplate = `<?xml version='1.0' encoding='UTF-8' standalone='no' ?>
 `
 
 func (r RSS) yamlExport(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	rssList, err := clientset.Osf2fV1alpha1().RSSes(ns).List(ctx, metav1.ListOptions{})
+	rssList, err := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).List(ctx, metav1.ListOptions{})
+	fmt.Println(err)
 	response.Header().Set("Content-Type", "application/octet-stream")
 	response.Header().Set("Content-Disposition", "attachment; filename=rsses.yaml")
 	data, err := yaml.Marshal(rssList)

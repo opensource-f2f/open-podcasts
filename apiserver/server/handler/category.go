@@ -3,14 +3,15 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/emicklei/go-restful/v3"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 )
 
 type Category struct {
+	common.CommonOption
 }
 
 func (r Category) WebService() (ws *restful.WebService) {
@@ -23,15 +24,10 @@ func (r Category) WebService() (ws *restful.WebService) {
 	return
 }
 
-func (r Category) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
+func (r *Category) findAll(request *restful.Request, response *restful.Response) {
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	categoryList, err := clientset.Osf2fV1alpha1().Categories(ns).List(ctx, metav1.ListOptions{})
+	categoryList, err := r.Client.Osf2fV1alpha1().Categories(r.DefaultNamespace).List(ctx, metav1.ListOptions{})
+	fmt.Println(err)
 
 	data, err := json.Marshal(categoryList)
 	response.Write(data)

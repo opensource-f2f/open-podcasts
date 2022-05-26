@@ -4,14 +4,14 @@ import (
 	"context"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 )
 
 type Subscription struct {
+	common.CommonOption
 	subscriptionPath *restful.Parameter
 }
 
@@ -31,15 +31,10 @@ func (r Subscription) WebService() (ws *restful.WebService) {
 }
 
 func (r Subscription) findOne(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	subName := req.PathParameter(r.subscriptionPath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	subscription, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Get(ctx, subName, metav1.GetOptions{})
+	subscription, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, subName, metav1.GetOptions{})
 	resp.WriteAsJson(subscription)
 }
 

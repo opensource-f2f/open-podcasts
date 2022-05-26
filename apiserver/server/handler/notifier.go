@@ -2,14 +2,15 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"github.com/emicklei/go-restful/v3"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 )
 
 type Notifier struct {
+	common.CommonOption
 	notifierPath *restful.Parameter
 }
 
@@ -29,15 +30,10 @@ func (r Notifier) WebService() (ws *restful.WebService) {
 }
 
 func (r Notifier) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	name := request.PathParameter(r.notifierPath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	notifier, err := clientset.Osf2fV1alpha1().Notifiers(ns).Get(ctx, name, metav1.GetOptions{})
+	notifier, err := r.Client.Osf2fV1alpha1().Notifiers(r.DefaultNamespace).Get(ctx, name, metav1.GetOptions{})
+	fmt.Println(err)
 	response.WriteAsJson(notifier)
 }

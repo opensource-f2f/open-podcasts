@@ -2,16 +2,17 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 )
 
 type Profile struct {
+	common.CommonOption
 	nameQuery    *restful.Parameter
 	rssQuery     *restful.Parameter
 	episodeQuery *restful.Parameter
@@ -72,15 +73,10 @@ func (r Profile) WebService() (ws *restful.WebService) {
 }
 
 func (r Profile) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	name := request.QueryParameter(r.nameQuery.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	_, _ = clientset.Osf2fV1alpha1().Profiles(ns).Create(ctx, &v1alpha1.Profile{
+	_, _ = r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Create(ctx, &v1alpha1.Profile{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
 		},
@@ -89,32 +85,23 @@ func (r Profile) create(request *restful.Request, response *restful.Response) {
 }
 
 func (r Profile) findOne(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	name := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, _ := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, name, metav1.GetOptions{})
+	profile, _ := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, name, metav1.GetOptions{})
 	response.WriteAsJson(profile)
 }
 
 func (r Profile) subscribe(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	rss := request.QueryParameter(r.rssQuery.Data().Name)
 	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	if profile.Spec.Subscription.Name == "" {
-		sub, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Create(ctx, &v1alpha1.Subscription{
+		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Create(ctx, &v1alpha1.Subscription{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: rss,
 			},
@@ -124,55 +111,47 @@ func (r Profile) subscribe(request *restful.Request, response *restful.Response)
 		profile.Spec.Subscription = v1.LocalObjectReference{
 			Name: sub.Name,
 		}
-		clientset.Osf2fV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+		r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
 	} else {
-		sub, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
 		sub.Spec.RSSList = uniqueAppend(sub.Spec.RSSList, v1.LocalObjectReference{Name: rss})
-		clientset.Osf2fV1alpha1().Subscriptions(ns).Update(ctx, sub, metav1.UpdateOptions{})
+		r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Update(ctx, sub, metav1.UpdateOptions{})
 	}
 	response.Write([]byte("ok"))
 }
 
 func (r Profile) unsubscribe(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	rss := request.QueryParameter(r.rssQuery.Data().Name)
 	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	if profile.Spec.Subscription.Name != "" {
-		sub, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
 		var removed bool
 		sub.Spec.RSSList, removed = removeLocalObjectReference(sub.Spec.RSSList, v1.LocalObjectReference{Name: rss})
 		if removed {
-			clientset.Osf2fV1alpha1().Subscriptions(ns).Update(ctx, sub, metav1.UpdateOptions{})
+			r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Update(ctx, sub, metav1.UpdateOptions{})
 		}
 	}
 	response.Write([]byte("ok"))
 }
 
 func (r Profile) subscriptions(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	profileName := request.PathParameter(r.profilePath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	var rssList []*v1alpha1.RSS
 	if profile.Spec.Subscription.Name != "" {
-		sub, _ := clientset.Osf2fV1alpha1().Subscriptions(ns).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
 		for i := range sub.Spec.RSSList {
 			rssNameRef := sub.Spec.RSSList[i]
-			rss, _ := clientset.Osf2fV1alpha1().RSSes(ns).Get(ctx, rssNameRef.Name, metav1.GetOptions{})
+			rss, _ := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).Get(ctx, rssNameRef.Name, metav1.GetOptions{})
 			rssList = append(rssList, rss)
 		}
 	}
@@ -180,58 +159,46 @@ func (r Profile) subscriptions(request *restful.Request, response *restful.Respo
 }
 
 func (r Profile) playLater(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	profileName := req.PathParameter(r.profilePath.Data().Name)
 	episodeName := req.QueryParameter(r.episodeQuery.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	var added bool
 	profile.Spec.LaterPlayList, added = uniquePlayToDoAppend(profile.Spec.LaterPlayList, v1alpha1.PlayTodo{
 		LocalObjectReference: v1.LocalObjectReference{Name: episodeName},
 	})
 	if added {
-		clientset.Osf2fV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+		r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
 	}
 }
 
 func (r Profile) playOver(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	profileName := req.PathParameter(r.profilePath.Data().Name)
 	episodeName := req.QueryParameter(r.episodeQuery.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	var removed bool
 	profile.Spec.LaterPlayList, removed = removePlayTodo(profile.Spec.LaterPlayList, v1alpha1.PlayTodo{
 		LocalObjectReference: v1.LocalObjectReference{Name: episodeName},
 	})
 	if removed {
-		clientset.Osf2fV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+		r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
 	}
 }
 
 func (r Profile) notifier(req *restful.Request, resp *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	profileName := req.PathParameter(r.profilePath.Data().Name)
 	feishuWebhook := req.QueryParameter(r.feishuQuery.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	profile, err := clientset.Osf2fV1alpha1().Profiles(ns).Get(ctx, profileName, metav1.GetOptions{})
+	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
+	fmt.Println(err)
 
 	if profile.Spec.Notifier.Name == "" {
 		notifier := &v1alpha1.Notifier{}
@@ -240,12 +207,12 @@ func (r Profile) notifier(req *restful.Request, resp *restful.Response) {
 			WebhookUrl: feishuWebhook,
 		}
 
-		notifier, _ = clientset.Osf2fV1alpha1().Notifiers(ns).Create(ctx, notifier, metav1.CreateOptions{})
+		notifier, _ = r.Client.Osf2fV1alpha1().Notifiers(r.DefaultNamespace).Create(ctx, notifier, metav1.CreateOptions{})
 
 		profile.Spec.Notifier = v1.LocalObjectReference{
 			Name: notifier.Name,
 		}
-		clientset.Osf2fV1alpha1().Profiles(ns).Update(ctx, profile, metav1.UpdateOptions{})
+		r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
 	}
 	resp.Write([]byte("ok"))
 }

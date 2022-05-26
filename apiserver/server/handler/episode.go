@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -14,6 +15,7 @@ import (
 )
 
 type Episode struct {
+	common.CommonOption
 	pathParam *restful.Parameter
 	rssQuery  *restful.Parameter
 }
@@ -39,18 +41,14 @@ func (r Episode) WebService() (ws *restful.WebService) {
 }
 
 func (r Episode) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	rss := request.QueryParameter(r.rssQuery.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	spisodeList, err := clientset.Osf2fV1alpha1().Episodes(ns).List(ctx, metav1.ListOptions{
+	spisodeList, err := r.Client.Osf2fV1alpha1().Episodes(r.DefaultNamespace).List(ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("rss=%s", rss),
 	})
 
+	fmt.Println(err)
 	sortWithDesc(spisodeList.Items)
 	data, err := json.Marshal(spisodeList.Items)
 	response.Write(data)
@@ -66,7 +64,7 @@ func (r Episode) findOne(request *restful.Request, response *restful.Response) {
 
 	ctx := context.Background()
 	clientset, err := client.NewForConfig(config)
-	episode, err := clientset.Osf2fV1alpha1().Episodes(ns).Get(ctx, name, metav1.GetOptions{})
+	episode, err := clientset.Osf2fV1alpha1().Episodes(r.DefaultNamespace).Get(ctx, name, metav1.GetOptions{})
 
 	data, err := json.Marshal(episode)
 	response.Write(data)

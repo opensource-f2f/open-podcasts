@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
-	client "github.com/opensource-f2f/open-podcasts/generated/clientset/versioned"
+	"github.com/opensource-f2f/open-podcasts/apiserver/server/common"
 	"io/ioutil"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -16,6 +15,7 @@ import (
 )
 
 type ShowItem struct {
+	common.CommonOption
 	showitemPath *restful.Parameter
 	showQuery    *restful.Parameter
 }
@@ -48,12 +48,7 @@ func (r ShowItem) WebService() (ws *restful.WebService) {
 }
 
 func (r ShowItem) create(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
 
 	showitem := &v1alpha1.ShowItem{}
 	request.ReadEntity(showitem)
@@ -64,23 +59,19 @@ func (r ShowItem) create(request *restful.Request, response *restful.Response) {
 	showitem.Labels[v1alpha1.LabelKeyShowRef] = showitem.Spec.ShowRef
 
 	// calculate the next index
+	var err error
 	var showItemList *v1alpha1.ShowItemList
-	if showItemList, err = clientset.Osf2fV1alpha1().ShowItems(ns).List(ctx, v1.ListOptions{
+	if showItemList, err = r.Client.Osf2fV1alpha1().ShowItems(r.DefaultNamespace).List(ctx, v1.ListOptions{
 		LabelSelector: fmt.Sprintf("rss=%s", showitem.Spec.ShowRef),
 	}); err == nil {
 		showitem.Spec.Index = len(showItemList.Items)
 	}
 
-	_, _ = clientset.Osf2fV1alpha1().ShowItems(ns).Create(ctx, showitem, v1.CreateOptions{})
+	_, _ = r.Client.Osf2fV1alpha1().ShowItems(r.DefaultNamespace).Create(ctx, showitem, v1.CreateOptions{})
 }
 
 func (r ShowItem) findAll(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
 
 	showName := request.QueryParameter(r.showQuery.Data().Name)
 	labelSelector := ""
@@ -88,22 +79,16 @@ func (r ShowItem) findAll(request *restful.Request, response *restful.Response) 
 		labelSelector = fmt.Sprintf("%s=%s", v1alpha1.LabelKeyShowRef, showName)
 	}
 
-	showItemList, _ := clientset.Osf2fV1alpha1().ShowItems(ns).List(ctx, v1.ListOptions{
+	showItemList, _ := r.Client.Osf2fV1alpha1().ShowItems(r.DefaultNamespace).List(ctx, v1.ListOptions{
 		LabelSelector: labelSelector,
 	})
 	response.WriteAsJson(showItemList)
 }
 
 func (r ShowItem) upload(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	showItemName := request.PathParameter(r.showitemPath.Data().Name)
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	showItem, err := clientset.Osf2fV1alpha1().ShowItems(ns).Get(ctx, showItemName, v1.GetOptions{})
+	showItem, err := r.Client.Osf2fV1alpha1().ShowItems(r.DefaultNamespace).Get(ctx, showItemName, v1.GetOptions{})
 
 	httpReq := request.Request
 	err = httpReq.ParseMultipartForm(10 << 20)
@@ -126,16 +111,10 @@ func (r ShowItem) upload(request *restful.Request, response *restful.Response) {
 }
 
 func (r ShowItem) download(request *restful.Request, response *restful.Response) {
-	config, err := clientcmd.BuildConfigFromFlags("", "")
-	if err != nil {
-		panic(err.Error())
-	}
-
 	showItemName := request.PathParameter(r.showitemPath.Data().Name)
 
 	ctx := context.Background()
-	clientset, err := client.NewForConfig(config)
-	showItem, err := clientset.Osf2fV1alpha1().ShowItems(ns).Get(ctx, showItemName, v1.GetOptions{})
+	showItem, err := r.Client.Osf2fV1alpha1().ShowItems(r.DefaultNamespace).Get(ctx, showItemName, v1.GetOptions{})
 	if err == nil {
 		filepath := path.Join(getTempDir(), showItem.Spec.Filename)
 		response.Header().Set("Content-Type", "application/octet-stream")
