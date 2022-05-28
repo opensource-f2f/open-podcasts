@@ -104,7 +104,7 @@ docker-push-apiserver:
 	${CONTAINER_CLI} push ${IMG-SERVER}
 
 docker-build-cmd:
-	${CONTAINER_CLI} build -t ${IMG-CMD} .
+	${CONTAINER_CLI} build -t ${IMG-CMD} . -f cmd/Dockerfile
 docker-push-cmd:
 	${CONTAINER_CLI} push ${IMG-CMD}
 
