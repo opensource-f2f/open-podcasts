@@ -24,6 +24,6 @@ func (r Category) WebService() (ws *restful.WebService) {
 
 func (r *Category) findAll(request *restful.Request, response *restful.Response) {
 	ctx := context.Background()
-	categoryList, err := r.Client.Osf2fV1alpha1().Categories(r.DefaultNamespace).List(ctx, metav1.ListOptions{})
+	categoryList, err := r.Client.Osf2fV1alpha1().Categories("").List(ctx, metav1.ListOptions{})
 	output(categoryList, err, response)
 }
