@@ -4,4 +4,4 @@ name: 'YAML to RSS'
 description: 'YAML to RSS'
 runs:
   using: 'docker'
-  image: 'cmd/Dockerfile'
+  image: 'ghcr.io/opensource-f2f/open-podcasts-yaml-rss:dev'
