@@ -1,0 +1,7 @@
+showRef: show-sample
+title: episode-1
+description: 'This is a demo episode'
+index: 1
+filename: "S02E02.mp3"
+image: "fake.png"
+localStorage: github-release
