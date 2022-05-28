@@ -98,24 +98,45 @@ func (r Profile) subscribe(request *restful.Request, response *restful.Response)
 
 	ctx := context.Background()
 	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
-	fmt.Println(err)
+	if err != nil {
+		_ = response.WriteError(http.StatusBadGateway, err)
+		return
+	}
 
 	if profile.Spec.Subscription.Name == "" {
-		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Create(ctx, &v1alpha1.Subscription{
+		sub, err := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Create(ctx, &v1alpha1.Subscription{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: rss,
+				Namespace:    r.DefaultNamespace,
 			},
 			Spec: v1alpha1.SubscriptionSpec{},
 		}, metav1.CreateOptions{})
+		if err != nil {
+			_ = response.WriteError(http.StatusBadGateway, err)
+			return
+		}
 
 		profile.Spec.Subscription = v1.LocalObjectReference{
 			Name: sub.Name,
 		}
-		r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
+		_, err = r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Update(ctx, profile, metav1.UpdateOptions{})
+		if err != nil {
+			_ = response.WriteError(http.StatusBadGateway, err)
+			return
+		}
 	} else {
-		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		sub, err := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		if err != nil {
+			_ = response.WriteError(http.StatusBadGateway, err)
+			return
+		}
+
 		sub.Spec.RSSList = uniqueAppend(sub.Spec.RSSList, v1.LocalObjectReference{Name: rss})
-		r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Update(ctx, sub, metav1.UpdateOptions{})
+		_, err = r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Update(ctx, sub, metav1.UpdateOptions{})
+		if err != nil {
+			_ = response.WriteError(http.StatusBadGateway, err)
+			return
+		}
 	}
 	response.Write([]byte("ok"))
 }
