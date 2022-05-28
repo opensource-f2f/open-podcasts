@@ -4,6 +4,7 @@ import Episodes from "./Episodes";
 import Button from "cuke-ui/lib/button";
 import "./RSSByCategory.css"
 import Badge from "cuke-ui/lib/badge";
+import authHeaders from "../Service/request"
 
 class RSSItem extends Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class RSSList extends Component {
         const profile = this.props.profile
         this.loadRsses(category, profile)
 
-        fetch('/categories')
+        fetch('/api/categories', authHeaders())
             .then(res => res.json())
             .then(res => {
                 let total = 0
@@ -59,7 +60,7 @@ class RSSList extends Component {
     loadRsses(category, profile) {
         if (!category || category === "") {
             if (!profile || profile === "") {
-                fetch('/rsses')
+                fetch('/api/rsses', authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         this.setState({
@@ -67,7 +68,7 @@ class RSSList extends Component {
                         })
                     })
             } else {
-                fetch('/rsses/subscribed?profile=' + profile)
+                fetch('/api/profiles/' + profile + '/subscriptions', authHeaders())
                     .then(res => res.json())
                     .then(res => {
                         this.setState({
@@ -76,7 +77,7 @@ class RSSList extends Component {
                     })
             }
         } else {
-            fetch('/rsses/search?category=' + category)
+            fetch('/api/rsses?category=' + category, authHeaders())
                 .then(res => res.json())
                 .then(res => {
                     this.setState({

@@ -36,10 +36,12 @@ spec:
           spec:
             description: AuthorSpec defines the desired state of Author
             properties:
-              foo:
-                description: Foo is an example field of Author. Edit author_types.go
-                  to remove/update
+              description:
                 type: string
+              name:
+                type: string
+            required:
+            - description
             type: object
           status:
             description: AuthorStatus defines the observed state of Author

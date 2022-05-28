@@ -11,7 +11,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: RSS
-  path: github.com/opensource-f2f/open-podcasts/api/v1alpha1
+  path: github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -20,7 +20,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: Episode
-  path: ggithub.com/opensource-f2f/open-podcasts/api/v1alpha1
+  path: ggithub.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -29,7 +29,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: Profile
-  path: ggithub.com/opensource-f2f/open-podcasts/api/v1alpha1
+  path: ggithub.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -38,7 +38,7 @@ resources:
   domain: my.domain
   group: osf2f
   kind: Category
-  path: github.com/opensource-f2f/open-podcasts/api/v1alpha1
+  path: github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -46,7 +46,25 @@ resources:
   controller: true
   domain: my.domain
   group: osf2f
-  kind: Author
-  path: github.com/opensource-f2f/open-podcasts/api/v1alpha1
+  kind: Show
+  path: github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: my.domain
+  group: osf2f
+  kind: Storage
+  path: github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: my.domain
+  group: osf2f
+  kind: ShowItem
+  path: github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1
   version: v1alpha1
 version: "3"

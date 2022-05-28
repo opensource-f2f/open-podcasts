@@ -31,7 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/api/v1alpha1"
+	osf2fv1alpha1 "github.com/opensource-f2f/open-podcasts/api/osf2f.my.domain/v1alpha1"
 	"github.com/opensource-f2f/open-podcasts/controllers"
 	//+kubebuilder:scaffold:imports
 )
@@ -111,6 +111,27 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Category")
+		os.Exit(1)
+	}
+	if err = (&controllers.ShowReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Show")
+		os.Exit(1)
+	}
+	if err = (&controllers.StorageReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Storage")
+		os.Exit(1)
+	}
+	if err = (&controllers.ShowItemReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ShowItem")
 		os.Exit(1)
 	}
 	if err = (&controllers.AuthorReconciler{

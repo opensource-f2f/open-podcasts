@@ -2,5 +2,6 @@ apiVersion: osf2f.my.domain/v1alpha1
 kind: RSS
 metadata:
   name: osf2f
+  namespace: default
 spec:
   address: http://www.ximalaya.com/album/53320813.xml

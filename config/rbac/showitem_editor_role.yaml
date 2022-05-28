@@ -1,0 +1,24 @@
+# permissions for end users to edit showitems.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: showitem-editor-role
+rules:
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems/status
+  verbs:
+  - get

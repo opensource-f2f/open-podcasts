@@ -28,6 +28,18 @@ Demo address: http://103.61.38.146:30001/
   * `hd install kubectl`
   * `hd install k9s`
 
+## Development
+
+Start the APIServer:
+```shell
+cd apiserver && go run cmd/main.go
+```
+
+Start the front-end:
+```shell
+cd ui && npm i && npm run start
+```
+
 ## Create new API
 
 ```shell

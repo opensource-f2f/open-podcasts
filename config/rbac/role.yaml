@@ -158,7 +158,89 @@ rules:
 - apiGroups:
   - osf2f.my.domain
   resources:
-  - subscriptions
+  - showitems
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - showitems/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - shows
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - shows/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - shows/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - storages/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - osf2f.my.domain
+  resources:
+  - subscriptions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update

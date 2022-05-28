@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  BuildOnLinux:
+  BuildController:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -23,93 +23,39 @@ jobs:
       - name: Publish Backend Image
         run: |
           IMG=ghcr.io/opensource-f2f/open-podcasts:${{ github.ref_name }} make docker-build docker-push
+
+  BuildAPIServer:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.5
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+      - name: Set up Go
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.16.x
+      - name: Login
+        run: |
+          docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
+      - name: Publish APIServer Image
+        run: |
+          IMG-UI=ghcr.io/opensource-f2f/open-podcasts-apiserver:${{ github.ref_name }} make docker-build-apiserver docker-push-apiserver
+
+  BuildUI:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.5
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+      - name: Set up Go
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.16.x
+      - name: Login
+        run: |
+          docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
       - name: Publish UI Image
         run: |
           IMG-UI=ghcr.io/opensource-f2f/open-podcasts-ui:${{ github.ref_name }} make docker-build-ui docker-push-ui
-#          sudo apt-get update -y
-#          sudo apt install libasound2-dev -y
-#          GOENABLE=0 go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
-#          cd bin && tar czvf goplay-linux-amd64.tar.gz goplay
-#          gh release upload ${{ github.ref_name }} goplay-linux-amd64.tar.gz
-#  BuildOnDarwin:
-#    runs-on: macos-10.15
-#    steps:
-#      - name: Set up Go 1.16
-#        uses: actions/setup-go@v2.1.4
-#        with:
-#          go-version: 1.16
-#        id: go
-#      - name: Check out code into the Go module directory
-#        uses: actions/checkout@v2.3.5
-#      - name: Build
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
-#        run: |
-#          GOENABLE=0 go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay .
-#          cd bin && tar czvf goplay-darwin-amd64.tar.gz goplay
-#          gh release upload ${{ github.ref_name }} goplay-darwin-amd64.tar.gz
-#  BuildOnWindows:
-#    runs-on: windows-latest
-#    steps:
-#      - name: Set up Go 1.16
-#        uses: actions/setup-go@v2.1.4
-#        with:
-#          go-version: 1.16
-#        id: go
-#      - name: Check out code into the Go module directory
-#        uses: actions/checkout@v2.3.5
-#      - name: Build
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_PUBLISH_SECRETS }}
-#        run: |
-#          go build -ldflags '-X github.com/linuxsuren/cobra-extension/version.version=${{ github.ref_name }} -X github.com/linuxsuren/cobra-extension/version.commit=${{ github.sha }}' -o bin/goplay.exe .
-#          7z d goplay-windows-amd64.zip bin/goplay.exe
-#          gh release upload ${{ github.ref_name }} goplay-windows-amd64.zip
-
-#  msi:
-#    needs: BuildOnWindows
-#    runs-on: windows-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Download hd.exe
-#        id: download_exe
-#        shell: bash
-#        run: |
-#          hub release download "${GITHUB_REF#refs/tags/}" -i '*windows-amd64*.zip'
-#          printf "::set-output name=zip::%s\n" *.zip
-#          unzip -o *.zip && rm -v *.zip
-#        env:
-#          GITHUB_TOKEN: ${{secrets.GH_PUBLISH_SECRETS}}
-#      - name: Install go-msi
-#        run: choco install -y "go-msi"
-#      - name: Prepare PATH
-#        shell: bash
-#        run: |
-#          echo "$WIX\\bin" >> $GITHUB_PATH
-#          echo "C:\\Program Files\\go-msi" >> $GITHUB_PATH
-#      - name: Build MSI
-#        id: buildmsi
-#        shell: bash
-#        env:
-#          ZIP_FILE: ${{ steps.download_exe.outputs.zip }}
-#        run: |
-#          mkdir -p build
-#          msi="$(basename "$ZIP_FILE" ".zip").msi"
-#          printf "::set-output name=msi::%s\n" "$msi"
-#          go-msi make --msi "$PWD/$msi" --out "$PWD/build" --version "${GITHUB_REF#refs/tags/}"
-#      - name: Upload MSI
-#        shell: bash
-#        run: |
-#          tag_name="${GITHUB_REF#refs/tags/}"
-#          hub release edit "$tag_name" -m "" -a "$MSI_FILE"
-#          release_url="$(gh api repos/:owner/:repo/releases -q ".[]|select(.tag_name==\"${tag_name}\")|.url")"
-#          publish_args=( -F draft=false )
-#          if [[ $GITHUB_REF != *-* ]]; then
-#            publish_args+=( -f discussion_category_name="$DISCUSSION_CATEGORY" )
-#          fi
-#          gh api -X PATCH "$release_url" "${publish_args[@]}"
-#        env:
-#          MSI_FILE: ${{ steps.buildmsi.outputs.msi }}
-#          DISCUSSION_CATEGORY: General
-#          GITHUB_TOKEN: ${{secrets.GH_PUBLISH_SECRETS}}

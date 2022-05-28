@@ -1,4 +1,6 @@
 resources:
+- apiserver.yaml
+- apiserver-svc.yaml
 - manager.yaml
 - ui.yaml
 - ui-svc.yaml
@@ -15,7 +17,10 @@ kind: Kustomization
 images:
 - name: controller
   newName: ghcr.io/opensource-f2f/open-podcasts
-  newTag: master
+  newTag: dev
 - name: osf2f-ui
   newName: ghcr.io/opensource-f2f/open-podcasts-ui
-  newTag: master
+  newTag: dev
+- name: apiserver
+  newName: ghcr.io/opensource-f2f/open-podcasts-apiserver
+  newTag: dev

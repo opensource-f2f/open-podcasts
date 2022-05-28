@@ -5,6 +5,7 @@ import Tag from 'cuke-ui/lib/tag';
 import "./Detail.css"
 import {Router, Route, Link, useParams} from 'react-router-dom'
 import Episodes from "./Episodes";
+import authHeaders from "../Service/request"
 var  LocaleCode = require('locale-code')
 
 class Detail extends Component {
@@ -31,7 +32,7 @@ class Detail extends Component {
     }
 
     componentDidMount() {
-        fetch('/rsses')
+        fetch('/api/rsses', authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({
@@ -40,7 +41,7 @@ class Detail extends Component {
             })
 
         const name = this.props.name
-        fetch('/rsses/one?name=' + name)
+        fetch('/api/rsses/' + name, authHeaders())
             .then(res => res.json())
             .then(res => {
                 this.setState({
@@ -53,11 +54,11 @@ class Detail extends Component {
         if (profile === "" || !profile) {
             return
         }
-        fetch('/profiles?name=' + profile)
+        fetch('/api/profiles/' + profile, authHeaders())
             .then(res => res.json())
             .then(res => {
                 if (res.spec && res.spec.subscription && res.spec.subscription.name) {
-                    fetch('/subscriptions/one?name=' + res.spec.subscription.name)
+                    fetch('/api/subscriptions/' + res.spec.subscription.name, authHeaders())
                         .then(res => res.json())
                         .then(res => {
                             for (const rss of res.spec.rssList) {
@@ -77,15 +78,12 @@ class Detail extends Component {
         if (profile === "" || !profile) {
             return
         }
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        };
+
         const rss = this.state.rss.metadata.name
         if (e) {
-            fetch('/subscribe?profile=' + profile + '&rss=' + rss, requestOptions)
+            fetch('/api/profiles/' + profile + '/subscribe?rss=' + rss, authHeaders('POST'))
         } else {
-            fetch('/unsubscribe?profile=' + profile + '&rss=' + rss, requestOptions)
+            fetch('/api/profiles/' + profile + '/unsubscribe?rss=' + rss, authHeaders('POST'))
         }
     }
 

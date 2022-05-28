@@ -1,7 +1,8 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= ghcr.io/opensource-f2f/open-podcasts:master
-IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:master
+IMG ?= ghcr.io/opensource-f2f/open-podcasts:dev
+IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:dev
+IMG-SERVER ?= ghcr.io/opensource-f2f/open-podcasts-apiserver:dev
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
 CONTAINER_CLI ?= docker
@@ -49,6 +50,9 @@ manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and Cust
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
+update-codegen:
+	./hack/update-codegen.sh
+
 .PHONY: fmt
 fmt: ## Run go fmt against code.
 	go fmt ./...
@@ -71,6 +75,9 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
+
+docker-all: docker-build docker-push docker-build-apiserver docker-push-apiserver docker-build-ui docker-push-ui
+
 .PHONY: docker-build
 docker-build: #test ## Build docker image with the manager.
 	${CONTAINER_CLI} build -t ${IMG} .
@@ -86,6 +93,14 @@ docker-build-ui:
 .PHONY: docker-push-ui
 docker-push-ui:
 	${CONTAINER_CLI} push ${IMG-UI}
+
+.PHONY: docker-build-apiserver
+docker-build-apiserver:
+	${CONTAINER_CLI} build -t ${IMG-SERVER} apiserver
+
+.PHONY: docker-push-apiserver
+docker-push-apiserver:
+	${CONTAINER_CLI} push ${IMG-SERVER}
 
 ##@ Deployment
 
