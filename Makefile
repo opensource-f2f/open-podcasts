@@ -3,6 +3,7 @@
 IMG ?= ghcr.io/opensource-f2f/open-podcasts:dev
 IMG-UI ?= ghcr.io/opensource-f2f/open-podcasts-ui:dev
 IMG-SERVER ?= ghcr.io/opensource-f2f/open-podcasts-apiserver:dev
+IMG-CMD ?= ghcr.io/opensource-f2f/open-podcasts-yaml-rss:dev
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.23
 CONTAINER_CLI ?= docker
@@ -101,6 +102,11 @@ docker-build-apiserver:
 .PHONY: docker-push-apiserver
 docker-push-apiserver:
 	${CONTAINER_CLI} push ${IMG-SERVER}
+
+docker-build-cmd:
+	${CONTAINER_CLI} build -t ${IMG-CMD} cmd
+docker-push-cmd:
+	${CONTAINER_CLI} push ${IMG-CMD}
 
 ##@ Deployment
 
