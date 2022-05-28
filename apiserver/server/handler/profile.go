@@ -165,18 +165,26 @@ func (r Profile) subscriptions(request *restful.Request, response *restful.Respo
 
 	ctx := context.Background()
 	profile, err := r.Client.Osf2fV1alpha1().Profiles(r.DefaultNamespace).Get(ctx, profileName, metav1.GetOptions{})
-	fmt.Println(err)
+	if err != nil {
+		_ = response.WriteError(http.StatusBadGateway, err)
+		return
+	}
 
 	var rssList []*v1alpha1.RSS
 	if profile.Spec.Subscription.Name != "" {
-		sub, _ := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		sub, err := r.Client.Osf2fV1alpha1().Subscriptions(r.DefaultNamespace).Get(ctx, profile.Spec.Subscription.Name, metav1.GetOptions{})
+		if err != nil {
+			_ = response.WriteError(http.StatusBadGateway, err)
+			return
+		}
+
 		for i := range sub.Spec.RSSList {
 			rssNameRef := sub.Spec.RSSList[i]
 			rss, _ := r.Client.Osf2fV1alpha1().RSSes(r.DefaultNamespace).Get(ctx, rssNameRef.Name, metav1.GetOptions{})
 			rssList = append(rssList, rss)
 		}
 	}
-	response.WriteAsJson(rssList)
+	_ = response.WriteAsJson(rssList)
 }
 
 func (r Profile) playLater(req *restful.Request, resp *restful.Response) {
