@@ -23,7 +23,9 @@ RUN CGO_ENABLED=0 go build -a -o yaml-rss cmd/main.go
 FROM gcr.io/distroless/static:nonroot
 LABEL org.opencontainers.image.source=https://github.com/opensource-f2f/open-podcasts-yaml-rss
 WORKDIR /
-COPY --from=builder /workspace/yaml-rss .
+COPY --from=builder /workspace/yaml-rss /usr/bin/yaml-rss
 USER 65532:65532
 
-ENTRYPOINT ["/yaml-rss"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

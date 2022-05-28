@@ -1,0 +1,7 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+
+name: 'YAML to RSS'
+description: 'YAML to RSS'
+runs:
+  using: 'docker'
+  image: 'cmd/Dockerfile'
