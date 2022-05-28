@@ -55,14 +55,15 @@ func (o *option) runE(cmd *cobra.Command, args []string) (err error) {
 		DefaultNamespace: o.defaultNamespace,
 	}
 
-	rss := &handler.RSS{}
-	category := &handler.Category{commonOption}
-	episode := &handler.Episode{}
-	profile := &handler.Profile{}
-	subscription := &handler.Subscription{}
-	notifier := &handler.Notifier{}
-	showItem := &handler.ShowItem{}
+	rss := &handler.RSS{CommonOption: commonOption}
+	category := &handler.Category{CommonOption: commonOption}
+	episode := &handler.Episode{CommonOption: commonOption}
+	profile := &handler.Profile{CommonOption: commonOption}
+	subscription := &handler.Subscription{CommonOption: commonOption}
+	notifier := &handler.Notifier{CommonOption: commonOption}
+	showItem := &handler.ShowItem{CommonOption: commonOption}
 	userws := &user.User{}
+
 	restful.DefaultContainer.Add(rss.WebService())
 	restful.DefaultContainer.Add(category.WebService())
 	restful.DefaultContainer.Add(episode.WebService())
