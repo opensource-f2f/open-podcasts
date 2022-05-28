@@ -59,3 +59,19 @@ jobs:
       - name: Publish UI Image
         run: |
           make docker-build-ui docker-push-ui
+  PublishCmd:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.17
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.5
+      - name: Login
+        run: |
+          docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
+      - name: Publish UI Image
+        run: |
+          make docker-build-cmd docker-push-cmd
