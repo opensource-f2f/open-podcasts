@@ -66,6 +66,13 @@ func GenerateRSS(externalServer string, show *v1alpha1.Show, showItems *v1alpha1
 	p := podcast.New(ti, l, d, &pubDate, &updatedDate)
 	p.Language = show.Spec.Language
 	p.Generator = "Open Podcast (https://github.com/opensource-f2f/open-podcasts)"
+	if len(show.Spec.Categories) > 0 {
+		p.Category = show.Spec.Categories[0]
+		for i := range show.Spec.Categories {
+			category := show.Spec.Categories[i]
+			p.ICategories = append(p.ICategories, &podcast.ICategory{Text: category})
+		}
+	}
 	if show.Spec.Image != "" {
 		p.Image = &podcast.Image{
 			URL: show.Spec.Image,
