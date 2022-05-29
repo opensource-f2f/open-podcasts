@@ -23,12 +23,12 @@ import (
 // ShowItemSpec defines the desired state of ShowItem
 type ShowItemSpec struct {
 	ShowRef      string `json:"showRef"`
-	Index        int    `json:"index,omitempty"`
-	Title        string `json:"title,omitempty"`
-	Description  string `json:"description,omitempty"`
-	Image        string `json:"image,omitempty"`
-	Filename     string `json:"filename,omitempty"`
-	LocalStorage string `json:"localStorage,omitempty"`
+	Index        int    `json:"index,omitempty" yaml:"index"`
+	Title        string `json:"title,omitempty" yaml:"title"`
+	Description  string `json:"description,omitempty" yaml:"description"`
+	Image        string `json:"image,omitempty" yaml:"image"`
+	Filename     string `json:"filename,omitempty" yaml:"filename"`
+	LocalStorage string `json:"localStorage,omitempty" yaml:"localStorage"`
 }
 
 // ShowItemStatus defines the observed state of ShowItem

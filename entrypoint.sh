@@ -1,3 +1,3 @@
 #!/bin/sh
 
-yaml-rss > test.rss
+yaml-rss --server $1 > test.rss

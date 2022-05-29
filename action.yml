@@ -2,6 +2,12 @@
 
 name: 'YAML to RSS'
 description: 'YAML to RSS'
+inputs:
+  server:  # id of input
+    description: 'The RSS content server address'
+    required: true
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/opensource-f2f/open-podcasts-yaml-rss:dev'
+  args:
+    - ${{ inputs.server }}
