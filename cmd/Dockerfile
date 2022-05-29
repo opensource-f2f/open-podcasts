@@ -13,19 +13,16 @@ RUN go mod download
 COPY cmd/main.go cmd/main.go
 COPY api api/
 COPY pkg pkg/
+COPY entrypoint.sh entrypoint.sh
 RUN go mod tidy
 
 # Build
 RUN CGO_ENABLED=0 go build -a -o yaml-rss cmd/main.go
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static:nonroot
+FROM alpine:3.10
 LABEL org.opencontainers.image.source=https://github.com/opensource-f2f/open-podcasts-yaml-rss
 WORKDIR /
 COPY --from=builder /workspace/yaml-rss /usr/bin/yaml-rss
-USER 65532:65532
-
-COPY entrypoint.sh /entrypoint.sh
+COPY --from=builder /workspace/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

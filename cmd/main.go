@@ -25,12 +25,13 @@ func main() {
 			return
 		},
 	}
+	cmd.SetOut(os.Stdout)
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func findDefaultItems() (files []string, err error) {
-	files, err = filepath.Glob("item-*.")
+	files, err = filepath.Glob("item-*.yaml")
 	return
 }
