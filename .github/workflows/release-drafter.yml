@@ -24,7 +24,7 @@ jobs:
       - name: Login
         run: |
           docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
-      - name: Publish Backend Image
+      - name: Publish Image
         run: |
           make docker-build docker-push
   PublishAPIServer:
@@ -40,7 +40,7 @@ jobs:
       - name: Login
         run: |
           docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
-      - name: Publish UI Image
+      - name: Publish Image
         run: |
           make docker-build-apiserver docker-push-apiserver
   PublishFrontend:
@@ -56,7 +56,7 @@ jobs:
       - name: Login
         run: |
           docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
-      - name: Publish UI Image
+      - name: Publish Image
         run: |
           make docker-build-ui docker-push-ui
   PublishCmd:
@@ -72,6 +72,6 @@ jobs:
       - name: Login
         run: |
           docker login ghcr.io/opensource-f2f -u linuxsuren -p${{secrets.GH_PUBLISH_SECRETS}}
-      - name: Publish UI Image
+      - name: Publish Image
         run: |
           make docker-build-cmd docker-push-cmd

@@ -10,7 +10,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 # Copy the go source
-COPY cmd/main.go cmd/main.go
+COPY cmd cmd/
 COPY api api/
 COPY pkg pkg/
 COPY entrypoint.sh entrypoint.sh
@@ -20,7 +20,7 @@ RUN go mod tidy
 RUN CGO_ENABLED=0 go build -a -o yaml-rss cmd/main.go
 
 FROM alpine:3.10
-LABEL org.opencontainers.image.source=https://github.com/opensource-f2f/open-podcasts-yaml-rss
+LABEL org.opencontainers.image.source=https://github.com/opensource-f2f/open-podcasts
 WORKDIR /
 COPY --from=builder /workspace/yaml-rss /usr/bin/yaml-rss
 COPY --from=builder /workspace/entrypoint.sh /entrypoint.sh
