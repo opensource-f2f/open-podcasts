@@ -75,7 +75,9 @@ func GenerateRSS(externalServer string, show *v1alpha1.Show, showItems *v1alpha1
 	}
 	if show.Spec.Image != "" {
 		p.Image = &podcast.Image{
-			URL: show.Spec.Image,
+			URL:   show.Spec.Image,
+			Title: "cover",
+			Link:  show.Spec.Image,
 		}
 	}
 
