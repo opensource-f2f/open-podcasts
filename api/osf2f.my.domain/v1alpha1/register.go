@@ -15,6 +15,7 @@ func init() {
 		&Show{}, &ShowList{},
 		&ShowItem{}, &ShowItemList{},
 		&Storage{}, &StorageList{},
+		&Author{}, &AuthorList{},
 	)
 }
 
