@@ -144,6 +144,14 @@ func (r *RSSReconciler) linkToCategory(rss *v1alpha1.RSS) (err error) {
 	return
 }
 
+func getSingleCategory(category string) (result string) {
+	result = category
+	if strings.Contains(category, "&") {
+		result = strings.TrimSpace(strings.Split(category, "&")[0])
+	}
+	return
+}
+
 func AddOwnerReference(object metav1.Object, typeMeta metav1.TypeMeta, objectMeta metav1.ObjectMeta) {
 	SetOwnerReference(object, metav1.OwnerReference{
 		Kind:       typeMeta.Kind,

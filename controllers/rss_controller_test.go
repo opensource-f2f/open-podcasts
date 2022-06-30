@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/SlyMarbo/rss"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -54,6 +55,34 @@ func Test_removeDuplicateStr(t *testing.T) {
 			if got := removeDuplicateStr(tt.args.strSlice); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("removeDuplicateStr() = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func Test_getSingleCategory(t *testing.T) {
+	type args struct {
+		category string
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantResult string
+	}{{
+		name: "multiple categories",
+		args: args{
+			category: "society & culture",
+		},
+		wantResult: "society",
+	}, {
+		name: "single category",
+		args: args{
+			category: "tech",
+		},
+		wantResult: "tech",
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.wantResult, getSingleCategory(tt.args.category), "getSingleCategory(%v)", tt.args.category)
 		})
 	}
 }

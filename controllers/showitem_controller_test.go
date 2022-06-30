@@ -62,14 +62,14 @@ func Test_generateRSS(t *testing.T) {
       <description>desc</description>
       <comments>notes</comments>
       <pubDate>Tue, 03 May 2022 04:02:17 +0000</pubDate>
-      <enclosure url="audio" length="0" type="audio/x-m4a"></enclosure>
+      <enclosure url="/showitems//download" length="0" type="audio/x-m4a"></enclosure>
     </item>
   </channel>
 </rss>`,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := generateRSS(tt.args.show, tt.args.showItems); got != tt.want {
+			if got := generateRSS("", tt.args.show, tt.args.showItems); got != tt.want {
 				t.Errorf("generateRSS() = %v, want %v", got, tt.want)
 			}
 		})
