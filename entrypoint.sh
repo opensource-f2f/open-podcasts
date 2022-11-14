@@ -29,4 +29,4 @@ then
   exit 1
 fi
 
-yaml-rss --server ${server} --show-file ${showFile} --items-pattern ${itemsPattern} > ${output}
+yaml-rss --server ${server} --show-file ${showFile} --items-pattern "${itemsPattern}" > ${output}
