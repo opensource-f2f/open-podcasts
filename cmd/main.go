@@ -33,7 +33,7 @@ func (o *option) runE(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var content string
-	showFilePath := "show.yaml"
+	showFilePath := o.showFile
 	if content, err = rss.GenerateRSSFromNonCRDFiles(o.server, showFilePath, showItemFiles); err != nil {
 		return
 	}
