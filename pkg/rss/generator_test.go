@@ -44,6 +44,14 @@ func TestGenerateRSSFromNonCRDFiles(t *testing.T) {
 		},
 		wantContent: "",
 		wantErr:     false,
+	}, {
+		name: "with a URL episode source",
+		args: args{
+			show:      "data/show.yaml",
+			showItems: []string{"data/item-2-url.yaml"},
+		},
+		wantContent: "",
+		wantErr:     false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
