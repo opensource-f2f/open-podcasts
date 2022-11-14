@@ -5,9 +5,24 @@ description: 'YAML to RSS'
 inputs:
   server:  # id of input
     description: 'The RSS content server address'
+    required: false
+  showFile:
+    description: 'The show file path'
     required: true
+    default: 'show.yaml'
+  itemsPattern:
+    description: 'The each episode files path pattern'
+    required: true
+    default: 'item-*.yaml'
+  output:
+    description: 'The output file path'
+    required: true
+    default: 'index.rss'
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/opensource-f2f/open-podcasts-yaml-rss:dev'
   args:
-    - ${{ inputs.server }}
+    - --server=${{ inputs.server }}
+    - --show-file=${{ inputs.showFile }}
+    - --items-pattern=${{ inputs.itemsPattern }}
+    - --output=${{ inputs.output }}
