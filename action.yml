@@ -23,6 +23,6 @@ runs:
   image: 'docker://ghcr.io/opensource-f2f/open-podcasts-yaml-rss:dev'
   args:
     - --server=${{ inputs.server }}
-    - --show-file=${{ inputs.showFile }}
-    - --items-pattern=${{ inputs.itemsPattern }}
+    - --showFile=${{ inputs.showFile }}
+    - --itemsPattern=${{ inputs.itemsPattern }}
     - --output=${{ inputs.output }}
