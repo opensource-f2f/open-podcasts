@@ -105,6 +105,8 @@ func GetAudioFileURL(externalServer string, item v1alpha1.ShowItem) string {
 	switch itemSpec.LocalStorage {
 	case "github-release":
 		return fmt.Sprintf("%s/releases/download/%d/%s", externalServer, itemSpec.Index, itemSpec.Filename)
+	case "url":
+		return itemSpec.Filename
 	default:
 		return fmt.Sprintf("%s/showitems/%s/download", externalServer, item.Name)
 	}
